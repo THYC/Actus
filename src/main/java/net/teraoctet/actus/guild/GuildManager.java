@@ -37,14 +37,14 @@ public class GuildManager {
      * @param aplayer Object APlayer
      * @return Boolean
      */
-    public static Boolean hasAnyFaction(APlayer aplayer) { return aplayer.getID_guild() != 0; }
+    public static Boolean hasAnyGuild(APlayer aplayer) { return aplayer.getID_guild() != 0; }
     
     /**
      * Si TRUE le joueur est membre d'une guild
      * @param player joueur 
      * @return Boolean
      */
-    public static Boolean hasAnyFaction(Player player) {
+    public static Boolean hasAnyGuild(Player player) {
         APlayer aplayer = getAPlayer(player.getIdentifier());
         return aplayer.getFactionRank() == 1;
     }
@@ -84,7 +84,7 @@ public class GuildManager {
         Data.commit();
     }*/
     
-    public void removeFaction(int id_guild){
+    public void removeGuild(int id_guild){
         for(Map.Entry<String,APlayer> p : getPlayers().entrySet()){
             if(p.getValue().getID_guild() == id_guild){
                 p.getValue().setFactionRank(0);
@@ -103,7 +103,7 @@ public class GuildManager {
      * @param id_guild id de la guild
      * @return List
      */
-    public List<String> getFactionPlayers(int id_guild){
+    public List<String> getGuildPlayers(int id_guild){
         List<String> listPlayer =  new ArrayList<>() ;
         getPlayers().entrySet().stream().filter((p) -> (p.getValue().getID_guild() == id_guild)).forEach((p) -> {
             listPlayer.add(p.getValue().getName());
@@ -117,7 +117,7 @@ public class GuildManager {
      * @param rank filtre le rank a retourner
      * @return List
      */
-    public List<String> getFactionPlayers(int id_guild, int rank){
+    public List<String> getGuildPlayers(int id_guild, int rank){
         List<String> listPlayer =  new ArrayList<>() ;
         getPlayers().entrySet().stream().filter((p) -> (p.getValue().getID_guild() == id_guild && p.getValue().getFactionRank() == rank)).forEach((p) -> {
             listPlayer.add(p.getValue().getName());

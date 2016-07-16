@@ -31,7 +31,7 @@ public class CommandPortalMsg implements CommandExecutor {
                 
                 // on vérifie que le portail existe
                 if (portalManager.hasPortal(name) == true){
-                    Portal portal = portalManager.getPortal(name);
+                    Portal portal = portalManager.getPortal(name).get();
                     Optional<String> arguments = ctx.<String> getOne("arguments");
 
                     // si le joueur n'a pas tapé d'arguments on affiche le message existant

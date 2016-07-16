@@ -45,6 +45,11 @@ import org.spongepowered.api.text.Text;
 
 public class CommandManager {
         
+        public CommandSpec CommandActus = CommandSpec.builder()
+                .description(Text.of("/actus"))
+                .executor(new CommandActus())
+                .build();
+    
         public CommandSpec CommandSetName = CommandSpec.builder()
                 .description(Text.of("/setname <name>"))
                 .permission("actus.admin.setname")

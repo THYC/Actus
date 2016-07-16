@@ -3,9 +3,6 @@ package net.teraoctet.actus.commands.guild;
 import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -13,13 +10,7 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 
 public class CommandGuildInvit implements CommandExecutor {
@@ -30,11 +21,11 @@ public class CommandGuildInvit implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.addplayer")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(GuildManager.hasAnyFaction(aplayer)) {
+            if(GuildManager.hasAnyGuild(aplayer)) {
                 
                 return CommandResult.success();
             } else {
-                src.sendMessage(NO_FACTION());
+                src.sendMessage(NO_GUILD());
             }
         } 
         

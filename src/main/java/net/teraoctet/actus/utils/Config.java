@@ -55,9 +55,9 @@ public class Config {
     public static boolean DEL_SIGN_AFTER_SALE() { return config.getNode("plot", "DEL_SIGN_AFTER_SALE").getBoolean(); }
     public static boolean DISPLAY_PLOT_MSG_FOR_OWNER() { return config.getNode("plot", "DISPLAY_PLOT_MSG_FOR_OWNER").getBoolean(); }
     
-    public static int FACTION_MAX_NUMBER_OF_MEMBER() { return config.getNode("guild", "MAX_NUMBER_OF_MEMBER").getInt(); }
-    public static int FACTION_NAME_MAX_SIZE() { return config.getNode("guild", "NAME_MAX_SIZE").getInt(); }
-    public static int FACTION_NAME_MIN_SIZE() { return config.getNode("guild", "NAME_MIN_SIZE").getInt(); }
+    public static int GUILD_MAX_NUMBER_OF_MEMBER() { return config.getNode("guild", "MAX_NUMBER_OF_MEMBER").getInt(); }
+    public static int GUILD_NAME_MAX_SIZE() { return config.getNode("guild", "NAME_MAX_SIZE").getInt(); }
+    public static int GUILD_NAME_MIN_SIZE() { return config.getNode("guild", "NAME_MIN_SIZE").getInt(); }
     
     public static int COOLDOWN_TO_TP() { return config.getNode("server", "COOLDOWN_TO_TP").getInt(); }
 }

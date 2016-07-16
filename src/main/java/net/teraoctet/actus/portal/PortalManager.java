@@ -1,5 +1,6 @@
 package net.teraoctet.actus.portal;
 
+import java.util.Optional;
 import static net.teraoctet.actus.utils.Data.portals;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -10,11 +11,11 @@ public class PortalManager {
         
     public PortalManager(){}
     
-    private Portal portalContainsVector(Location loc){
+    private Optional<Portal> portalContainsVector(Location loc){
         for (Portal portal : portals) {
-            if(foundPortal(loc,portal)){return portal;}
+            if(foundPortal(loc,portal)){return Optional.of(portal);}
         }
-        return null;
+        return Optional.empty();
     }
     
     public Boolean hasPortal(String name){
@@ -35,13 +36,13 @@ public class PortalManager {
         return true;
     }
   
-    public Portal getPortal(Location loc){return portalContainsVector(loc);}
+    public Optional<Portal> getPortal(Location loc){return portalContainsVector(loc);}
         
-    public Portal getPortal(String portalName){
+    public Optional<Portal> getPortal(String portalName){
         for(Portal portal : portals){
-            if(portal.getName().contains(portalName)){return portal;}
+            if(portal.getName().contains(portalName)){return Optional.of(portal);}
         }
-        return null;
+        return Optional.empty();
     }
                     
     public Text listPortal(){

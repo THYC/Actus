@@ -5,11 +5,6 @@ import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -18,7 +13,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 
@@ -30,7 +25,7 @@ public class CommandGuildDeposit implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.deposit")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyFaction(aplayer)) {
+            if(guildManager.hasAnyGuild(aplayer)) {
                 double amount = ctx.<Double> getOne("amount").get();
                 double playerMoney = aplayer.getMoney();
                 
@@ -49,7 +44,7 @@ public class CommandGuildDeposit implements CommandExecutor {
                     src.sendMessage(MISSING_BALANCE());
                 }
             } else {
-                src.sendMessage(NO_FACTION());
+                src.sendMessage(NO_GUILD());
             }
         } 
         

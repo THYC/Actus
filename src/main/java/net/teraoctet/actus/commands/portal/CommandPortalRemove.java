@@ -30,7 +30,7 @@ public class CommandPortalRemove implements CommandExecutor {
 
             String name = ctx.<String> getOne("name").get();
             if (portalManager.hasPortal(name) == true){
-                Portal portal = portalManager.getPortal(name);
+                Portal portal = portalManager.getPortal(name).get();
                 portal.delete();
                 Data.commit();
                 Data.removePortal(portal);

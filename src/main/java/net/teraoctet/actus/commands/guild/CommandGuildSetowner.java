@@ -4,14 +4,6 @@ import static net.teraoctet.actus.Actus.guildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_CHEF_GRADE_GIVEN;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_NEW_CHEF;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_YOU_ARE_NEW_CHEF;
-import static net.teraoctet.actus.utils.MessageManager.NOT_IN_SAME_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -19,12 +11,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_CHEF_GRADE_GIVEN;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_NEW_CHEF;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_YOU_ARE_NEW_CHEF;
-import static net.teraoctet.actus.utils.MessageManager.NOT_IN_SAME_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_CHEF_GRADE_GIVEN;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_NEW_CHEF;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_YOU_ARE_NEW_CHEF;
+import static net.teraoctet.actus.utils.MessageManager.NOT_IN_SAME_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 
@@ -36,7 +28,7 @@ public class CommandGuildSetowner implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.setowner")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyFaction(aplayer)) {
+            if(guildManager.hasAnyGuild(aplayer)) {
                 if(guildManager.isOwner(aplayer)) {
                     Player targetPlayer = ctx.<Player> getOne("player").get();
                     APlayer target_aplayer = getAPlayer(targetPlayer.getIdentifier());
@@ -49,18 +41,18 @@ public class CommandGuildSetowner implements CommandExecutor {
                         target_aplayer.setFactionRank(1);
                         aplayer.update();
                         target_aplayer.update();
-                        src.sendMessage(FACTION_CHEF_GRADE_GIVEN(targetPlayer.getName()));
-                        targetPlayer.sendMessage(FACTION_YOU_ARE_NEW_CHEF());
-                        getGame().getServer().getBroadcastChannel().send(FACTION_NEW_CHEF(targetPlayer.getName(), guildName));
+                        src.sendMessage(GUILD_CHEF_GRADE_GIVEN(targetPlayer.getName()));
+                        targetPlayer.sendMessage(GUILD_YOU_ARE_NEW_CHEF());
+                        getGame().getServer().getBroadcastChannel().send(GUILD_NEW_CHEF(targetPlayer.getName(), guildName));
                         return CommandResult.success();   
                     } else {
-                        src.sendMessage(NOT_IN_SAME_FACTION(targetPlayer.getName()));
+                        src.sendMessage(NOT_IN_SAME_GUILD(targetPlayer.getName()));
                     } 
                 } else {
                     src.sendMessage(WRONG_RANK());
                 }
             } else {
-                src.sendMessage(NO_FACTION());
+                src.sendMessage(NO_GUILD());
             }
         } 
         

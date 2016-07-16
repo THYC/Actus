@@ -4,17 +4,6 @@ import static net.teraoctet.actus.Actus.guildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getAPlayer;
 import static net.teraoctet.actus.utils.Data.getUUID;
-import static net.teraoctet.actus.utils.MessageManager.CANNOT_EJECT_OWNER;
-import static net.teraoctet.actus.utils.MessageManager.DATA_NOT_FOUND;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_MEMBER_REMOVED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_RETURNED_BY;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.NOT_FOUND;
-import static net.teraoctet.actus.utils.MessageManager.NOT_IN_SAME_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 import static net.teraoctet.actus.utils.ServerManager.isOnline;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
@@ -25,13 +14,11 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import static net.teraoctet.actus.utils.MessageManager.CANNOT_EJECT_OWNER;
 import static net.teraoctet.actus.utils.MessageManager.DATA_NOT_FOUND;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_MEMBER_REMOVED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_RETURNED_BY;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.NOT_FOUND;
-import static net.teraoctet.actus.utils.MessageManager.NOT_IN_SAME_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_MEMBER_REMOVED_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_RETURNED_BY;
+import static net.teraoctet.actus.utils.MessageManager.NOT_IN_SAME_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 
@@ -43,7 +30,7 @@ public class CommandGuildRemoveplayer implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.removeplayer")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyFaction(aplayer)) {
+            if(guildManager.hasAnyGuild(aplayer)) {
                 int playerRank = aplayer.getFactionRank();
                 if(playerRank <= 2) {
                     String targetName = ctx.<String> getOne("name").get();
@@ -66,24 +53,24 @@ public class CommandGuildRemoveplayer implements CommandExecutor {
 
                                 if(isOnline(targetName)) { 
                                     Player targetPlayer = getGame().getServer().getPlayer(targetName).get();
-                                    targetPlayer.sendMessage(FACTION_RETURNED_BY(src.getName()));
+                                    targetPlayer.sendMessage(GUILD_RETURNED_BY(src.getName()));
                                 } else {  
                                     //ENVOYER UN MAIL AU JOUEUR QUI A ETE RENVOYE
                                 }
 
-                                //ENVOYER UNE NOTIFICATION DANS LE CANAL DE FACTION
-                                src.sendMessage(FACTION_MEMBER_REMOVED_SUCCESS(targetName));
+                                //ENVOYER UNE NOTIFICATION DANS LE CANAL DE GUILD
+                                src.sendMessage(GUILD_MEMBER_REMOVED_SUCCESS(targetName));
                                 return CommandResult.success();
                             }
                         } else {
-                            src.sendMessage(NOT_IN_SAME_FACTION(targetName));
+                            src.sendMessage(NOT_IN_SAME_GUILD(targetName));
                         } 
                     }
                 } else {
                     src.sendMessage(WRONG_RANK());
                 }
             } else {
-                src.sendMessage(NO_FACTION());
+                src.sendMessage(NO_GUILD());
             }
         } 
         

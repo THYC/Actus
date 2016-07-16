@@ -30,7 +30,7 @@ public class CommandPortalTPFrom implements CommandExecutor {
 
             String name = ctx.<String> getOne("name").get();  
             if (portalManager.hasPortal(name) == true){
-                Portal portal = portalManager.getPortal(name);
+                Portal portal = portalManager.getPortal(name).get();
                 portal.settoworld(player.getWorld().getName());
                 portal.settoX(player.getLocation().getBlockX());
                 portal.settoY(player.getLocation().getBlockY());

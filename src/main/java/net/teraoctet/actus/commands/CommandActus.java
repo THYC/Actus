@@ -1,23 +1,33 @@
 package net.teraoctet.actus.commands;
 
-public class CommandActus {
-    
-    /*if(!ctx.getOne("name").isPresent() && !ctx.getOne("environment").isPresent() && !ctx.getOne("gamemode").isPresent() && !ctx.getOne("difficulty").isPresent()) {  
-            PaginationService paginationService = game.getServiceManager().provide(PaginationService.class).get();
-            PaginationBuilder builder = paginationService.builder();
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static org.spongepowered.api.Sponge.getGame;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.service.pagination.PaginationList;
+import org.spongepowered.api.service.pagination.PaginationService;
+import org.spongepowered.api.text.Text;
 
-            try {
-                builder.title(Texts.legacy('&').from("&6World Help"))
-                    .contents(  Texts.legacy('&').from("&6/world create <name> <environment> <gamemode> <difficulty>"),
-                                Texts.legacy('&').from("&6/world remove <name>"),
-                                Texts.legacy('&').from("&6/world list"),
-                                Texts.legacy('&').from("&6/world edit <world> <setting> <value>"))
-                    .paddingString("-")
-                    .sendTo(player);
-            } catch (TextMessageException ex) {
-                Logger.getLogger(CommandPlot.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return CommandResult.success();*/	
-        
+public class CommandActus implements CommandExecutor {
+           
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext ctx) {
     
+        PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
+        PaginationList.Builder builder = paginationService.builder();  
+
+        builder
+                .title(Text.builder().append(MESSAGE("&eActus")).toText())
+                .contents(
+                        Text.builder().append(MESSAGE("&4Vs 0.1 Beta")).toText(),
+                        Text.builder().append(MESSAGE("")).toText(),
+                        Text.builder().append(MESSAGE("")).toText())
+                .header(Text.builder().append(MESSAGE("&bBy thyc82")).toText())
+                .padding(Text.of("-"))
+                .sendTo(src); 
+        return CommandResult.success();
+        
+    }
 }

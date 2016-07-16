@@ -40,9 +40,10 @@ public class PortalListener {
     public void onPlayerMovePortal(MoveEntityEvent event, @First Player player) {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Location locTo = event.getToTransform().getLocation();
-        Portal portal = portalManager.getPortal(locTo);
+        Optional<Portal> optPortal = portalManager.getPortal(locTo);
            
-        if (portal != null){            
+        if (optPortal.isPresent()){   
+            Portal portal = optPortal.get();
             if(player.hasPermission("actus.portal." + portal.getName()) || aplayer.getLevel() == 10)
             {
                 if(portal.gettoworld().equalsIgnoreCase("DISABLED")){
@@ -83,10 +84,11 @@ public class PortalListener {
     @Listener
     public void onEntityMovePortal(MoveEntityEvent event, @First Entity entity) {
         Location locTo = event.getToTransform().getLocation();
-        Portal portal = portalManager.getPortal(locTo);
+        Optional<Portal> optPortal = portalManager.getPortal(locTo);
         
         if(entity instanceof Player == false){
-            if (portal != null){  
+            if (optPortal.isPresent()){   
+                Portal portal = optPortal.get();  
                 if(!portal.gettoworld().equalsIgnoreCase("DISABLED")){
                     Optional<World> world = getGame().getServer().getWorld(portal.gettoworld());                    
                     Location<World> loc = new Location(world.get(), new Vector3d(portal.gettoX(), portal.gettoY(), portal.gettoZ()));
@@ -110,8 +112,8 @@ public class PortalListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
     
-        Portal portal = portalManager.getPortal(loc);
-        if (portal != null && aplayer.getLevel() != 10){
+        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        if (optPortal.isPresent() && aplayer.getLevel() != 10){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
         }
@@ -130,8 +132,8 @@ public class PortalListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         
-        Portal portal = portalManager.getPortal(loc);
-        if (portal != null && aplayer.getLevel() != 10){
+        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        if (optPortal.isPresent() && aplayer.getLevel() != 10){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
         }
@@ -150,8 +152,8 @@ public class PortalListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         
-        Portal portal = portalManager.getPortal(loc);
-        if (portal != null && aplayer.getLevel() != 10){
+        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        if (optPortal.isPresent() && aplayer.getLevel() != 10){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
         }
@@ -162,7 +164,7 @@ public class PortalListener {
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
         
-        Portal portal = portalManager.getPortal(loc);
-        if (portal != null){event.setCancelled(true);}
+        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        if (optPortal.isPresent()){event.setCancelled(true);}
     }
 }

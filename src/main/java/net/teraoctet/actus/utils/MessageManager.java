@@ -32,22 +32,22 @@ public class MessageManager {
     private static Text DAY_MESSAGE;
     private static Text NIGHT_MESSAGE;
     private static Text STORM_MESSAGE;
-    private static Text GUIDE_FACTION;
-    private static Text NO_FACTION;
-    private static Text NOT_IN_SAME_FACTION;
+    private static Text GUIDE_GUILD;
+    private static Text NO_GUILD;
+    private static Text NOT_IN_SAME_GUILD;
     private static Text WRONG_RANK;
     private static Text OWNER_CANNOT_LEAVE;
-    private static Text ALREADY_FACTION_MEMBER;
-    private static Text FACTION_CREATED_SUCCESS;
-    private static Text FACTION_RENAMED_SUCCESS;
-    private static Text FACTION_DELETED_SUCCESS;
-    private static Text LEAVING_FACTION_SUCCESS;
-    private static Text FACTION_MEMBER_REMOVED_SUCCESS;
-    private static Text FACTION_RETURNED_BY;
-    private static Text FACTION_DELETED_NOTIFICATION;
-    private static Text FACTION_NEW_CHEF;
-    private static Text FACTION_CHEF_GRADE_GIVEN;
-    private static Text FACTION_YOU_ARE_NEW_CHEF;
+    private static Text ALREADY_GUILD_MEMBER;
+    private static Text GUILD_CREATED_SUCCESS;
+    private static Text GUILD_RENAMED_SUCCESS;
+    private static Text GUILD_DELETED_SUCCESS;
+    private static Text LEAVING_GUILD_SUCCESS;
+    private static Text GUILD_MEMBER_REMOVED_SUCCESS;
+    private static Text GUILD_RETURNED_BY;
+    private static Text GUILD_DELETED_NOTIFICATION;
+    private static Text GUILD_NEW_CHEF;
+    private static Text GUILD_CHEF_GRADE_GIVEN;
+    private static Text GUILD_YOU_ARE_NEW_CHEF;
     private static Text BUYING_COST_PLOT;
     private static Text PROTECT_PLOT_SUCCESS;
     private static Text BEDROCK2SKY_PROTECT_PLOT_SUCCESS;
@@ -98,21 +98,21 @@ public class MessageManager {
     private static Text WRONG_CHARACTERS_NUMBER;
     private static Text KILLED_BY;
     private static Text SUICIDE;
-    private static Text ONHOVER_FACTION_MOREACTIONS;
-    private static Text ONHOVER_FACTION_SETGRADE;
-    private static Text ONHOVER_FACTION_RENAME;
-    private static Text ONHOVER_FACTION_INVIT;
-    private static Text ONHOVER_FACTION_DELETE;
-    private static Text ONHOVER_FACTION_REMOVEMEMBER;
-    private static Text ONHOVER_FACTION_WITHDRAWAL;
-    private static Text ONHOVER_FACTION_DEPOSIT;
-    private static Text ONHOVER_FACTION_LEAVE;
-    private static Text ONHOVER_FACTION_LIST_LVL10;
+    private static Text ONHOVER_GUILD_MOREACTIONS;
+    private static Text ONHOVER_GUILD_SETGRADE;
+    private static Text ONHOVER_GUILD_RENAME;
+    private static Text ONHOVER_GUILD_INVIT;
+    private static Text ONHOVER_GUILD_DELETE;
+    private static Text ONHOVER_GUILD_REMOVEMEMBER;
+    private static Text ONHOVER_GUILD_WITHDRAWAL;
+    private static Text ONHOVER_GUILD_DEPOSIT;
+    private static Text ONHOVER_GUILD_LEAVE;
+    private static Text ONHOVER_GUILD_LIST_LVL10;
     private static Text ONHOVER_PI_NAME;
     private static Text SHOP_SALE;
     private static Text SHOP_BUY;
     private static Text WITHDRAW_SUCCESS;
-    private static Text FACTION_MISSING_BALANCE;
+    private static Text GUILD_MISSING_BALANCE;
        
     public static File file = new File("config/actus/message.conf");
     public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
@@ -337,103 +337,103 @@ public class MessageManager {
                 
                 msg = new ArrayList<>();
                 msg.add("&cVous n'\352tes dans aucune guild !");
-                message.getNode("FACTION","NO_FACTION").setValue(msg);
+                message.getNode("GUILD","NO_GUILD").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cVous \352tes d\351j\340 dans une guild !");
-                message.getNode("FACTION","ALREADY_FACTION_MEMBER").setValue(msg);
+                message.getNode("GUILD","ALREADY_GUILD_MEMBER").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cVotre rang dans la guild ne vous permet pas d'utiliser \347a !");
-                message.getNode("FACTION","WRONG_RANK").setValue(msg);
+                message.getNode("GUILD","WRONG_RANK").setValue(msg);
                 manager.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&c%var1% ne fait pas parti de votre guild !");
-                message.getNode("FACTION","NOT_IN_SAME_FACTION").setValue(msg);
+                message.getNode("GUILD","NOT_IN_SAME_GUILD").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cVous \352tes chef de votre guild, vous ne pouvez pas la quitter !");
                 msg.add("&cVeuillez c\351der le grade à un autre membre avec : /guild setgrade 1 <player>");
-                message.getNode("FACTION","OWNER_CANNOT_LEAVE").setValue(msg);
+                message.getNode("GUILD","OWNER_CANNOT_LEAVE").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&9%var1% est le nouveau leader de la guild \"%var2%&9\" !");
-                message.getNode("FACTION","FACTION_NEW_CHEF").setValue(msg);
+                message.getNode("GUILD","GUILD_NEW_CHEF").setValue(msg);
                 manager.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&2Vous avez c\351d\351 votre grade de chef \340 %var1% !");
-                message.getNode("FACTION","FACTION_CHEF_GRADE_GIVEN").setValue(msg);
+                message.getNode("GUILD","GUILD_CHEF_GRADE_GIVEN").setValue(msg);
                 manager.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&2Vous \352tes le nouveau leader de votre guild !");
-                message.getNode("FACTION","FACTION_YOU_ARE_NEW_CHEF").setValue(msg);
+                message.getNode("GUILD","GUILD_YOU_ARE_NEW_CHEF").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&n&eQu'est-ce que \347a apporte d'\350tre dans une guild ?");
                 msg.add("&eComing soon ..!");
                 msg.add("&ePlus d'infos sur &bhttp://craft.teraoctet.net\n");
-                message.getNode("FACTION","GUIDE_FACTION").setValue(msg);
+                message.getNode("GUILD","GUIDE_GUILD").setValue(msg);
                 
                 msg = new ArrayList<>();
                 msg.add("&eVous venez de cr\351er la guild \"&r%var1%&e\"");
-                message.getNode("FACTION","FACTION_CREATED_SUCCESS").setValue(msg);
+                message.getNode("GUILD","GUILD_CREATED_SUCCESS").setValue(msg);
                 manager.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&eVous venez de supprimer la guild \"&r%var1%&e\"");
-                message.getNode("FACTION","FACTION_DELETED_SUCCESS").setValue(msg);
+                message.getNode("GUILD","GUILD_DELETED_SUCCESS").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eLa guild \"&6%var1%&e\" a \351t\351 renomm\351e en \"&6%var2%&e\"");
-                message.getNode("FACTION","FACTION_RENAMED_SUCCESS").setValue(msg);
+                message.getNode("GUILD","GUILD_RENAMED_SUCCESS").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eVous venez de quitter la guild \"&r%var1%&e\"");
-                message.getNode("FACTION","LEAVING_FACTION_SUCCESS").setValue(msg);
+                message.getNode("GUILD","LEAVING_GUILD_SUCCESS").setValue(msg);
                 manager.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&eVous avez renvoy\351 &6%var1% &ede votre guild");
-                message.getNode("FACTION","FACTION_MEMBER_REMOVED_SUCCESS").setValue(msg);
+                message.getNode("GUILD","GUILD_MEMBER_REMOVED_SUCCESS").setValue(msg);
                 manager.save(message);
                      
                 msg = new ArrayList<>();
                 msg.add("&eVous avez \351t\351 renvoy\351 de votre guild par &6%var1%");
-                message.getNode("FACTION","FACTION_RETURNED_BY").setValue(msg);
+                message.getNode("GUILD","GUILD_RETURNED_BY").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&1La guild \"&r%var1%&1\" a \351t\351 dissoute !");
-                message.getNode("FACTION","FACTION_DELETED_NOTIFICATION").setValue(msg);
+                message.getNode("GUILD","GUILD_DELETED_NOTIFICATION").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Affiche un menu pour g\351rer la guild");
                 msg.add("&n&eAccessible par :&r Chef, Sous-chef, Officier");
-                message.getNode("FACTION","ONHOVER_FACTION_MOREACTIONS").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_MOREACTIONS").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Shift+Click pour quitter la guild");
                 msg.add("\n&7/guild leave");
-                message.getNode("FACTION","ONHOVER_FACTION_LEAVE").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_LEAVE").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Inviter un joueur \340 rejoindre la guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef, Officier");
                 msg.add("\n&7/guild addplayer <player>");
-                message.getNode("FACTION","ONHOVER_FACTION_INVIT").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_INVIT").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
@@ -441,48 +441,48 @@ public class MessageManager {
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef, Officier");
                 msg.add("\n&7/guild setplayergrade <player> <grade>");
                 msg.add("&o&n&7Grade :&r&o&7 2 -> Sous-chef | 3 -> Officer | 4 -> Membre | 5 -> Recrue");
-                message.getNode("FACTION","ONHOVER_FACTION_SETGRADE").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_SETGRADE").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Renvoyer un joueur de la guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild removeplayer <player>");
-                message.getNode("FACTION","ONHOVER_FACTION_REMOVEMEMBER").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_REMOVEMEMBER").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Retirer des \351meraudes de la banque de guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild withdraw <montant>");
-                message.getNode("FACTION","ONHOVER_FACTION_WITHDRAWAL").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_WITHDRAWAL").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Renommer la guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild rename <nom>");
-                message.getNode("FACTION","ONHOVER_FACTION_RENAME").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_RENAME").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Supprimer la guild");
                 msg.add("&e&nUtilisable par :&r Chef");
                 msg.add("\n&7/guild delete <nom>");
-                message.getNode("FACTION","ONHOVER_FACTION_DELETE").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_DELETE").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6D\351poser des \351meraudes dans la banque de la guild");
                 msg.add("\n&7/guild depot <montant>");
-                message.getNode("FACTION","ONHOVER_FACTION_DEPOSIT").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_DEPOSIT").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Faction : &r%var1%");
                 msg.add("&e&nChef : &r%var2%");
                 msg.add("\n&7&n&oShift+Click :&r &8&o/guild delete <name>");
-                message.getNode("FACTION","ONHOVER_FACTION_LIST_LVL10").setValue(msg);
+                message.getNode("GUILD","ONHOVER_GUILD_LIST_LVL10").setValue(msg);
                 manager.save(message);
                 
                 //-------------------------
@@ -580,7 +580,7 @@ public class MessageManager {
                 
                 msg = new ArrayList<>();
                 msg.add("&cVotre guild ne poss\351de pas autant d'\351meraudes dans ses coffres !");
-                message.getNode("ECONOMY","FACTION_MISSING_BALANCE").setValue(msg);
+                message.getNode("ECONOMY","GUILD_MISSING_BALANCE").setValue(msg);
                 manager.save(message);
                 
                 //-------------------------
@@ -872,60 +872,60 @@ public class MessageManager {
     public static Text STORM_MESSAGE(Player player){return format(STORM_MESSAGE, "WEATHER-TIME","STORM_MESSAGE", player);}
     
     //-------------------------
-    // Message FACTION
+    // Message GUILD
     //-------------------------
     
-    public static Text NO_FACTION(){return format(NO_FACTION, "FACTION", "NO_FACTION");}
+    public static Text NO_GUILD(){return format(NO_GUILD, "GUILD", "NO_GUILD");}
     
-    public static Text WRONG_RANK(){return format(WRONG_RANK, "FACTION", "WRONG_RANK");}
+    public static Text WRONG_RANK(){return format(WRONG_RANK, "GUILD", "WRONG_RANK");}
     
-    public static Text NOT_IN_SAME_FACTION(String targetName){return format(NOT_IN_SAME_FACTION, "FACTION", "NOT_IN_SAME_FACTION", targetName, "");}
+    public static Text NOT_IN_SAME_GUILD(String targetName){return format(NOT_IN_SAME_GUILD, "GUILD", "NOT_IN_SAME_GUILD", targetName, "");}
     
-    public static Text ALREADY_FACTION_MEMBER(){return format(ALREADY_FACTION_MEMBER, "FACTION", "ALREADY_FACTION_MEMBER");}
+    public static Text ALREADY_GUILD_MEMBER(){return format(ALREADY_GUILD_MEMBER, "GUILD", "ALREADY_GUILD_MEMBER");}
     
-    public static Text OWNER_CANNOT_LEAVE(){return format(OWNER_CANNOT_LEAVE, "FACTION", "OWNER_CANNOT_LEAVE");}
+    public static Text OWNER_CANNOT_LEAVE(){return format(OWNER_CANNOT_LEAVE, "GUILD", "OWNER_CANNOT_LEAVE");}
     
-    public static Text FACTION_NEW_CHEF(String targetName, String guildName){return format(FACTION_NEW_CHEF, "FACTION", "FACTION_NEW_CHEF", targetName, guildName);}
+    public static Text GUILD_NEW_CHEF(String targetName, String guildName){return format(GUILD_NEW_CHEF, "GUILD", "GUILD_NEW_CHEF", targetName, guildName);}
     
-    public static Text FACTION_CHEF_GRADE_GIVEN(String targetName){return format(FACTION_CHEF_GRADE_GIVEN, "FACTION", "FACTION_CHEF_GRADE_GIVEN", targetName, "");}
+    public static Text GUILD_CHEF_GRADE_GIVEN(String targetName){return format(GUILD_CHEF_GRADE_GIVEN, "GUILD", "GUILD_CHEF_GRADE_GIVEN", targetName, "");}
     
-    public static Text FACTION_YOU_ARE_NEW_CHEF(){return format(FACTION_YOU_ARE_NEW_CHEF, "FACTION", "FACTION_YOU_ARE_NEW_CHEF");}
+    public static Text GUILD_YOU_ARE_NEW_CHEF(){return format(GUILD_YOU_ARE_NEW_CHEF, "GUILD", "GUILD_YOU_ARE_NEW_CHEF");}
     
-    public static Text GUIDE_FACTION(){return format(GUIDE_FACTION, "FACTION", "GUIDE_FACTION");}
+    public static Text GUIDE_GUILD(){return format(GUIDE_GUILD, "GUILD", "GUIDE_GUILD");}
     
-    public static Text FACTION_CREATED_SUCCESS(String guildName){return format(FACTION_CREATED_SUCCESS, "FACTION", "FACTION_CREATED_SUCCESS", guildName, "");}
+    public static Text GUILD_CREATED_SUCCESS(String guildName){return format(GUILD_CREATED_SUCCESS, "GUILD", "GUILD_CREATED_SUCCESS", guildName, "");}
     
-    public static Text FACTION_RENAMED_SUCCESS(String oldName, String newName){return format(FACTION_RENAMED_SUCCESS, "FACTION", "FACTION_RENAMED_SUCCESS", oldName, newName);}
+    public static Text GUILD_RENAMED_SUCCESS(String oldName, String newName){return format(GUILD_RENAMED_SUCCESS, "GUILD", "GUILD_RENAMED_SUCCESS", oldName, newName);}
     
-    public static Text FACTION_DELETED_SUCCESS(String guildName){return format(FACTION_DELETED_SUCCESS, "FACTION", "FACTION_DELETED_SUCCESS", guildName, "");}
+    public static Text GUILD_DELETED_SUCCESS(String guildName){return format(GUILD_DELETED_SUCCESS, "GUILD", "GUILD_DELETED_SUCCESS", guildName, "");}
     
-    public static Text LEAVING_FACTION_SUCCESS(String guildName){return format(LEAVING_FACTION_SUCCESS, "FACTION", "LEAVING_FACTION_SUCCESS", guildName, "");}
+    public static Text LEAVING_GUILD_SUCCESS(String guildName){return format(LEAVING_GUILD_SUCCESS, "GUILD", "LEAVING_GUILD_SUCCESS", guildName, "");}
     
-    public static Text FACTION_MEMBER_REMOVED_SUCCESS(String targetName){return format(FACTION_MEMBER_REMOVED_SUCCESS, "FACTION", "FACTION_MEMBER_REMOVED_SUCCESS", targetName, "");}
+    public static Text GUILD_MEMBER_REMOVED_SUCCESS(String targetName){return format(GUILD_MEMBER_REMOVED_SUCCESS, "GUILD", "GUILD_MEMBER_REMOVED_SUCCESS", targetName, "");}
             
-    public static Text FACTION_RETURNED_BY(String src){return format(FACTION_RETURNED_BY, "FACTION", "FACTION_RETURNED_BY", src, "");}
+    public static Text GUILD_RETURNED_BY(String src){return format(GUILD_RETURNED_BY, "GUILD", "GUILD_RETURNED_BY", src, "");}
     
-    public static Text FACTION_DELETED_NOTIFICATION(String guildName){return format(FACTION_DELETED_NOTIFICATION, "FACTION", "FACTION_DELETED_NOTIFICATION", guildName, "");}
+    public static Text GUILD_DELETED_NOTIFICATION(String guildName){return format(GUILD_DELETED_NOTIFICATION, "GUILD", "GUILD_DELETED_NOTIFICATION", guildName, "");}
     
-    public static Text ONHOVER_FACTION_MOREACTIONS(){return format(ONHOVER_FACTION_MOREACTIONS, "FACTION", "ONHOVER_FACTION_MOREACTIONS");}
+    public static Text ONHOVER_GUILD_MOREACTIONS(){return format(ONHOVER_GUILD_MOREACTIONS, "GUILD", "ONHOVER_GUILD_MOREACTIONS");}
     
-    public static Text ONHOVER_FACTION_LEAVE(){return format(ONHOVER_FACTION_LEAVE, "FACTION", "ONHOVER_FACTION_LEAVE");}
+    public static Text ONHOVER_GUILD_LEAVE(){return format(ONHOVER_GUILD_LEAVE, "GUILD", "ONHOVER_GUILD_LEAVE");}
     
-    public static Text ONHOVER_FACTION_DEPOSIT(){return format(ONHOVER_FACTION_DEPOSIT, "FACTION", "ONHOVER_FACTION_DEPOSIT");}
+    public static Text ONHOVER_GUILD_DEPOSIT(){return format(ONHOVER_GUILD_DEPOSIT, "GUILD", "ONHOVER_GUILD_DEPOSIT");}
     
-    public static Text ONHOVER_FACTION_INVIT(){return format(ONHOVER_FACTION_INVIT, "FACTION", "ONHOVER_FACTION_INVIT");}
+    public static Text ONHOVER_GUILD_INVIT(){return format(ONHOVER_GUILD_INVIT, "GUILD", "ONHOVER_GUILD_INVIT");}
     
-    public static Text ONHOVER_FACTION_SETGRADE(){return format(ONHOVER_FACTION_SETGRADE, "FACTION", "ONHOVER_FACTION_SETGRADE");}
+    public static Text ONHOVER_GUILD_SETGRADE(){return format(ONHOVER_GUILD_SETGRADE, "GUILD", "ONHOVER_GUILD_SETGRADE");}
     
-    public static Text ONHOVER_FACTION_REMOVEMEMBER(){return format(ONHOVER_FACTION_REMOVEMEMBER, "FACTION", "ONHOVER_FACTION_REMOVEMEMBER");}
+    public static Text ONHOVER_GUILD_REMOVEMEMBER(){return format(ONHOVER_GUILD_REMOVEMEMBER, "GUILD", "ONHOVER_GUILD_REMOVEMEMBER");}
     
-    public static Text ONHOVER_FACTION_WITHDRAWAL(){return format(ONHOVER_FACTION_WITHDRAWAL, "FACTION", "ONHOVER_FACTION_WITHDRAWAL");}
+    public static Text ONHOVER_GUILD_WITHDRAWAL(){return format(ONHOVER_GUILD_WITHDRAWAL, "GUILD", "ONHOVER_GUILD_WITHDRAWAL");}
     
-    public static Text ONHOVER_FACTION_RENAME(){return format(ONHOVER_FACTION_RENAME, "FACTION", "ONHOVER_FACTION_RENAME");}
+    public static Text ONHOVER_GUILD_RENAME(){return format(ONHOVER_GUILD_RENAME, "GUILD", "ONHOVER_GUILD_RENAME");}
     
-    public static Text ONHOVER_FACTION_DELETE(){return format(ONHOVER_FACTION_DELETE, "FACTION", "ONHOVER_FACTION_DELETE");}
+    public static Text ONHOVER_GUILD_DELETE(){return format(ONHOVER_GUILD_DELETE, "GUILD", "ONHOVER_GUILD_DELETE");}
     
-    public static Text ONHOVER_FACTION_LIST_LVL10(String guildName, String ownerName){return format(ONHOVER_FACTION_LIST_LVL10, "FACTION", "ONHOVER_FACTION_LIST_LVL10", guildName, ownerName);}
+    public static Text ONHOVER_GUILD_LIST_LVL10(String guildName, String ownerName){return format(ONHOVER_GUILD_LIST_LVL10, "GUILD", "ONHOVER_GUILD_LIST_LVL10", guildName, ownerName);}
     
     //-------------------------
     // Message PLOT / PARCELLE
@@ -971,7 +971,7 @@ public class MessageManager {
     
     public static Text MISSING_BALANCE(){return format(MISSING_BALANCE, "ECONOMY", "MISSING_BALANCE");}
     
-    public static Text FACTION_MISSING_BALANCE(){return format(FACTION_MISSING_BALANCE, "ECONOMY", "FACTION_MISSING_BALANCE");}
+    public static Text GUILD_MISSING_BALANCE(){return format(GUILD_MISSING_BALANCE, "ECONOMY", "GUILD_MISSING_BALANCE");}
     
     public static Text WITHDRAW_SUCCESS(String amount){return format(WITHDRAW_SUCCESS, "ECONOMY", "WITHDRAW_SUCCESS",amount, "");}
     

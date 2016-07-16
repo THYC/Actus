@@ -18,7 +18,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 public class BookManager {
-    public static File file = new File("config/genesys/book.conf");
+    public static File file = new File("config/actus/book.conf");
     public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
     public static ConfigurationNode book = manager.createEmptyNode(ConfigurationOptions.defaults());
     

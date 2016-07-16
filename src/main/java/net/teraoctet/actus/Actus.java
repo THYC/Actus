@@ -41,7 +41,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 @Plugin(
         id = "net.teraoctet.actus", 
         name = "Actus", 
-        version = "0.1",
+        version = "0.1.0",
         description = "Server management plugin",
         url = "http://actus.teraoctet.net",
         authors = {"thyc82"}
@@ -52,6 +52,7 @@ public class Actus {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
     }
     
     @Inject private Logger logger;
@@ -86,7 +87,8 @@ public class Actus {
         getGame().getEventManager().registerListeners(this, new PlayerListener());
         getGame().getEventManager().registerListeners(this, new WorldListener());
         getGame().getEventManager().registerListeners(this, new EconomyListener());
-         
+        
+        getGame().getCommandManager().register(this, new CommandManager().CommandActus, "actus");
 	getGame().getCommandManager().register(this, new CommandManager().CommandKill, "kill", "tue");
 	getGame().getCommandManager().register(this, new CommandManager().CommandSun, "sun", "soleil");
 	getGame().getCommandManager().register(this, new CommandManager().CommandRain, "rain", "pluie");
@@ -121,8 +123,8 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandShopSell, "shopsell", "shops");
 
         getLogger().info("-----------------------------"); 
-	getLogger().info("...........actus..........."); 
-        getLogger().info("developped by THYC and Votop"); 
+	getLogger().info("...........Actus............."); 
+        getLogger().info(".....developped by THYC......"); 
         getLogger().info("-----------------------------"); 
     }
         

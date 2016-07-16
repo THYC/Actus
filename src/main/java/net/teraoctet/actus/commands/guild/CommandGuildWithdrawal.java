@@ -5,21 +5,15 @@ import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_MISSING_BALANCE;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WITHDRAW_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import static net.teraoctet.actus.utils.MessageManager.FACTION_MISSING_BALANCE;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_MISSING_BALANCE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_FACTION;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.WITHDRAW_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
@@ -32,7 +26,7 @@ public class CommandGuildWithdrawal implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.withdrawal")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyFaction(aplayer)) {
+            if(guildManager.hasAnyGuild(aplayer)) {
                 if(aplayer.getFactionRank() <= 2){
                     double amount = ctx.<Double> getOne("amount").get();
                     Guild gguild = getGuild(aplayer.getID_guild());
@@ -48,16 +42,16 @@ public class CommandGuildWithdrawal implements CommandExecutor {
                         gguild.update();
 
                         src.sendMessage(WITHDRAW_SUCCESS(Double.toString(amount)));
-                        //AJOUTER NOTIFICATION DE LE CANAL FACTION
+                        //AJOUTER NOTIFICATION DE LE CANAL GUILD
                         return CommandResult.success();
                     } else {
-                        src.sendMessage(FACTION_MISSING_BALANCE());
+                        src.sendMessage(GUILD_MISSING_BALANCE());
                     }
                 } else {
                     src.sendMessage(WRONG_RANK());
                 }
             } else {
-                src.sendMessage(NO_FACTION());
+                src.sendMessage(NO_GUILD());
             }
         } 
         
