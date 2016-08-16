@@ -3,6 +3,7 @@ package net.teraoctet.actus.utils;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.Optional;
 import java.util.UUID;
+import net.teraoctet.actus.Actus;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -22,12 +23,13 @@ public class DeSerialize {
      * @param stringLocation Chaine String sous la forme "world:x:y:z"
      * @return retourne un objet Location
      */
-    public static Location<World> getLocation(String stringLocation) {
+    public static Optional<Location<World>> getLocation(String stringLocation) {
         String loc[] = stringLocation.split(":");
+        if(loc.length < 4) return Optional.empty();
         UUID uuid = UUID.fromString(loc[0]);
         Optional<World> world = getGame().getServer().getWorld(uuid);
         Location<World> location = new Location<>(world.get(), Double.valueOf(loc[1]), Double.valueOf(loc[2]), Double.valueOf(loc[3]));
-        return location;
+        return Optional.of(location);
     }
     
     /**

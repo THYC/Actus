@@ -3,7 +3,7 @@ package net.teraoctet.actus.commands.plot;
 import com.flowpowered.math.vector.Vector3d;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.utils.Data;

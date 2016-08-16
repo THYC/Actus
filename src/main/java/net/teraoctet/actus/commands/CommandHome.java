@@ -2,9 +2,9 @@ package net.teraoctet.actus.commands;
 
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.serverManager;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
 import net.teraoctet.actus.utils.Home;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.utils.Config;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
@@ -18,6 +18,21 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.HOME_NOT_FOUND;
+import static net.teraoctet.actus.utils.MessageManager.HOME_TP_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.HOME_NOT_FOUND;
+import static net.teraoctet.actus.utils.MessageManager.HOME_TP_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.HOME_NOT_FOUND;
+import static net.teraoctet.actus.utils.MessageManager.HOME_TP_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 
 public class CommandHome implements CommandExecutor {
     

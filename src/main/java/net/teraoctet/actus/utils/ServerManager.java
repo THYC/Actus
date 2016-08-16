@@ -3,13 +3,15 @@ package net.teraoctet.actus.utils;
 import com.flowpowered.math.vector.Vector3d;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
 import static net.teraoctet.actus.Actus.mapCountDown;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -125,45 +127,7 @@ public class ServerManager {
     public static void broadcast(Text text) {
         getGame().getServer().getBroadcastChannel().send(text);
     }
-      
-    /**
-     * Retourne la date au format d h m
-     * @param milliseconds Double
-     * @return string
-     */
-    public static String dateShortToString(double milliseconds) {
-        int days = 0;
-        int hours = 0;
-        int minutes = 0;
-
-        while(milliseconds >= 1000 * 60 * 60 * 24) { days += 1; milliseconds -= 1000 * 60 * 60 * 24; }
-        while(milliseconds >= 1000 * 60 * 60) { hours += 1; milliseconds -= 1000 * 60 * 60; }
-        while(milliseconds >= 1000 * 60) { minutes += 1; milliseconds -= 1000 * 60; }
-
-        String time = "";
-        if(days > 0) time = days + "d ";
-        time = time + hours + "h ";
-        time = time + minutes + "m";
-
-        return time;
-
-    }
-    
-    /**
-     * Retourne la date au format double suivant une unité demandé
-     * @param time date au format double
-     * @param unit unite a retourner
-     * @return Double
-     */
-    public static double dateToMilliseconds(double time, String unit) {
-        if(unit.equalsIgnoreCase("days")) { return time * 1000 * 60 * 60 * 24; }
-        else if(unit.equalsIgnoreCase("hours")) { return time * 1000 * 60 * 60; }
-        else if(unit.equalsIgnoreCase("minutes")) { return time * 1000 * 60; }
-        else if(unit.equalsIgnoreCase("seconds")) { return time * 1000; }
-
-        return 0;
-    }
-    
+              
     /**
      * double les quotes contenu dans le message
      * @param message chaine du message à modifier
@@ -181,9 +145,19 @@ public class ServerManager {
      * @return String
      */
     public String dateToString(){
+        Date now = new Date();
         Calendar cal = Calendar.getInstance();
+        
+        int year = 1900 + now.getYear();
+        int month = now.getMonth();
+        int day = now.getDate();
+        int h = now.getHours();
+        int mn = now.getMinutes();
+        int s = now.getSeconds();
+        
+	cal.set(year, month, day, h, mn, s);
 	SimpleDateFormat simpleDate = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT+02"));
 	return simpleDate.format(cal.getTime());
     }
     
@@ -192,8 +166,52 @@ public class ServerManager {
      * @return Long
      */
     public Long dateToLong(){
+        Date now = new Date();
         Calendar cal = Calendar.getInstance();
+        
+        int year = 1900 + now.getYear();
+        int month = now.getMonth();
+        int day = now.getDate();
+        int h = now.getHours();
+        int mn = now.getMinutes();
+        int s = now.getSeconds();
+        
+	cal.set(year, month, day, h, mn, s);
 	return cal.getTimeInMillis();
+    }
+    
+    /**
+     * Retourne TimeInMillis au format "dd MMM yyyy HH:mm:ss"
+     * @param date de type Long en Milliseconde
+     * @return String
+     */
+    public String longToDateString(long date){
+        Calendar cal = Calendar.getInstance();        
+	cal.setTimeInMillis(date);
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT+02"));
+	return simpleDate.format(cal.getTime());
+    }
+    
+    /**
+     * Retourne TimeInMillis au format "dd MMM yyyy HH:mm:ss"
+     * @param date de type Double en Milliseconde
+     * @return String
+     */
+    public String longToDateString(double date){
+        Calendar cal = Calendar.getInstance(); 
+        Long dateL = (long)date;
+	cal.setTimeInMillis(dateL);
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT+02"));
+	return simpleDate.format(cal.getTime());
+    }
+    
+    public String longToTime(Long millis){
+        Calendar cal = Calendar.getInstance(); 
+	cal.setTimeInMillis(millis);
+        SimpleDateFormat simpleDate = new SimpleDateFormat("HH:mm:ss");
+	return simpleDate.format(cal.getTime());
     }
     
     /**
@@ -293,5 +311,18 @@ public class ServerManager {
         
     public void sendCommand(Player player, String cmd){
         getGame().getCommandManager().get(cmd, player);
+    }
+    
+    /**
+     * Retourne les coordonnées d'un possible coffre attenant 
+     * @param location Location du coffre a ajouter
+     * @return loction du coffre existant
+     */
+    public Optional<Location> locDblChest(Location location) {
+	if(location.add(1, 0, 0).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(1, 0, 0));
+        if(location.add(-1, 0, 0).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(-1, 0, 0));
+        if(location.add(0, 0, 1).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(0, 0, 1));
+        if(location.add(0, 0, -1).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(0, 0, -1));
+        return Optional.empty();
     }
 }

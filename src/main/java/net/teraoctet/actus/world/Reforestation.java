@@ -9,6 +9,8 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.scheduler.Scheduler;
@@ -41,7 +43,7 @@ public class Reforestation {
                     BlockState blockState = blockType.getDefaultState();           
                     Location loc = getLocSapling(drop.getLocation());
                     if (loc != null){
-                        loc.add(0,1,0).setBlock(blockState);
+                        loc.add(0,1,0).setBlock(blockState,Cause.of(NamedCause.source(plugin)));
                         drop.remove();
                     }
                 }

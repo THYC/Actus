@@ -1,9 +1,9 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
 import net.teraoctet.actus.utils.Home;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Data.commit;
 import static net.teraoctet.actus.utils.MessageManager.HOME_DEL_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;

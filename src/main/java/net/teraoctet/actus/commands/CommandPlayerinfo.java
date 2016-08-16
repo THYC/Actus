@@ -1,10 +1,9 @@
 package net.teraoctet.actus.commands;
 
-import java.util.Date;
 import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.Data.getUUID;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getUUID;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -67,9 +66,9 @@ public class CommandPlayerinfo implements CommandExecutor {
                             .color(TextColors.DARK_GRAY)
                             .build());
                 } else {
-                    String lastConnection = serverManager.dateShortToString(aplayer.getLastonline());
+                    //String lastConnection = serverManager.dateShortToString(aplayer.getLastonline());
                     src.sendMessage(Text.builder(targetName + " est d\351connect\351")
-                            .onHover(TextActions.showText(Text.builder("Derni\350re connexion: " + lastConnection.toString()).build()))
+                            //.onHover(TextActions.showText(Text.builder("Derni\350re connexion: " + lastConnection.toString()).build()))
                             .color(TextColors.DARK_GRAY)
                             .build());
                     src.sendMessage(Text.builder("Derni\350re position : " + aplayer.getLastposition())
@@ -106,10 +105,19 @@ public class CommandPlayerinfo implements CommandExecutor {
         else if (src instanceof Player && src.hasPermission("actus.playerinfo")) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getIdentifier());
+            long seconds = (long)aplayer.getOnlinetime()/1000;
+            long hours = seconds / 3600;
+            //if(hours > 0){
+                
+            //}
+            //long minutes = seconds / 60;
+            
+            //String time = 
+            
             src.sendMessage(MESSAGE("&8--------------------"));
             src.sendMessage(MESSAGE("&7Mes infos : " + player.getName()));
             src.sendMessage(MESSAGE("&8--------------------"));
-            src.sendMessage(MESSAGE("&8Temps de connexion : "));
+            src.sendMessage(MESSAGE("&8Temps de connexion : " + serverManager.longToTime((long)aplayer.getOnlinetime()-(3600*1000))));
             src.sendMessage(MESSAGE("&8Nombre de points accumulés : "));
             src.sendMessage(MESSAGE("&8Droits suppl\351mentaires accordés : "));
             src.sendMessage(MESSAGE("&8--------------------"));

@@ -3,9 +3,8 @@ package net.teraoctet.actus.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
-import net.teraoctet.actus.player.APlayer;
 import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
 import org.spongepowered.api.block.tileentity.Sign;
@@ -26,6 +25,8 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 
 public class CommandSignHelp implements CommandExecutor {
        
@@ -42,7 +43,7 @@ public class CommandSignHelp implements CommandExecutor {
             }
             String name = ctx.<String> getOne("name").get();
             
-            Location location = null;
+            Optional<Location> optlocation = Optional.empty();
             BlockRay<World> playerBlockRay = BlockRay.from(player).blockLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
             { 
@@ -51,17 +52,17 @@ public class CommandSignHelp implements CommandExecutor {
                 if (player.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.WALL_SIGN) || 
                         player.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.STANDING_SIGN)) 
                 { 
-                    location = currentHitRay.getLocation(); 
+                    optlocation = Optional.of(currentHitRay.getLocation()); 
                     break;
                 }                     
             } 
 
-            if (location == null){
-                location = player.getLocation();
-                location.setBlockType(STANDING_SIGN);  
+            if (!optlocation.isPresent()){
+                optlocation = Optional.of(player.getLocation());
+                optlocation.get().setBlockType(STANDING_SIGN,Cause.of(NamedCause.source(plugin)));  
             }
 
-            Optional<TileEntity> signBlock = location.getTileEntity();
+            Optional<TileEntity> signBlock = optlocation.get().getTileEntity();
             TileEntity tileSign = signBlock.get();
             Sign sign=(Sign)tileSign;
             Optional<SignData> opSign = sign.getOrCreate(SignData.class);

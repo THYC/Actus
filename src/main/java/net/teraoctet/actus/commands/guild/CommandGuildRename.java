@@ -6,13 +6,31 @@ import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Config.GUILD_NAME_MAX_SIZE;
 import static net.teraoctet.actus.utils.Config.GUILD_NAME_MIN_SIZE;
 import static net.teraoctet.actus.utils.Data.getGuild;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
@@ -29,7 +47,7 @@ public class CommandGuildRename implements CommandExecutor {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             if(guildManager.hasAnyGuild(aplayer)) {
-                if(aplayer.getFactionRank() <= 2){
+                if(aplayer.getGuildRank() <= 2){
                     String newName = ctx.<String> getOne("name").get();
                     if(newName.length() >= GUILD_NAME_MIN_SIZE() && newName.length() <= GUILD_NAME_MAX_SIZE()) {
                         Guild gguild = getGuild(aplayer.getID_guild());

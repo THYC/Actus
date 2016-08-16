@@ -7,9 +7,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.Data.datasource;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.utils.DeSerialize;
 import net.teraoctet.actus.utils.Config;
 import org.spongepowered.api.block.BlockTypes;
@@ -20,21 +21,11 @@ import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.Sponge.getGame;
 import static org.spongepowered.api.block.BlockTypes.AIR;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -151,12 +142,12 @@ public class Plot {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("SELECT * FROM gplsale WHERE plotName = '" + plotName + "'");
             while(rs.next()) {
-                Location loc = DeSerialize.getLocation(rs.getString("location"));
-                if (loc.getBlockType().equals(BlockTypes.STANDING_SIGN) || loc.getBlockType().equals(BlockTypes.WALL_SIGN)){
+                Optional<Location<World>> loc = DeSerialize.getLocation(rs.getString("location"));
+                if (loc.get().getBlockType().equals(BlockTypes.STANDING_SIGN) || loc.get().getBlockType().equals(BlockTypes.WALL_SIGN)){
                     if(Config.DEL_SIGN_AFTER_SALE()){
-                        loc.setBlockType(AIR);
+                        loc.get().setBlockType(AIR,Cause.of(NamedCause.source(plugin)));
                     } else {
-                        Optional<TileEntity> signBlock = loc.getTileEntity();
+                        Optional<TileEntity> signBlock = loc.get().getTileEntity();
                         TileEntity tileSign = signBlock.get();
                         Sign sign=(Sign)tileSign;
                         Optional<SignData> opSign = sign.getOrCreate(SignData.class);
@@ -405,12 +396,12 @@ public class Plot {
     }
     
     /**
-     * Point Y correspondant au premier bloc le plus au niveau du sol
+     * Point Y correspondant au premier bloc le plus haut, au niveau du sol
      * @param X coordonnée X du point à calculer
      * @param Z coordonnée Z du point à calculer
      * @return le point Y
      */
-    private int getYSpawn(int X, int Z){
+    public int getYSpawn(int X, int Z){
         Optional<World> worldopt = getWorld();
         if(worldopt.isPresent()){
             Location location = new Location(worldopt.get(), X, 250, Z);

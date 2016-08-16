@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.commands.CommandTest;
 import net.teraoctet.actus.economy.ItemShop;
@@ -18,9 +19,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
 import org.spongepowered.api.data.type.HandTypes;
-//import org.spongepowered.api.text.BookView;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
@@ -43,23 +44,20 @@ public class CommandShopCreate implements CommandExecutor {
                 if(displayData.isPresent()){
                     name = displayData.get().displayName().get().toPlain();
                 }
-                //BookView.Builder bv = BookView.builder()
-                        //.author(Text.of(TextColors.GOLD, "actus"))
-                        //.title(Text.of(TextColors.GOLD, "ItemShop"));
                 Text text = Text.builder()
-                        .append(MESSAGE("&l&1   ---- ItemShop ----\n\n"))
-                        .append(MESSAGE("&8Nom de l'item : &4" + name + "\n"))
-                        .append(MESSAGE("&8Location : &4" + locationString.get() +"\n\n"))
-                        .append(MESSAGE("&1Indiquer le type de transaction :\n"))
-                        .append(Text.builder().append(MESSAGE("&4- VENTE\n"))
+                        .append(MESSAGE("\n\n\n\n"))
+                        .append(MESSAGE("&l&e   -----------------\n"))
+                        .append(MESSAGE("&l&b   ---- ItemShop ----\n"))
+                        .append(MESSAGE("&l&e   -----------------\n\n"))
+                        .append(MESSAGE("&eNom de l'item : &b" + name + "\n"))
+                        .append(MESSAGE("&eIndiquer le type de transaction :\n\n"))
+                        .append(Text.builder().append(MESSAGE("&b- VENTE\n\n"))
                         .onClick(TextActions.runCommand("/shopcreate " + locationString.get() + " sale"))
                         .onHover(TextActions.showText(MESSAGE("&eClique ici pour un item a la vente"))).build())
-                        .append(Text.builder().append(MESSAGE("&4- ACHAT\n"))
+                        .append(Text.builder().append(MESSAGE("&b- ACHAT\n"))
                         .onClick(TextActions.runCommand("/shopcreate " + locationString.get() + " buy"))
                         .onHover(TextActions.showText(MESSAGE("&eClique ic pour un rachat d'item"))).build())
                         .build();
-                //bv.addPage(text);
-                //player.sendBookView(bv.build());
                 player.sendMessage(text);
                 return CommandResult.success();
             }else if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent() && locationString.isPresent() && transactType.isPresent() && !price.isPresent()){
@@ -69,37 +67,32 @@ public class CommandShopCreate implements CommandExecutor {
                 if(displayData.isPresent()){
                     name = displayData.get().displayName().get().toPlain();
                 }
-                
-                //BookView.Builder bv = BookView.builder()
-                        //.author(Text.of(TextColors.GOLD, "actus"))
-                        //.title(Text.of(TextColors.GOLD, "ItemShop"));
                 Text text = Text.builder()
-                        .append(MESSAGE("&l&1   ---- ItemShop ----\n\n"))
-                        .append(MESSAGE("&8Nom de l'item : &l&4" + name +"\n"))
-                        .append(MESSAGE("&8Location : &l&4" + locationString.get() +"\n\n"))
-                        .append(MESSAGE("&8Transaction : &l&4" + transactType.get() +"\n\n"))
-                        .append(MESSAGE("&1Pour finir il te faudra indiquer le prix apres la fermeture du livre\n"))
-                        .append(Text.builder().append(MESSAGE("&4Clique ici pour continuer\n"))
-                        .onClick(TextActions.runCommand("/shopcreate " + locationString.get() + " " + transactType.get() + "  0"))
-                        .onHover(TextActions.showText(MESSAGE("&eClique ici"))).build())
+                        .append(MESSAGE("\n\n\n\n"))
+                        .append(MESSAGE("&l&e   -----------------\n"))
+                        .append(MESSAGE("&l&b   ---- ItemShop ----\n"))
+                        .append(MESSAGE("&l&e   -----------------\n\n"))
+                        .append(MESSAGE("&eNom de l'item : &l&b" + name +"\n"))
+                        .append(MESSAGE("&eTransaction : &l&b" + transactType.get() +"\n\n"))
+                        .append(MESSAGE("&eMaintenant tape le prix souhait\351\n"))
                         .build();
-                //bv.addPage(text);
-                //player.sendBookView(bv.build());
+                        inputShop.put(player, "shopcreate " + locationString.get() + " " + transactType.get());
                 player.sendMessage(text);
                 return CommandResult.success();
             }else if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent() && locationString.isPresent() && transactType.isPresent() && price.isPresent()){
                 ItemStack is = player.getItemInHand(HandTypes.MAIN_HAND).get(); 
-                if(price.get()==0){
-                    player.sendMessage(Text.builder()
-                            .append(Text.builder().append(MESSAGE("&eA l'affichage de la commande, tu devras changer le zero en fin de ligne qui correspond au tarif par la valeur du tarif que tu souhaites avoir (ex: 2 / 0.002 / 2.50 etc...) "))
-                            .onClick(TextActions.suggestCommand("/shopcreate " + locationString.get() + " " + transactType.get() + "  0"))
-                            .onHover(TextActions.showText(MESSAGE("&ePour continuer et afficher la commande, clique ici"))).build()).build());
-                    return CommandResult.success();
-                }
                 ItemShop itemShop = new ItemShop(is,transactType.get(),price.get(),-1);
                 try {
                     if(itemShopManager.saveShop(locationString.get(), itemShop)){
-                        player.sendMessage(MESSAGE("&6ItemShop cr\351\351 avec succès"));
+
+                        is.offer(Keys.DISPLAY_NAME, MESSAGE("&b" + transactType.get()+ ": &e" +  price.get() + " E"));
+                        player.setItemInHand(HandTypes.MAIN_HAND, is);
+                        player.sendMessage(MESSAGE("&6ItemShop cr\351\351 avec succ\350s"));
+                        player.sendMessage(MESSAGE("&6Pose maintenant l'item dans le cadre"));
+                        //Optional<Location<World>> loc = getLocation(locationString.get());
+                        //ItemFrame frame = (ItemFrame)loc.get().getTileEntity().get();
+                        //frame.get(Keys.REPRESENTED_ITEM).get().merge(ItemStackSnapshot.class.NONE);
+                        //frame.getOrCreate(Keys.REPRESENTED_ITEM);
                         return CommandResult.success();   
                     } else {
                         player.sendMessage(ERROR());

@@ -3,7 +3,7 @@ package net.teraoctet.actus.commands.plot;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
 import org.spongepowered.api.command.CommandResult;

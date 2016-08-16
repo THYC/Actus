@@ -48,7 +48,10 @@ public class PortalManager {
     public Text listPortal(){
         String listportal = "";
         for(Portal portal : portals){
-            listportal = listportal + System.getProperty("line.separator") + portal.getName();
+            listportal = listportal + System.getProperty("line.separator") + portal.getName() 
+                    + " " + portal.getworld() 
+                    + " 1: xyz" + String.valueOf(portal.getX1()) + " " + String.valueOf(portal.getY1()) + " " + String.valueOf(portal.getZ1())
+                    + " 2: xyz" + String.valueOf(portal.getX2()) + " " + String.valueOf(portal.getY2()) + " " + String.valueOf(portal.getZ2());
         }
         
         Text text = Text.builder(listportal).color(TextColors.GOLD).build();

@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.plot.Plot;
-import net.teraoctet.actus.utils.DeSerialize;
-import net.teraoctet.actus.utils.Data;
-import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.world.WorldManager.getWorld;
 
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -35,14 +33,13 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-//import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import static org.spongepowered.api.item.ItemTypes.DIAMOND_AXE;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.explosion.Explosion;
@@ -58,7 +55,7 @@ public class WorldListener {
 	
         for (Entity entity : entities)
         {
-            AWorld world = Data.getWorld(entity.getWorld().getName());
+            AWorld world = getWorld(entity.getWorld().getName());
             if(world == null) return;
             if(!world.getAnimal() && entity instanceof Animal || entity.getType().equals(EntityTypes.BAT)) { event.setCancelled(true);return;}
             if(!world.getMonster() && entity instanceof Monster) {event.setCancelled(true);return;}
@@ -131,7 +128,7 @@ public class WorldListener {
             }
         }
     }
-        
+    
     @Listener(order = Order.LAST) 
     public void onExplosion(final ExplosionEvent.Detonate event){ 
         Explosion explosion = event.getExplosion();
@@ -147,27 +144,32 @@ public class WorldListener {
     }
         
     @Listener 
-    public void itemDrop(DropItemEvent.Destruct event){ 
+    public void itemDrop(DropItemEvent.Destruct event){
         if (event.getCause().first(Creeper.class).isPresent()){
+            plugin.getLogger().info("event.getCause().first(Creeper.class).isPresent()");
+            event.getEntities().clear();
             event.setCancelled(true);
         }
+        event.setCancelled(true);
     } 
     
     @Listener 
     public void saplingDrop(DropItemEvent.Dispense event){ 
-        Entity drop = event.getEntities().get(0);
- 
-        Optional<ItemStackSnapshot> item = drop.get(Keys.REPRESENTED_ITEM);
-        if (item.get().getType().getBlock().isPresent()) {
-                       
-            if (item.get().getType().getBlock().get().equals(BlockTypes.SAPLING)){
-                
-                //Logger.getLogger("INFO").info(drop.getKeys().toString());
-                //Logger.getLogger("INFO").info(drop.getValue(Keys.TREE_TYPE).get().toString());
-                                
-                Reforestation reforestation = new Reforestation(drop);
-                reforestation.run();
-            }    
+        if(!event.getEntities().isEmpty()){
+            Entity drop = event.getEntities().get(0);
+
+            Optional<ItemStackSnapshot> item = drop.get(Keys.REPRESENTED_ITEM);
+            if (item.get().getType().getBlock().isPresent()) {
+
+                if (item.get().getType().getBlock().get().equals(BlockTypes.SAPLING)){
+
+                    //Logger.getLogger("INFO").info(drop.getKeys().toString());
+                    //Logger.getLogger("INFO").info(drop.getValue(Keys.TREE_TYPE).get().toString());
+
+                    Reforestation reforestation = new Reforestation(drop);
+                    reforestation.run();
+                }    
+            }
         }
     }
         
@@ -202,11 +204,11 @@ public class WorldListener {
                     if (!getGame().getEventManager().post(event)) {
                         if (player.getGameModeData().get(Keys.GAME_MODE).get() != GameModes.CREATIVE) {
                             BlockState bs = blockSnapshotTransaction.getOriginal().getState();
-                            Entity entity = player.getWorld().createEntity(EntityTypes.ITEM, blockSnapshotTransaction.getOriginal().getPosition()).get();
+                            Entity entity = player.getWorld().createEntity(EntityTypes.ITEM, blockSnapshotTransaction.getOriginal().getPosition());
                             entity.offer(Keys.REPRESENTED_ITEM, bs.getType().getItem().get().getTemplate().copy());
                             player.getWorld().spawnEntity(entity, breakEvent.getCause());
                         }
-                        blockSnapshotTransaction.getFinal().restore(true, true);
+                        blockSnapshotTransaction.getFinal().restore(true, BlockChangeFlag.ALL);
                     }
                 });
                 firedEvents.clear();

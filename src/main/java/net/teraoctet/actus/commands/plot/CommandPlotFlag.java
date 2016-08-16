@@ -4,7 +4,7 @@ import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import static net.teraoctet.actus.utils.MessageManager.formatText;

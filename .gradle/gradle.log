@@ -1,46 +1,6 @@
 This mapping 'snapshot_20160518' was designed for MC 1.9.4! Use at your own peril.This mapping 'snapshot_20160518' was designed for MC 1.9.4! Use at your own peril.
 
-:deobfCompileDummyTask
-:getVersionJson
-:extractUserdev UP-TO-DATE
-:downloadClient SKIPPED
-:downloadServer SKIPPED
-:splitServerJar SKIPPED
-:mergeJars SKIPPED
-:applyBinaryPatches SKIPPED
-:deobfProvidedDummyTask
-:extractDependencyATs SKIPPED
-:extractMcpData SKIPPED
-:extractMcpMappings SKIPPED
-:genSrgs SKIPPED
-:deobfMcMCP SKIPPED
-:sourceApiJava
-:compileApiJava UP-TO-DATE
-:processApiResources UP-TO-DATE
-:apiClasses UP-TO-DATE
-:sourceMainJava
-:compileJavaNote: Writing plugin metadata to file:/D:/DEV/Actus/build/classes/main/mcmod.info
-Note: Some input files use unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-
-:processResources UP-TO-DATE
-:classes
-:jar
-:sourceTestJava
-:compileTestJava UP-TO-DATE
-:processTestResources UP-TO-DATE
-:testClasses UP-TO-DATE
-:test UP-TO-DATE
-:reobfJar
-:extractRangemapReplacedMain
-D:\DEV\Actus\build\sources\main\java
-:retromapReplacedMain
-remapping source...
-:sourceJar
-:assemble
-:check UP-TO-DATE
-:build
 
 BUILD SUCCESSFUL
 
-Total time: 23.203 secs
+Total time: 6.613 secs

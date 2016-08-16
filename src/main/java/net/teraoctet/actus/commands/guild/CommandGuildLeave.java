@@ -4,7 +4,7 @@ import static net.teraoctet.actus.Actus.guildManager;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;

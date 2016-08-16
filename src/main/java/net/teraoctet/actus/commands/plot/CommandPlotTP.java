@@ -4,7 +4,7 @@ import com.flowpowered.math.vector.Vector3d;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.utils.DeSerialize;
 import org.spongepowered.api.command.CommandResult;

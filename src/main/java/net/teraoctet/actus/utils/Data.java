@@ -12,10 +12,16 @@ import java.util.HashMap;
 import java.util.List;
 import javax.sql.DataSource;
 import net.teraoctet.actus.guild.Guild;
+import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.addUUID;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.portal.Portal;
-import net.teraoctet.actus.world.AWorld;
+import net.teraoctet.actus.ticket.Ticket;
+import net.teraoctet.actus.warp.Warp;
+import static net.teraoctet.actus.warp.WarpManager.addWarp;
 
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.service.sql.SqlService;
@@ -45,8 +51,8 @@ public class Data {
                 List<String> tables = new ArrayList<>();		
                 while(resultset.next()) { tables.add(resultset.getString(3));}
 
-                if(!tables.contains("gjails")) {
-                        execute("CREATE TABLE gjails ("
+                if(!tables.contains("jails")) {
+                        execute("CREATE TABLE jails ("
                                 + "uuid TEXT, "
                                 + "player TEXT, "
                                 + "jail TEXT, "
@@ -63,13 +69,6 @@ public class Data {
                                 + "x INT, "
                                 + "y INT, "
                                 + "z INT)");
-                }
-
-                if(!tables.contains("gmutes")) {
-                        execute("CREATE TABLE gmutes ("
-                                + "uuid TEXT, "
-                                + "duration DOUBLE, "
-                                + "reason TEXT)");
                 }
 
                 if(!tables.contains("aplayers")) {
@@ -91,8 +90,8 @@ public class Data {
                                 + "guild_rank INT)");
                 }
                 
-                if(!tables.contains("gguilds")) {
-                        execute("CREATE TABLE gguilds ("
+                if(!tables.contains("guilds")) {
+                        execute("CREATE TABLE guilds ("
                                 + "id_guild, "
                                 + "name TEXT, "
                                 + "world TEXT, "
@@ -105,24 +104,13 @@ public class Data {
                                 + "dead INT)");
                 }
 
-                if(!tables.contains("gspawns")) {
-                        execute("CREATE TABLE gspawns ("
-                                + "name TEXT, "
-                                + "world TEXT, "
-                                + "x DOUBLE, "
-                                + "y DOUBLE, "
-                                + "z DOUBLE, "
-                                + "message TEXT)");
-                }
-
-                if(!tables.contains("gtickets")) {
-                        execute("CREATE TABLE gtickets ("
-                                + "id DOUBLE, "
+                if(!tables.contains("tickets")) {
+                        execute("CREATE TABLE tickets ("
+                                + "date DOUBLE, "
                                 + "uuid TEXT, "
                                 + "message TEXT, "
-                                + "time DOUBLE, "
-                                + "comments TEXT, "
-                                + "world TEXT, x, "
+                                + "world TEXT, "
+                                + "x DOUBLE, "
                                 + "y DOUBLE, "
                                 + "z DOUBLE, "
                                 + "assigned TEXT, "
@@ -130,19 +118,28 @@ public class Data {
                                 + "status TEXT)");
                 }
 
-                if(!tables.contains("gwarps")) {
-                        execute("CREATE TABLE gwarps ("
+                if(!tables.contains("warps")) {
+                        execute("CREATE TABLE warps ("
                                 + "name TEXT, "
                                 + "world TEXT, "
                                 + "x DOUBLE, "
                                 + "y DOUBLE, "
                                 + "z DOUBLE, "
-                                + "owner TEXT, "
-                                + "invited TEXT, "
-                                + "private TEXT, "
                                 + "message TEXT)");
                 }
-
+                
+                if(!tables.contains("trace")) {
+                        execute("CREATE TABLE trace ("
+                                + "date DOUBLE, "
+                                + "world TEXT, "
+                                + "x DOUBLE, "
+                                + "y DOUBLE, "
+                                + "z DOUBLE, "
+                                + "uuid TEXT, "
+                                + "type TEXT, "
+                                + "block TEXT)");
+                }
+                
                 if(!tables.contains("plot")) {
                         execute("CREATE TABLE plot ("
                                 + "plotName TEXT, "
@@ -171,8 +168,8 @@ public class Data {
                                 + "uuidAllowed TEXT)");
                 }
                 
-                if(!tables.contains("gplsale")) {
-                        execute("CREATE TABLE gplsale ("
+                if(!tables.contains("plsale")) {
+                        execute("CREATE TABLE plsale ("
                                 + "plotName TEXT, "
                                 + "location TEXT)");
                 }
@@ -195,8 +192,8 @@ public class Data {
                                 + "message TEXT)");
                 }
                 
-                if(!tables.contains("gitemshop")) {
-                        execute("CREATE TABLE gitemshop ("
+                if(!tables.contains("itemshop")) {
+                        execute("CREATE TABLE itemshop ("
                                 + "portalname TEXT, "
                                 + "level INT, "
                                 + "world TEXT, "
@@ -221,16 +218,16 @@ public class Data {
             try {
                 Connection c = datasource.getConnection();
                 Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM gjail");
+                ResultSet rs = s.executeQuery("SELECT * FROM jail");
                 while(rs.next()) {
-                    Jail gjail = new Jail(
+                    Jail jail = new Jail(
                         rs.getString("uuid"), 
                         rs.getString("player"),
                         rs.getString("jail"),
                         rs.getString("reason"), 
-                        rs.getDouble("time"), 
-                        rs.getDouble("duration"));
-                    Data.addJail(gjail.getUUID(), gjail);
+                        rs.getInt("time"), 
+                        rs.getInt("duration"));
+                    Data.addJail(jail.getUUID(), jail);
                 }
                 s.close();
                 c.close();
@@ -258,15 +255,15 @@ public class Data {
                         rs.getDouble("timejail"),
                         rs.getInt("id_guild"),
                         rs.getInt("guild_rank"));
-                    Data.addAPlayer(player.getUUID(), player);
-                    Data.addUUID(player.getName(), player.getUUID());
+                    addAPlayer(player.getUUID(), player);
+                    addUUID(player.getName(), player.getUUID());
                 }   
             } catch (SQLException e) {}
             
             try {
                 Connection c = datasource.getConnection();
                 Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM gguilds");
+                ResultSet rs = s.executeQuery("SELECT * FROM guilds");
                 
                 while(rs.next()) {
                     Guild guild = new Guild(
@@ -298,8 +295,8 @@ public class Data {
                         rs.getInt("z"));
                         APlayer aplayer = getAPlayer(home.getUUID());
                         aplayer.setHome(home.getName(), home);
-                        Data.removeAPlayer(home.getUUID());
-                        Data.addAPlayer(home.getUUID(), aplayer);
+                        removeAPlayer(home.getUUID());
+                        addAPlayer(home.getUUID(), aplayer);
                 }
                 s.close();
                 c.close();
@@ -367,47 +364,48 @@ public class Data {
                 s.close();
                 c.close();
             } catch (SQLException e) {}
-		/*try {
-			Connection c = datasource.getConnection();
-			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM spawns");
-			while(rs.next()) {
-				SPAWN spawn = new SPAWN(rs.getString("name"), rs.getString("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getDouble("yaw"), rs.getDouble("pitch"), rs.getString("message"));
-				Gdata.addSpawn(spawn.getName(), spawn);
-			}
-			s.close();
-			c.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}*/
+				
+            try {
+                Connection c = datasource.getConnection();
+                Statement s = c.createStatement();
+                ResultSet rs = s.executeQuery("SELECT * FROM tickets");
+                while(rs.next()) {
+                    Ticket ticket = new Ticket(
+                        rs.getInt("date"), 
+                        rs.getString("uuid"), 
+                        rs.getString("message"), 
+                        rs.getString("world"), 
+                        rs.getDouble("x"), 
+                        rs.getDouble("y"), 
+                        rs.getDouble("z"),  
+                        rs.getString("assigned"), 
+                        rs.getString("priority"), 
+                        rs.getString("status"));
+                    //addTicket(ticket.getID(), ticket);
+                }
+                s.close();
+                c.close();
+            } catch (SQLException e) {}
 		
-		/*try {
-			Connection c = datasource.getConnection();
-			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM tickets");
-			while(rs.next()) {
-				TICKET ticket = new TICKET((int)rs.getDouble("id"), rs.getString("uuid"), rs.getString("message"), rs.getDouble("time"), DESERIALIZE.messages(rs.getString("comments")), rs.getString("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getDouble("yaw"), rs.getDouble("pitch"), rs.getString("assigned"), rs.getString("priority"), rs.getString("status"));
-				Gdata.addTicket(ticket.getID(), ticket);
-			}
-			s.close();
-			c.close();
+            try {
+                Connection c = datasource.getConnection();
+                Statement s = c.createStatement();
+                ResultSet rs = s.executeQuery("SELECT * FROM warps");
+                while(rs.next()) {
+                    Warp warp = new Warp(
+                        rs.getString("name"),
+                        rs.getString("world"),
+                        rs.getDouble("x"), 
+                        rs.getDouble("y"), 
+                        rs.getDouble("z"), 
+                        rs.getString("message"));
+                    addWarp(warp.getName(), warp);
+                }
+                s.close();
+                c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}*/
-		
-		/*try {
-			Connection c = datasource.getConnection();
-			Statement s = c.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM warps");
-			while(rs.next()) {
-				WARP warp = new WARP(rs.getString("name"), rs.getString("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getDouble("yaw"), rs.getDouble("pitch"), rs.getString("owner"), DESERIALIZE.list(rs.getString("invited")), rs.getString("private"), rs.getString("message"));
-				Gdata.addWarp(warp.getName(), warp);
-			}
-			s.close();
-			c.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	public static void execute(String execute) {	
@@ -433,32 +431,13 @@ public class Data {
 	}
 	
 	public static void queue(String queue) { Data.queue.add(queue); }
-	
-        private static final HashMap<String, AWorld> worlds = new HashMap<>();
-	public static void addWorld(String name, AWorld world) { if(!worlds.containsKey(name)) worlds.put(name, world); }
-	public static void removeWorld(String name) { if(worlds.containsKey(name)) worlds.remove(name); }
-	public static AWorld getWorld(String name) { return worlds.containsKey(name) ? worlds.get(name) : null; }
-        public static AWorld getWorldUUID( String uuid) { return worlds.containsKey(uuid) ? worlds.get(uuid) : null; }
-	public static HashMap<String, AWorld> getWorlds() { return worlds; }
-        
+	        
 	private static final HashMap<String, Jail> gjails = new HashMap<>();
 	public static void addJail(String uuid, Jail gjail) { if(!gjails.containsKey(uuid)) gjails.put(uuid, gjail); }
 	public static void removeJail(String uuid) { if(gjails.containsKey(uuid)) gjails.remove(uuid); }
 	public static Jail getJail(String uuid) { return gjails.containsKey(uuid) ? gjails.get(uuid) : null; }
 	public static HashMap<String, Jail> getBans() { return gjails; }
-	
-	private static final HashMap<String, APlayer> players = new HashMap<>();
-        @SuppressWarnings("element-type-mismatch")
-	public static void addAPlayer(String uuid, APlayer aplayer) { if(!players.containsKey(players)) players.put(uuid, aplayer); }
-	public static void removeAPlayer(String uuid) { if(players.containsKey(uuid)) players.remove(uuid); }
-	public static APlayer getAPlayer(String uuid) { return players.containsKey(uuid) ? players.get(uuid) : null; }
-	public static HashMap<String, APlayer> getPlayers() { return players; }
-        
-	private static final HashMap<String, String> uuids = new HashMap<>();
-	public static void addUUID(String name, String uuid) { uuids.put(name, uuid); }
-	public static void removeUUID(String name) { if(uuids.containsKey(name)) uuids.remove(name); }
-	public static String getUUID(String name) { return uuids.containsKey(name) ? uuids.get(name) : null; }
-        
+
         private static final HashMap<Integer, Guild> guilds = new HashMap<>();
         @SuppressWarnings("element-type-mismatch")
 	public static void addGuild(Integer ID, Guild guild) { if(!guilds.containsKey(guilds)) guilds.put(ID, guild); }
@@ -477,26 +456,15 @@ public class Data {
         public static final ArrayList<Portal> portals = new ArrayList<>();
         public static void addPortal(Portal portal) { if(!portals.contains(portal)) portals.add(portal); } 
         public static void removePortal(Portal portal) { if(portals.contains(portal)) portals.remove(portal); } 
-
 	
-	//private static HashMap<String, SPAWN> spawns = new HashMap<String, SPAWN>();
-	//public static void addSpawn(String name, SPAWN spawn) { if(!spawns.containsKey(name)) spawns.put(name, spawn); }
-	//public static void removeSpawn(String name) { if(spawns.containsKey(name)) spawns.remove(name); }
-	//public static SPAWN getSpawn(String name) { return spawns.containsKey(name) ? spawns.get(name) : null; }
-	//public static HashMap<String, SPAWN> getSpawns() { return spawns; }
+	private static HashMap<Integer, Ticket> tickets = new HashMap<>();
+	public static void addTicket(int id, Ticket ticket) { if(!tickets.containsKey(id)) tickets.put(id, ticket); }
+	public static void removeTicket(int id) { if(tickets.containsKey(id)) tickets.remove(id); }
+	public static Ticket getTicket(int id) { return tickets.containsKey(id) ? tickets.get(id) : null; }
+	public static HashMap<Integer, Ticket> getTickets() { return tickets; }
+	public static void clearTickets() { tickets.clear(); }
 	
-	//private static HashMap<Integer, TICKET> tickets = new HashMap<Integer, TICKET>();
-	//public static void addTicket(int id, TICKET ticket) { if(!tickets.containsKey(id)) tickets.put(id, ticket); }
-	//public static void removeTicket(int id) { if(tickets.containsKey(id)) tickets.remove(id); }
-	//public static TICKET getTicket(int id) { return tickets.containsKey(id) ? tickets.get(id) : null; }
-	//public static HashMap<Integer, TICKET> getTickets() { return tickets; }
-	//public static void clearTickets() { tickets.clear(); }
 	
-	//private static HashMap<String, WARP> warps = new HashMap<String, WARP>();
-	//public static void addWarp(String name, WARP warp) { if(!warps.containsKey(name)) warps.put(name, warp); }
-	//public static void removeWarp(String name) { if(warps.containsKey(name)) warps.remove(name); }
-	//public static WARP getWarp(String name) { return warps.containsKey(name) ? warps.get(name) : null; }
-	//public static HashMap<String, WARP> getWarps() { return warps; }
         
 
 }

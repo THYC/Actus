@@ -1,6 +1,7 @@
 package net.teraoctet.actus.commands.economy;
 
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.economy.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -24,7 +25,12 @@ public class CommandShopPurchase implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.admin.shop")) {
             Player player = (Player) src;
-            
+            if(!action.containsKey(player)){
+                player.sendMessages(MESSAGE("&eVous n'avez pas de transaction en cours"));
+                player.sendMessages(MESSAGE("&eVous devez d'abord faire un click droit sur le Shop de vente"));
+                return CommandResult.empty();
+            }
+            action.remove(player);
             Optional<String> locationString = ctx.<String> getOne("locationstring");
             Optional<ItemShop> itemShop = itemShopManager.getItemShop(locationString.get());
             if(itemShop.isPresent()){
@@ -40,7 +46,7 @@ public class CommandShopPurchase implements CommandExecutor {
                             player.getInventory().offer(is);
                             return CommandResult.success();
                         } else {
-                            player.sendMessage(MESSAGE("&bPas assez de monnaie dans votre bourse"));
+                            player.sendMessage(MESSAGE("&bPas assez de monnaie dans ta bourse"));
                         }
                     }
                 }
@@ -48,7 +54,7 @@ public class CommandShopPurchase implements CommandExecutor {
                     items.poll(price);
                     player.getInventory().offer(is);
                 } else {
-                    player.sendMessage(MESSAGE("&eTransaction annul\351e, vous n'avez pas le nombre d'emeraudes suffisant sur vous"));  
+                    player.sendMessage(MESSAGE("&eTransaction annul\351e, tu n'as pas le nombre d'emeraudes suffisant sur toi"));  
                 }
                 return CommandResult.success();
             }

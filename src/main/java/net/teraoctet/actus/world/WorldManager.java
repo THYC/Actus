@@ -2,10 +2,11 @@ package net.teraoctet.actus.world;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.teraoctet.actus.utils.Data;
 
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -18,13 +19,21 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import static org.spongepowered.api.Sponge.getGame;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 
 public class WorldManager {
+    private static final HashMap<String, AWorld> aworlds = new HashMap<>();
     public static File file = new File("config/actus/worlds.conf");
     public static ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
     public static ConfigurationNode worlds = manager.createEmptyNode(ConfigurationOptions.defaults());
-    
+    public static void addWorld(String name, AWorld world) { if(!aworlds.containsKey(name)) aworlds.put(name, world); }
+    public static void removeWorld(String name) { if(aworlds.containsKey(name)) aworlds.remove(name); }
+    public static AWorld getWorld(String name) { return aworlds.containsKey(name) ? aworlds.get(name) : null; }
+    public static AWorld getWorldUUID( String uuid) { return aworlds.containsKey(uuid) ? aworlds.get(uuid) : null; }
+    public static HashMap<String, AWorld> getWorlds() { return aworlds; }
+        
     public static void init() {
 	//try {
             if (!file.exists()) {
@@ -86,51 +95,52 @@ public class WorldManager {
             Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
         }
             
-            if(worlds.getNode("worlds").hasMapChildren()) {
-                for(Entry<Object, ? extends ConfigurationNode> e : worlds.getNode("worlds").getChildrenMap().entrySet()){ 
-                    String worldName = e.getKey().toString(); 
-                    if(!getGame().getServer().getWorld(worldName).isPresent()) continue;
-                    World original = getGame().getServer().getWorld(worldName).get();
-                    String uuid = worlds.getNode("worlds", worldName, "uuid").getString();
-                    String message = worlds.getNode("worlds", worldName, "message").getString();
-                    String prefix = worlds.getNode("worlds", worldName, "prefix").getString();
-                    String nodeDifficulty = worlds.getNode("worlds", worldName, "difficulty").getString().toUpperCase();
-                    Difficulty difficulty = Difficulties.EASY;
+        if(worlds.getNode("worlds").hasMapChildren()) {
+            for(Entry<Object, ? extends ConfigurationNode> e : worlds.getNode("worlds").getChildrenMap().entrySet()){ 
+                String worldName = e.getKey().toString(); 
+                if(!getGame().getServer().getWorld(worldName).isPresent()) continue;
+                World original = getGame().getServer().getWorld(worldName).get();
+                String uuid = worlds.getNode("worlds", worldName, "uuid").getString();
+                String message = worlds.getNode("worlds", worldName, "message").getString();
+                String prefix = worlds.getNode("worlds", worldName, "prefix").getString();
+                String nodeDifficulty = worlds.getNode("worlds", worldName, "difficulty").getString().toUpperCase();
+                Difficulty difficulty = Difficulties.EASY;
 
-                    switch (nodeDifficulty.toUpperCase()){
-                        case "PEACEFUL": difficulty = Difficulties.PEACEFUL;break;
-                        case "EASY" : difficulty = Difficulties.EASY;break;
-                        case "NORMAL" : difficulty = Difficulties.NORMAL;break;   
-                        case "HARD" : difficulty = Difficulties.HARD;break;  
-                    }
-
-                    String nodeGameMode = worlds.getNode("worlds", worldName, "gamemode").getString().toUpperCase();
-                    GameMode gameMode = GameModes.SURVIVAL;
-
-                    switch (nodeGameMode){
-                        case "SURVIVAL": gameMode = GameModes.SURVIVAL;break;
-                        case "CREATIVE" : gameMode = GameModes.CREATIVE;break;
-                        case "ADVENTURE" : gameMode = GameModes.ADVENTURE;break;
-                        case "SPECTATOR" : gameMode = GameModes.SPECTATOR;break;
-                    }
-
-                    boolean monsters = worlds.getNode("worlds", worldName, "monsters").getBoolean();
-                    boolean animals = worlds.getNode("worlds", worldName, "animals").getBoolean();
-                    boolean pvp = worlds.getNode("worlds", worldName, "pvp").getBoolean();
-                    double x = worlds.getNode("worlds", worldName, "spawn", "x").getDouble();
-                    double y = worlds.getNode("worlds", worldName, "spawn","y").getDouble();
-                    double z = worlds.getNode("worlds", worldName, "spawn","z").getDouble();
-                    Location<World> spawn = new Location<>(original, x, y, z);
-                    double border = worlds.getNode("worlds", worldName, "border").getDouble();
-                    double borderdamage = worlds.getNode("worlds", worldName, "border-damage").getDouble();
-                    AWorld gworld = new AWorld(worldName, uuid, message, prefix, difficulty, gameMode, monsters, animals, pvp, spawn, border, borderdamage);
-                    Data.addWorld(worldName, gworld);
+                switch (nodeDifficulty.toUpperCase()){
+                    case "PEACEFUL": difficulty = Difficulties.PEACEFUL;break;
+                    case "EASY" : difficulty = Difficulties.EASY;break;
+                    case "NORMAL" : difficulty = Difficulties.NORMAL;break;   
+                    case "HARD" : difficulty = Difficulties.HARD;break;  
                 }
+
+                String nodeGameMode = worlds.getNode("worlds", worldName, "gamemode").getString().toUpperCase();
+                GameMode gameMode = GameModes.SURVIVAL;
+
+                switch (nodeGameMode){
+                    case "SURVIVAL": gameMode = GameModes.SURVIVAL;break;
+                    case "CREATIVE" : gameMode = GameModes.CREATIVE;break;
+                    case "ADVENTURE" : gameMode = GameModes.ADVENTURE;break;
+                    case "SPECTATOR" : gameMode = GameModes.SPECTATOR;break;
+                }
+
+                boolean monsters = worlds.getNode("worlds", worldName, "monsters").getBoolean();
+                boolean animals = worlds.getNode("worlds", worldName, "animals").getBoolean();
+                boolean pvp = worlds.getNode("worlds", worldName, "pvp").getBoolean();
+                double x = worlds.getNode("worlds", worldName, "spawn", "x").getDouble();
+                double y = worlds.getNode("worlds", worldName, "spawn","y").getDouble();
+                double z = worlds.getNode("worlds", worldName, "spawn","z").getDouble();
+                Location<World> spawn = new Location<>(original, x, y, z);
+                double border = worlds.getNode("worlds", worldName, "border").getDouble();
+                double borderdamage = worlds.getNode("worlds", worldName, "border-damage").getDouble();
+                AWorld gworld = new AWorld(worldName, uuid, message, prefix, difficulty, gameMode, monsters, animals, pvp, spawn, border, borderdamage);
+                addWorld(worldName, gworld);
             }
-        //} catch (IOException e) {
-            //System.out.println(e.getLocalizedMessage()); 
- 
-        //}
+        }
+    }
+    
+    public void loadChunk(Player p){
+        Optional<Chunk> chunk = p.getWorld().getChunk(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
+        chunk.get().loadChunk(true);
     }
 		
     public static void save(AWorld world) {
@@ -150,5 +160,5 @@ public class WorldManager {
         worlds.getNode("worlds", world.getName(), "border-damage").setValue(world.getBorderDamage());
 		
         try { manager.save(worlds); worlds = manager.load(); } catch (IOException e) {}
-    }
+    }  
 }

@@ -3,11 +3,21 @@ package net.teraoctet.actus.plot;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.Data.jails;
 import static net.teraoctet.actus.utils.Data.plots;
 import static net.teraoctet.actus.utils.Data.setts;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
+import static org.spongepowered.api.block.BlockTypes.AIR;
+import static org.spongepowered.api.block.BlockTypes.GLOWSTONE;
+import static org.spongepowered.api.block.BlockTypes.OBSIDIAN;
+import static org.spongepowered.api.block.BlockTypes.TORCH;
 
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
@@ -210,11 +220,11 @@ public class PlotManager {
         String listplot = "&6";
         if (flagJail == true){
             for(Plot jail : jails){
-                listplot = listplot + System.getProperty("line.separator") + jail.getName();
+                listplot = listplot + "\n" + jail.getName();
             }
         } else {
             for(Plot plot : plots){
-                listplot = listplot + System.getProperty("line.separator") + plot.getName();
+                listplot = listplot + "\n" + plot.getName();
             }
         }
         Text text = Text.builder().append(TextSerializers.formattingCode('&').deserialize(listplot)).toText();
@@ -230,7 +240,7 @@ public class PlotManager {
         String listplot = "&6Total : " + plots.size();
         for(Plot plot : plots){
             if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
-                listplot = listplot + System.getProperty("line.separator") + plot.getName();
+                listplot = listplot + "\n" + plot.getName();
             }
         }
         Text text = Text.builder().append(TextSerializers.formattingCode('&').deserialize(listplot)).toText();
@@ -265,6 +275,47 @@ public class PlotManager {
                 foundPlot(plot.getLocX1Y1Z2(),newPlot) || foundPlot(plot.getLocX2Y2Z1(),newPlot) ||
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
                 foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot)));
+    }
+    
+    public void spawnTag (Location loc){
+        loc.setBlockType(GLOWSTONE, Cause.of(NamedCause.source(plugin)));
+    }  
+    
+    public void remTag (Plot plot){
+        World world = plot.getWorld().get();            
+        cutTag(new Location(world,plot.getX1(),plot.getYSpawn(plot.getX1(), plot.getZ1())-1,plot.getZ1()));
+        cutTag(new Location(world,plot.getX1(),plot.getYSpawn(plot.getX1(), plot.getZ2())-1,plot.getZ2()));
+        cutTag(new Location(world,plot.getX2(),plot.getYSpawn(plot.getX2(), plot.getZ1())-1,plot.getZ1()));
+        cutTag(new Location(world,plot.getX2(),plot.getYSpawn(plot.getX2(), plot.getZ2())-1,plot.getZ2()));
+    }
+    
+    private void cutTag(Location loc){
+        loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin)));  
+    }
+    
+    public Boolean hasTag(Location loc, Plot plot){
+        BlockType block = loc.getBlockType();
+        if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
+            if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
+                if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
+                    if(block.equals(GLOWSTONE))return true;     
+                }
+            }
+        }
+        return false;
+    }
+    
+    public Boolean hasTag(Plot plot){
+        Location loc = new Location(plot.getWorld().get(),plot.getX1(),plot.getYSpawn(plot.getX1(), plot.getZ1())-1,plot.getZ1());
+        BlockType block = loc.getBlockType();
+        if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
+            if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
+                if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
+                    if(block.equals(GLOWSTONE))return true;     
+                }
+            }
+        }
+        return false;
     }
 }
 

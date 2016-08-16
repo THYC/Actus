@@ -1,9 +1,11 @@
 package net.teraoctet.actus.commands;
 
+import java.util.Optional;
 import net.teraoctet.actus.utils.DeSerialize;
-import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.DeSerialize.getLocation;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,15 +25,19 @@ public class CommandBack implements CommandExecutor {
                 
         if (src instanceof Player && src.hasPermission("actus.back")){           
             Player player = (Player) src;
-            APlayer aplayer = Data.getAPlayer(player.getUniqueId().toString());
-            Location<World> location = getLocation(aplayer.getLastposition());
+            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+            Optional<Location<World>> location = getLocation(aplayer.getLastposition());
+            if(!location.isPresent()){
+                player.sendMessage(MESSAGE("&eAucun point d'enregistr\351 en derni\350re position"));
+                return CommandResult.empty();
+            }
             aplayer.setLastposition(DeSerialize.location(player.getLocation()));
             aplayer.update();
                 
-            if (player.getLocation().getExtent().getUniqueId().equals(location.getExtent().getUniqueId())) {
-                player.setLocation(location);
+            if (player.getLocation().getExtent().getUniqueId().equals(location.get().getExtent().getUniqueId())) {
+                player.setLocation(location.get());
             } else {
-                player.transferToWorld(location.getExtent(), location.getPosition());
+                player.transferToWorld(location.get().getExtent(), location.get().getPosition());
             }		
             src.sendMessage(TP_BACK(player));
             return CommandResult.success();

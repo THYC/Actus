@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static net.teraoctet.actus.utils.Data.addWorld;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
@@ -14,6 +13,7 @@ import static net.teraoctet.actus.utils.MessageManager.WORLD_CREATION_ERROR;
 import static net.teraoctet.actus.utils.MessageManager.WORLD_PROPERTIES_ERROR;
 import net.teraoctet.actus.world.AWorld;
 import net.teraoctet.actus.world.WorldManager;
+import static net.teraoctet.actus.world.WorldManager.addWorld;
 
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;

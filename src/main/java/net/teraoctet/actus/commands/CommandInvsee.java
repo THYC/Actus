@@ -1,5 +1,6 @@
 package net.teraoctet.actus.commands;
 
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.command.CommandResult;
@@ -18,7 +19,7 @@ public class CommandInvsee implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.invsee")) {
             Player target = ctx.<Player> getOne("target").get();
             Player player = (Player) src; 
-            player.openInventory(target.getInventory(), Cause.of(NamedCause.source(src)));
+            player.openInventory(target.getInventory(), Cause.of(NamedCause.source(plugin)));
             return CommandResult.success();
         }
         

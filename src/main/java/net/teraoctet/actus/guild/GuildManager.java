@@ -6,10 +6,16 @@ import java.util.Map;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.commit;
 import static net.teraoctet.actus.utils.Data.getGuild;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.Data.getPlayers;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getPlayers;
 import static net.teraoctet.actus.utils.Data.removeGuild;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 
 public class GuildManager {
     
@@ -22,7 +28,7 @@ public class GuildManager {
      */
     public static Boolean isOwner(Player player) {
         APlayer aplayer = getAPlayer(player.getIdentifier());
-        return aplayer.getFactionRank() == 1;
+        return aplayer.getGuildRank() == 1;
     }
     
     /**
@@ -30,7 +36,7 @@ public class GuildManager {
      * @param aplayer Object APlayer
      * @return Boolean
      */
-    public static Boolean isOwner(APlayer aplayer) { return aplayer.getFactionRank() == 1; }
+    public static Boolean isOwner(APlayer aplayer) { return aplayer.getGuildRank() == 1; }
     
     /**
      * Si TRUE le joueur est membre d'une guild
@@ -46,7 +52,7 @@ public class GuildManager {
      */
     public static Boolean hasAnyGuild(Player player) {
         APlayer aplayer = getAPlayer(player.getIdentifier());
-        return aplayer.getFactionRank() == 1;
+        return aplayer.getGuildRank() == 1;
     }
     
     /**
@@ -84,7 +90,7 @@ public class GuildManager {
         Data.commit();
     }*/
     
-    public void removeGuild(int id_guild){
+    public void delGuild(int id_guild){
         for(Map.Entry<String,APlayer> p : getPlayers().entrySet()){
             if(p.getValue().getID_guild() == id_guild){
                 p.getValue().setFactionRank(0);
@@ -92,8 +98,8 @@ public class GuildManager {
                 p.getValue().update();
             }
         }
-        Guild gguild = getGuild(id_guild);
-        gguild.delete();
+        Guild guild = getGuild(id_guild);
+        guild.delete();
         removeGuild(id_guild);
         commit();
     }
@@ -119,7 +125,7 @@ public class GuildManager {
      */
     public List<String> getGuildPlayers(int id_guild, int rank){
         List<String> listPlayer =  new ArrayList<>() ;
-        getPlayers().entrySet().stream().filter((p) -> (p.getValue().getID_guild() == id_guild && p.getValue().getFactionRank() == rank)).forEach((p) -> {
+        getPlayers().entrySet().stream().filter((p) -> (p.getValue().getID_guild() == id_guild && p.getValue().getGuildRank() == rank)).forEach((p) -> {
             listPlayer.add(p.getValue().getName());
         });
         return listPlayer;
@@ -132,7 +138,7 @@ public class GuildManager {
      */
     public APlayer getOwner(int id_guild){
         for(Map.Entry<String,APlayer> p : getPlayers().entrySet()){
-            if(p.getValue().getID_guild() == id_guild && p.getValue().getFactionRank() == 1){
+            if(p.getValue().getID_guild() == id_guild && p.getValue().getGuildRank() == 1){
                 return p.getValue();
             }
         }
@@ -167,5 +173,23 @@ public class GuildManager {
                 break;
         }
         return grade;
+    }
+    
+    /**
+     * Brule le joueur pendant une durée définie
+     * @param player joueur a bruler
+     * @param ticks  durée en tick
+     */
+    public void ignitePlayer(Player player, int ticks){
+        player.offer(Keys.FIRE_TICKS, ticks);
+    }
+    
+    /**
+     * 
+     * @param player 
+     */
+    public void spawnBat(Player player){
+        Entity bat = player.getLocation().getExtent().createEntity(EntityTypes.BAT, player.getLocation().getPosition());
+        player.getLocation().add(0, 2, 0).getExtent().spawnEntity(bat, Cause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()).build());
     }
 }

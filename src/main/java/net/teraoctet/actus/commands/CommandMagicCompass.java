@@ -1,6 +1,9 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
+import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.DeSerialize.getLocation;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -13,7 +16,10 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.utils.SettingCompass;
 import org.spongepowered.api.data.type.HandTypes;
+import static org.spongepowered.api.item.ItemTypes.COMPASS;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 public class CommandMagicCompass implements CommandExecutor {
         
@@ -52,6 +58,22 @@ public class CommandMagicCompass implements CommandExecutor {
                     case "guild":
                         player.sendMessage(MESSAGE("Cette commande ne fonctionne pas encore sur guild"));
                         break;
+                    case "grave":
+                        name = "GRAVE";
+                        APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+                        Optional<Location<World>> location = getLocation(aplayer.getLastdeath());
+                        if(!location.isPresent()){
+                            int x = location.get().getBlockX();
+                            int y = location.get().getBlockY();
+                            int z = location.get().getBlockZ();
+                            
+                            String loc = String.valueOf(x) + ":" + String.valueOf(y) + ":" + String.valueOf(z);
+                            is = sc.MagicCompass(player,name,loc);
+                        }else{
+                            player.sendMessage(MESSAGE("&eAucun point enregistr\351 pour ta tombe"));
+                            return CommandResult.empty();
+                        }
+                        break;
                     case "xyz":
                         if(nameOpt.isPresent()){
                             name = nameOpt.get();
@@ -71,18 +93,30 @@ public class CommandMagicCompass implements CommandExecutor {
                         break;
                     default:
                         player.sendMessage(USAGE("/mc [Direction] [name] [X] [Y] [Z]"));
-                        player.sendMessage(MESSAGE("&7Direction : HOME/PLOT/FACTION/XYZ"));
+                        player.sendMessage(MESSAGE("&7Direction : HOME/PLOT/GUILD/GRAVE/XYZ"));
                         player.sendMessage(MESSAGE("&7Name : le nom de votre home, de votre parcelle ..."));
                         player.sendMessage(MESSAGE("&7X Y Z : uniquement si Direction = XYZ"));
                         player.sendMessage(MESSAGE("&7ex : /xyz maMine 100 30 -150"));
                         return CommandResult.empty();
                 } 
                 
-                if(is.isPresent()){ player.setItemInHand(HandTypes.MAIN_HAND, is.get()); }
+                if(is.isPresent()){ 
+                    if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
+                        if(player.getItemInHand(HandTypes.MAIN_HAND).get().getItem().equals(COMPASS)){
+                            player.setItemInHand(HandTypes.MAIN_HAND, is.get()); 
+                        }else{
+                            player.sendMessage(MESSAGE("&eVous devez avoir une boussole dans votre main"));
+                        }
+                    }else{
+                        if(src.hasPermission("actus.magiccompass.create")) {
+                            player.setItemInHand(HandTypes.MAIN_HAND, is.get());
+                        }
+                    } 
+                }
                 return CommandResult.success();
             }else{
                 player.sendMessage(USAGE("/mc [Direction] [name] [X] [Y] [Z]"));
-                        player.sendMessage(MESSAGE("&7Direction : HOME/PLOT/FACTION/XYZ"));
+                        player.sendMessage(MESSAGE("&7Direction : HOME/PLOT/GUILD/GRAVE/XYZ"));
                         player.sendMessage(MESSAGE("&7Name : le nom de votre home, de votre parcelle ..."));
                         player.sendMessage(MESSAGE("&7X Y Z : uniquement si Direction = XYZ"));
                         player.sendMessage(MESSAGE("&7ex : /xyz maMine 100 30 -150"));

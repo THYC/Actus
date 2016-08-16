@@ -4,9 +4,9 @@ import java.util.List;
 import static net.teraoctet.actus.Actus.guildManager;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Config.GUILD_MAX_NUMBER_OF_MEMBER;
 import static net.teraoctet.actus.utils.Data.getGuild;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -19,6 +19,51 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import static net.teraoctet.actus.utils.MessageManager.GUIDE_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DELETE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DEPOSIT;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_INVIT;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LEAVE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_MOREACTIONS;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_REMOVEMEMBER;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_RENAME;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_SETGRADE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_WITHDRAWAL;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
+import static net.teraoctet.actus.utils.MessageManager.GUIDE_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DELETE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DEPOSIT;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_INVIT;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LEAVE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_MOREACTIONS;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_REMOVEMEMBER;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_RENAME;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_SETGRADE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_WITHDRAWAL;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
+import static net.teraoctet.actus.utils.MessageManager.GUIDE_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DELETE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DEPOSIT;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_INVIT;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LEAVE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_MOREACTIONS;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_REMOVEMEMBER;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_RENAME;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_SETGRADE;
+import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_WITHDRAWAL;
+import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 import static net.teraoctet.actus.utils.MessageManager.GUIDE_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -51,7 +96,7 @@ public class CommandGuild implements CommandExecutor {
                 //Menu des actions, affiché lorsque showActionsMenu
                 if(ctx.hasAny("displayaction")){
                     //Si le joueur a un grade suffisant dans la guild pour accéder à ce menu
-                    if(aplayer.getFactionRank() <= 3) {
+                    if(aplayer.getGuildRank() <= 3) {
                         builder.header(Text.builder().append(MESSAGE("&2Actions:")).toText())
                                 .contents(Text.builder().append(MESSAGE("&2+ &aAjouter un membre"))
                                         .onClick(TextActions.suggestCommand("/guild invit "))    
@@ -80,7 +125,7 @@ public class CommandGuild implements CommandExecutor {
                 //Menu affiché par défaut   
                 } else {
                     int guildSize = guildManager.getGuildPlayers(gguild.getID()).size();
-                    String playerRank = guildManager.rankIDtoString(aplayer.getFactionRank());
+                    String playerRank = guildManager.rankIDtoString(aplayer.getGuildRank());
                     String guildOwner = guildManager.getOwner(gguild.getID()).getName();
                     List listRank2 = guildManager.getGuildPlayers(gguild.getID(), 2);
                     List listRank3 = guildManager.getGuildPlayers(gguild.getID(), 3);

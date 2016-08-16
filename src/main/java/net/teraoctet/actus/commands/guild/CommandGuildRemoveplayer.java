@@ -2,8 +2,8 @@ package net.teraoctet.actus.commands.guild;
 
 import static net.teraoctet.actus.Actus.guildManager;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
-import static net.teraoctet.actus.utils.Data.getUUID;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getUUID;
 import static net.teraoctet.actus.utils.ServerManager.isOnline;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +31,7 @@ public class CommandGuildRemoveplayer implements CommandExecutor {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             if(guildManager.hasAnyGuild(aplayer)) {
-                int playerRank = aplayer.getFactionRank();
+                int playerRank = aplayer.getGuildRank();
                 if(playerRank <= 2) {
                     String targetName = ctx.<String> getOne("name").get();
                     String targetUUID = getUUID(targetName);
@@ -44,7 +44,7 @@ public class CommandGuildRemoveplayer implements CommandExecutor {
                         int player_id_guild = aplayer.getID_guild();
 
                         if(player_id_guild == target_id_guild) {
-                            if(playerRank == 2 && target_aplayer.getFactionRank() <= 2) {
+                            if(playerRank == 2 && target_aplayer.getGuildRank() <= 2) {
                                 src.sendMessage(CANNOT_EJECT_OWNER());
                             } else {
                                 target_aplayer.setID_guild(0);

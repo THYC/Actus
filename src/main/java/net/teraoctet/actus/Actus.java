@@ -23,7 +23,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.player.PlayerListener;
+import net.teraoctet.actus.player.PlayerManager;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.trace.TraceListener;
+import net.teraoctet.actus.trace.TraceManager;
+import net.teraoctet.actus.warp.WarpManager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -48,11 +56,10 @@ import org.spongepowered.api.plugin.PluginContainer;
         )
 
 public class Actus {
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        
+ 
+    public static void main() {
+        Logger logger = null;
+        logger.info("Actus");
     }
     
     @Inject private Logger logger;
@@ -62,14 +69,24 @@ public class Actus {
     public static GuildManager guildManager = new GuildManager();
     public static BookManager bookManager = new BookManager();
     public static ItemShopManager itemShopManager = new ItemShopManager();
+    public static PlayerManager playerManager = new PlayerManager();
+    public static WarpManager warpManager = new WarpManager();
+    public static TraceManager traceManager = new TraceManager();
     public Logger getLogger(){return logger;}  
     public static Game game;
     public static PluginContainer plugin;
     public static Map<Player, CooldownToTP> mapCountDown = new HashMap<>();
-    public static Map<Player,Boolean>modInput = new HashMap<>();
+    public static Map<Player,String>inputShop = new HashMap<>();
     public static Map<Player,Double>inputDouble = new HashMap<>();
+    public static Map<Player,String>action = new HashMap<>();
     public static final ArrayList<TPAH> Atpa = new ArrayList<>();
-                
+    public static Config config = new Config();
+    
+    @EventHandler
+    public void load (FMLInitializationEvent event) {
+       ModRecipes.init();
+   }
+   
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 	        
@@ -81,12 +98,14 @@ public class Actus {
         MessageManager.init();
         BookManager.init();
         ItemShopManager.init();
+        ModRecipes.init();
 
         getGame().getEventManager().registerListeners(this, new PlotListener());
         getGame().getEventManager().registerListeners(this, new PortalListener());
         getGame().getEventManager().registerListeners(this, new PlayerListener());
         getGame().getEventManager().registerListeners(this, new WorldListener());
         getGame().getEventManager().registerListeners(this, new EconomyListener());
+        getGame().getEventManager().registerListeners(this, new TraceListener());
         
         getGame().getCommandManager().register(this, new CommandManager().CommandActus, "actus");
 	getGame().getCommandManager().register(this, new CommandManager().CommandKill, "kill", "tue");
@@ -121,15 +140,31 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandShopCreate, "shopcreate", "shopc");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopPurchase, "shoppurchase", "shopp");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopSell, "shopsell", "shops");
+        getGame().getCommandManager().register(this, new CommandManager().CommandVanish, "vanish", "vh");
+        getGame().getCommandManager().register(this, new CommandManager().CommandEnchant, "enchant");
+        getGame().getCommandManager().register(this, new CommandManager().CommandRule, "rules", "rule", "rul");
+        getGame().getCommandManager().register(this, new CommandManager().CommandBank, "bank", "banque", "bk");
+        getGame().getCommandManager().register(this, new CommandManager().CommandShopList, "shoplist", "shopl");
+        getGame().getCommandManager().register(this, new CommandManager().CommandChest, "chest", "coffre", "lwc");
+        getGame().getCommandManager().register(this, new CommandManager().CommandNPC, "npc");
 
         getLogger().info("-----------------------------"); 
-	getLogger().info("...........Actus............."); 
-        getLogger().info(".....developped by THYC......"); 
+	getLogger().info("........... Actus ..........."); 
+        getLogger().info("developped by THYC and Votop"); 
         getLogger().info("-----------------------------"); 
     }
         
     @Listener
     public void onDisable(GameStoppingServerEvent event) {
+        for(Player player : game.getServer().getOnlinePlayers()){
+            APlayer aplayer = getAPlayer(player.getIdentifier());
+            long timeConnect = serverManager.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
+            long onlineTime = (long)aplayer.getOnlinetime() + timeConnect;
+            PlayerManager.removeFirstTime(player.getIdentifier());
+            aplayer.setLastonline(serverManager.dateToLong());
+            aplayer.setOnlinetime(onlineTime);
+            aplayer.update();
+        }
     	Data.commit();
     }
 

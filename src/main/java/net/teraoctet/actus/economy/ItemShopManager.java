@@ -3,6 +3,7 @@ package net.teraoctet.actus.economy;
 import java.io.File;
 import java.io.IOException;
 import static java.lang.Math.round;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.teraoctet.actus.utils.DeSerialize;
@@ -217,5 +218,30 @@ public class ItemShopManager {
             }
         }
         return Optional.empty();	
+    }
+    
+    /**
+     * Retourne la somme totale du CoinPurses
+     * @param coinPurses Object ItemStack CoinPurses a debiter
+     * @return Double
+     */
+    public Double getQteCoin(ItemStack coinPurses){
+	LoreData loreD = coinPurses.getOrCreate(LoreData.class).get();                
+	List<Text> lore = loreD.lore().get();
+        String[] arg = lore.get(1).toPlain().split(":");
+        Double coin = Double.valueOf(arg[1]);
+        return coin;	
+    }
+    
+    /**
+     * Retourne une liste des ItemShop actif
+     * @return Liste ItemShop
+     */
+    public List<String>getListItemShop(){
+        List<String> list = new ArrayList();
+        shop.getChildrenMap().entrySet().stream().forEach((node) -> {
+            list.add(node.getKey().toString());
+        });
+        return list;
     }
 }

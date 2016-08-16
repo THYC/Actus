@@ -4,7 +4,7 @@ import static net.teraoctet.actus.Actus.guildManager;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -27,7 +27,7 @@ public class CommandGuildWithdrawal implements CommandExecutor {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             if(guildManager.hasAnyGuild(aplayer)) {
-                if(aplayer.getFactionRank() <= 2){
+                if(aplayer.getGuildRank() <= 2){
                     double amount = ctx.<Double> getOne("amount").get();
                     Guild gguild = getGuild(aplayer.getID_guild());
                     double guildMoney = gguild.getMoney();

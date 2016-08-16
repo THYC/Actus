@@ -21,8 +21,9 @@ public class Permissions {
     }	
     
     public static String getPrefix(Player player) {
-        Subject subject = player.getContainingCollection().get(player.getUniqueId().toString());
-        return subject.getOption("prefix").orElse("");
+        Subject subject = player.getContainingCollection().get(player.getIdentifier());
+	String prefix = subject.getOption("prefix").orElse("");
+        return prefix;
     }
 	
     /*public static List<String> getGroups(Player player) {

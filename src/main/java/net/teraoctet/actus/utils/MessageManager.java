@@ -18,6 +18,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class MessageManager {
+    private static Text RULES;
     private static Text NO_PERMISSIONS;
     private static Text NO_CONSOLE;
     private static Text JOIN_MESSAGE;
@@ -130,12 +131,32 @@ public class MessageManager {
                 // Message général serveur
                 //-------------------------
                 
+                if(message.getNode("SERVER","RULES").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7- Ce serveur est en mode survie et PVP");
+                    msg.add("&7- Cele ne veut pas dire que tu peux faire n'importe quoi !");
+                    msg.add("&7- Tu doit etre courtois, aucune insulte n'est tol\351r\351");
+                    msg.add("&7- Tu ne dois pas d\351truire les constructions des autres joueurs");
+                    msg.add("&7- La TNT est autoris\351 uniquement sur ta parcelle");
+                    msg.add("&7- Tu ne dois pas utilis\351 des mods te facilitant la triche");
+                    msg.add("&7- N'oublie pas que ce serveur est avant tout un regroupement");
+                    msg.add("&7- de joueurs fan du jeu Minecraft dont le but est de jouer");
+                    msg.add("&7- dans un esprit de convivialit\351 et d'entraide.");
+                    msg.add("&7- Des commandes fun te sont disponibles pour te prot\351ger,");
+                    msg.add("&7- utilise les ! ou ne vient pas te plandre apr\350s !.");
+                    msg.add("&7- Commandes consultable ici : &bhttp://craft.teraoctet.net/actus/commandes\n");
+                    msg.add("&7- En cas de conflit, c'est le Staff qui tranche.");
+                    msg.add("&e- inscris-toi sur notre forum pour suivre les actus &bhttp://craft.teraoctet.net\n");
+                    message.getNode("SERVER","RULES").setValue(msg);
+                }
+                
                 if(message.getNode("SERVER","JOIN_MESSAGE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&6Bienvenue, &e%name%!");
                     msg.add("&6Tu es sur la map &e%world%!\n");
                     message.getNode("SERVER","JOIN_MESSAGE").setValue(msg);
                 }
+                
                 if(message.getNode("SERVER","EVENT_LOGIN_MESSAGE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7%name% a rejoint le serveur");
@@ -566,11 +587,11 @@ public class MessageManager {
                 //-------------------------
                 
                 msg = new ArrayList<>();
-                msg.add("&eVirement de &6%var1% \351meraudes &eeffectu\351 avec succès !");
+                msg.add("&eVirement de &6%var1% \351meraudes &eeffectu\351 avec succ\350s !");
                 message.getNode("ECONOMY", "DEPOSIT_SUCCESS").setValue(msg);
                 
                 msg = new ArrayList<>();
-                msg.add("&eRerait de &6%var1% \351meraudes &eeffectu\351 avec succès !");
+                msg.add("&eRerait de &6%var1% \351meraudes &eeffectu\351 avec succ\350s !");
                 message.getNode("ECONOMY", "WITHDRAW_SUCCESS").setValue(msg);
                 
                 msg = new ArrayList<>();
@@ -800,6 +821,8 @@ public class MessageManager {
     //-------------------------
     // Message général serveur
     //-------------------------
+    
+    public static Text RULES(){return format(RULES, "SERVER", "RULES");}
     
     public static Text JOIN_MESSAGE(Player player){return format(JOIN_MESSAGE, "SERVER", "JOIN_MESSAGE", player);}
     

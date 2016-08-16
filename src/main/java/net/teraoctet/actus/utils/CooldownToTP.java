@@ -5,13 +5,16 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
+import static net.teraoctet.actus.utils.MessageManager.ERROR;
+import static net.teraoctet.actus.utils.MessageManager.ERROR;
+import static net.teraoctet.actus.utils.MessageManager.ERROR;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
 
 public class CooldownToTP {

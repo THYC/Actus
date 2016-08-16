@@ -2,7 +2,7 @@ package net.teraoctet.actus.world;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.teraoctet.actus.utils.Data;
+import static net.teraoctet.actus.world.WorldManager.addWorld;
 import static org.spongepowered.api.Sponge.getGame;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -42,7 +42,7 @@ public class AWorld {
     }
 
     public void update() {
-        Data.addWorld(name, this);
+        addWorld(name, this);
         WorldManager.save(this);
         if(!getGame().getServer().getWorld(name).isPresent()) return;
         World world = getGame().getServer().getWorld(name).get();

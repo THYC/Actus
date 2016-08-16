@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.plot;
 
 import net.teraoctet.actus.plot.PlotManager;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.command.CommandResult;

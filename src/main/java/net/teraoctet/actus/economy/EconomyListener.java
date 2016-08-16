@@ -2,12 +2,14 @@ package net.teraoctet.actus.economy;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.Consumer;
+import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.itemShopManager;
+import net.teraoctet.actus.commands.economy.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.utils.DeSerialize;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
 import static net.teraoctet.actus.utils.MessageManager.WITHDRAW_SUCCESS;
@@ -28,14 +30,14 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.item.ItemTypes;
 
 public class EconomyListener {
-        
+    
+    private static final CallBackEconomy  cb  = new CallBackEconomy();  
     public EconomyListener() {}
 
     @Listener
@@ -60,6 +62,7 @@ public class EconomyListener {
                     player.sendMessage(MESSAGE("&7Voulez vous cr\351er un nouveau ItemShop ?"));
                     player.sendMessage(Text.builder("Clique ici pour lancer la cr\351ation d'un ItemShop").onClick(TextActions.runCommand("/shopcreate " + locationString)).color(TextColors.AQUA).build()); 
                     player.sendMessage(MESSAGE("&l&e-------------------------"));
+                    event.setCancelled(true);
                 }
             }else{
                 if(itemShopManager.hasShop(loc) && aplayer.getLevel()!=10){
@@ -78,34 +81,47 @@ public class EconomyListener {
                         final ListValue<ItemEnchantment> enchantments = enchantmentData.enchantments();
                         String enchantment = "";
                         for (ItemEnchantment e : enchantments) {
-                            enchantment = enchantment + e.getEnchantment().getId() + "\n";
+                            enchantment = enchantment + e.getEnchantment().getId() + " / ";
                         }
                         enchantment = enchantment.replace("minecraft:", "");
                         Text text = Text.EMPTY;
                         
                         //on affiche le menu de transaction de l'item
+                        
+                        //--------
+                        //  ACHAT 
+                        //--------
                         if(is.get().getTransactType().contains("buy")){
+                            action.put(player, "shop");
                             text = 
-                                Text.builder()  .append(MESSAGE("&l&b   -----------------\n"))
-                                                .append(MESSAGE("&l&b     ItemShop \n"))
+                                Text.builder()  .append(MESSAGE("\n\n\n"))
+                                                .append(MESSAGE("&l&b   -----------------\n"))
+                                                .append(MESSAGE("&l&b         ItemShop \n"))
                                                 .append(MESSAGE("&l&b   -----------------\n"))
                                                 .append(MESSAGE("&e&o" + is.get().getTransactType() + " : &l&b" + name + "\n"))
-                                                .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n\n"))
-                                                .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n\n")).build().concat(
-                                Text.builder()  .append(MESSAGE("&bCliquer ici pour confirmer la transaction\n"))
-                                                .onClick(TextActions.runCommand("/shopsell " + locationString)).build());                          
-                            
-                        } else {                            
+                                                .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n"))
+                                                .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n")).build().concat(
+                                Text.builder()  .append(MESSAGE("&b - Clique ici pour vendre les items de ta main seulemeent\n"))
+                                                .onClick(TextActions.runCommand("/shopsell " + locationString)).build()).concat(  
+                                Text.builder()  .append(MESSAGE("&b - ici pour vendre tous les items present dans ton stuff\n\n"))
+                                                .onClick(TextActions.executeCallback(cb.callShopSellAll(locationString))).build());
+                        
+                        //--------
+                        //  VENTE 
+                        //--------
+                        } else {   
+                            action.put(player, "shop");
                             text = 
-                                Text.builder()  .append(MESSAGE("&l&b   -----------------\n"))
-                                                .append(MESSAGE("&l&b     ItemShop \n"))
+                                Text.builder()  .append(MESSAGE("\n\n\n"))
+                                                .append(MESSAGE("&l&b   -----------------\n"))
+                                                .append(MESSAGE("&l&b         ItemShop \n"))
                                                 .append(MESSAGE("&l&b   -----------------\n"))
                                                 .append(MESSAGE("&e&o" + is.get().getTransactType() + " : &l&b" + name + "\n"))
-                                                .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n\n"))
-                                                .append(MESSAGE("&l&0Enchantments :\n"))
-                                                .append(MESSAGE("&4" + enchantment + "\n"))
-                                                .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n\n")).build().concat(
-                                Text.builder()  .append(MESSAGE("&bCliquer ici pour confirmer la transaction\n"))
+                                                .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n"))
+                                                .append(MESSAGE("&l&eEnchantments :\n"))
+                                                .append(MESSAGE("&b" + enchantment + "\n"))
+                                                .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n")).build().concat(
+                                Text.builder()  .append(MESSAGE("&b    Cliquer ici pour confirmer la transaction\n"))
                                                 .onClick(TextActions.runCommand("/shoppurchase " + locationString)).build());        
                         }
                         
@@ -208,62 +224,48 @@ public class EconomyListener {
                                 
                                 //On affiche le menu bank pour un retrait au joueur
                                 Text text = 
-                                        Text.builder()  .append(MESSAGE("&l&b   -----------------\n"))
+                                        Text.builder()  .append(MESSAGE("\n\n\n"))
+                                                        .append(MESSAGE("&l&b   -----------------\n"))
                                                         .append(MESSAGE("&l&b     RETRAIT \n"))
                                                         .append(MESSAGE("&l&b   -----------------\n\n"))
                                                         .append(MESSAGE("&b&oClique sur un des 4 choix\n")).build().concat(
                                         Text.builder()  .append(MESSAGE("&e[1] Retrait de 10 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(1,10.0))).build()).concat(
+                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(1,10.0))).build()).concat(
                                         Text.builder()  .append(MESSAGE("&e[2] Retrait de 20 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(1,20.0))).build()).concat(
+                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(1,20.0))).build()).concat(
                                         Text.builder()  .append(MESSAGE("&e[3] Retrait de 30 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(1,30.0))).build()).concat(
+                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(1,30.0))).build()).concat(
                                         Text.builder()  .append(MESSAGE("&e[4] &bje veux saisir la somme\n\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(2,0.0))).build());
+                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(2,0.0))).build());
                                 player.sendMessage(text);
                             }
                         }
                         
                         //on verifie si le joueur a cliqué sur un panneau depot
                         if (txt2.equals(MESSAGE("&o&1Depot"))){
-                                
-                            //on verifie si il y a eu une demande de saisie
-                            Optional<Double>coin;
-                            if(inputDouble.containsKey(player)){
-                                coin = Optional.of(inputDouble.get(player));
-                                if(coin.isPresent()){
-
-                                    //si une valeur a été saisie précédemment on effectue le versement et on sort
-                                    if(coin.get() != 0.0){
-                                        int coinInt = coin.get().intValue();
-                                        if(aplayer.getMoney()> coinInt){
-                                            aplayer.debitMoney(coinInt);
-                                            ItemStack is = ItemStack.of(ItemTypes.EMERALD, coinInt);
-                                            player.getInventory().offer(is);
-                                            inputDouble.remove(player);
-                                            player.sendMessages(WITHDRAW_SUCCESS(String.valueOf(coinInt)));
-                                            return;
-                                        }else{
-                                            player.sendMessage(MISSING_BALANCE());
-                                        }
-                                    }                                    
+                            
+                            //on verifie si le joueur a une bourse en main
+                            if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
+                                if(itemShopManager.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
+                                    Double depot = itemShopManager.getQteCoin(player.getItemInHand(HandTypes.MAIN_HAND).get());
+                                    aplayer.creditMoney(depot);
+                                    player.sendMessages(DEPOSIT_SUCCESS(String.valueOf(depot)));
+                                    player.setItemInHand(HandTypes.MAIN_HAND,null);
+                                    return;
                                 }
                             }
-
+         
                             //on affiche le menu bank pour un depot au joueur
                             Text text = 
-                                    Text.builder()  .append(MESSAGE("&l&b   -----------------\n"))
+                                        Text.builder()  .append(MESSAGE("\n\n\n"))
+                                                        .append(MESSAGE("&l&b   -----------------\n"))
                                                         .append(MESSAGE("&l&b     DEPOT \n"))
                                                         .append(MESSAGE("&l&b   -----------------\n\n"))
-                                                        .append(MESSAGE("&b&oClique sur un des 4 choix\n")).build().concat(
-                                        Text.builder()  .append(MESSAGE("&e[1] Depot des \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(1,10.0))).build()).concat(
-                                        Text.builder()  .append(MESSAGE("&e[2] Depot de toutes les \351meraude(s) situés dans mon stuff\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(1,20.0))).build()).concat(
-                                        Text.builder()  .append(MESSAGE("&e[3] Retrait de 30 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(1,30.0))).build()).concat(
-                                        Text.builder()  .append(MESSAGE("&e[4] &bje veux saisir la somme\n\n"))
-                                                        .onClick(TextActions.executeCallback(callBank(2,0.0))).build());
+                                                        .append(MESSAGE("&b&oClique sur un des 2 choix\n")).build().concat(
+                                        Text.builder()  .append(MESSAGE("&e[1] Depot des \351meraude(s) situ\351 dans ma main\n"))
+                                                        .onClick(TextActions.executeCallback(cb.callBankDepot(1))).build()).concat(
+                                        Text.builder()  .append(MESSAGE("&e[2] Depot de toutes les \351meraude(s) situ\351s dans mon stuff\n"))
+                                                        .onClick(TextActions.executeCallback(cb.callBankDepot(2))).build());
                             player.sendMessage(text);
                             
                         }
@@ -271,25 +273,5 @@ public class EconomyListener {
                 } 
             }
         }
-    }
-    
-    private Consumer<CommandSource> callBank(Integer type, double coin) {
-        /*----------------------------------------------*/
-        /* Confirmation de la transaction bancaire      */
-        /*----------------------------------------------*/
-	return (CommandSource src) -> {
-            Player player = (Player)src;
-            switch (type){
-                case 1: //retrait de sommes prédéfini
-                    inputDouble.put(player, coin);
-                    src.sendMessage(MESSAGE("&eMaintenant cliques de nouveau sur le panneau pour confirmer le retrait de " + coin + " \351meraude(s)"));
-                    src.sendMessage(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes"));
-                    break;
-                case 2: //retrait saisie par le joueur
-                    inputDouble.put(player, 0.0);
-                    src.sendMessage(MESSAGE("&eTapes la somme voulu :"));
-                    break;
-            }
-        };
     }
 }

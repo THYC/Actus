@@ -4,18 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.addUUID;
+import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.removeUUID;
 import net.teraoctet.actus.utils.Home;
-import static net.teraoctet.actus.utils.Data.addAPlayer;
-import static net.teraoctet.actus.utils.Data.addUUID;
-import static net.teraoctet.actus.utils.Data.removeAPlayer;
-import static net.teraoctet.actus.utils.Data.removeUUID;
 import net.teraoctet.actus.utils.ServerManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import static net.teraoctet.actus.utils.Data.queue;
-import static net.teraoctet.actus.utils.Data.queue;
-import static net.teraoctet.actus.utils.Data.queue;
-import static net.teraoctet.actus.utils.Data.queue;
 import static net.teraoctet.actus.utils.Data.queue;
 
 public class APlayer{
@@ -127,7 +123,7 @@ public class APlayer{
     public String getJail() { return jail; }
     public double getTimejail() { return timejail; }
     public int getID_guild() { return id_guild; }
-    public int getFactionRank() { return guild_rank; }
+    public int getGuildRank() { return guild_rank; }
     public Optional<Home> getHome(String name) { 
         if(homes == null) homes = new HashMap<>(); 
         if(homes.containsKey(name)){

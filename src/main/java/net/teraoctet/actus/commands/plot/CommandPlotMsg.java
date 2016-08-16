@@ -6,7 +6,7 @@ import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;

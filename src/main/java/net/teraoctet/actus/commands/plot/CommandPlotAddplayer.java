@@ -3,9 +3,11 @@ package net.teraoctet.actus.commands.plot;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayerName;
+import static net.teraoctet.actus.player.PlayerManager.isAPlayer;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -30,7 +32,7 @@ public class CommandPlotAddplayer implements CommandExecutor {
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
-                plot = plotManager.getPlot(plotName);                
+                plot = plotManager.getPlot(plotName);  
             } else {
                 plot = plotManager.getPlot(player.getLocation());
             }
@@ -46,14 +48,16 @@ public class CommandPlotAddplayer implements CommandExecutor {
             }
 
             if(ctx.getOne("player").isPresent()){
-                Player target = ctx.<Player> getOne("player").get();  
-                if (target == null){
-                    player.sendMessage(MESSAGE("&e" + target + " &7 doit \352tre connect\351 pour l'ajouter"));
+                String opttarget = ctx.<String> getOne("player").get();  
+                if (!isAPlayer(opttarget)){
+                    player.sendMessage(MESSAGE("&e" + opttarget + " &7 n'est pas un joueur, v\351rifie l'orthographe"));
                     return CommandResult.empty();
                 }
-                plot.get().setUuidAllowed(plot.get().getUuidAllowed() + " " + target.getUniqueId().toString());
-                player.sendMessage(MESSAGE("&e" + target.getName() + " &7 a \351t\351 ajout\351 à la liste des habitants"));
-                target.sendMessage(MESSAGE("&7Vous \352tes maintenant habitant de &e" + plot.get().getName()));
+                Optional<APlayer> target = getAPlayerName(opttarget);
+                plot.get().setUuidAllowed(plot.get().getUuidAllowed() + " " + target.get().getUUID());
+                plot.get().update();
+                player.sendMessage(MESSAGE("&e" + target.get().getName() + " &7 a \351t\351 ajout\351 a la liste des habitants"));
+                target.get().sendMessage(MESSAGE("&7Vous \352tes maintenant habitant de &e" + plot.get().getName()));
                 return CommandResult.success();
             } else {
                 player.sendMessage(USAGE("/plot addplayer <playerName> [nomParcelle]"));

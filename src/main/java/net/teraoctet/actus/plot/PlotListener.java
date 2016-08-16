@@ -4,12 +4,12 @@ import java.util.Optional;
 import net.teraoctet.actus.Actus;
 
 import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Config.DISPLAY_PLOT_MSG_FOR_OWNER;
 import org.spongepowered.api.block.BlockSnapshot;
-import static org.spongepowered.api.block.BlockTypes.AIR;
 import static org.spongepowered.api.block.BlockTypes.FIRE;
 import static org.spongepowered.api.block.BlockTypes.FLOWING_LAVA;
 import static org.spongepowered.api.block.BlockTypes.FLOWING_WATER;
@@ -18,7 +18,6 @@ import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
-import org.spongepowered.api.entity.explosive.Explosive;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -50,6 +49,30 @@ import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static org.spongepowered.api.block.BlockTypes.LAVA;
+import static org.spongepowered.api.block.BlockTypes.WATER;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.entity.IgniteEntityEvent;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
+import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
+import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
+import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 
 public class PlotListener {
         
@@ -75,7 +98,7 @@ public class PlotListener {
             if(itemInHand.isPresent()){
                 if(itemInHand.get().getItem() == WOODEN_SHOVEL){
                     if (plot.isPresent()) {
-                        player.sendMessage(PLOT_INFO(player,plot.get().getNameAllowed(),plot.get().getNameOwner(),plot.get().getName()));
+                        player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
                             PlotManager plotPlayer = PlotManager.getSett(player);
                             plotPlayer.setBorder(1, loc);
@@ -98,7 +121,7 @@ public class PlotListener {
             if(itemInHand.isPresent()){
                 if(itemInHand.get().getItem() == WOODEN_SHOVEL){
                     if (plot.isPresent()) {
-                        player.sendMessage(PLOT_INFO(player,plot.get().getNameAllowed(),plot.get().getNameOwner(),plot.get().getName()));
+                        player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
                             PlotManager plotPlayer = PlotManager.getSett(player);
                             plotPlayer.setBorder(2, loc);
@@ -139,7 +162,7 @@ public class PlotListener {
                             int cout = Integer.valueOf(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain());
                             if(!plotManager.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
                                 player.sendMessage(MESSAGE("&eCette parcelle n'existe plus"));
-                                b.getLocation().get().removeBlock();
+                                b.getLocation().get().removeBlock(Cause.of(NamedCause.source(player)));
                                 event.setCancelled(true);
                                 return;
                             }
@@ -181,6 +204,10 @@ public class PlotListener {
                 player.sendMessage(PLOT_PROTECTED());
                 player.sendMessage(MESSAGE(String.valueOf(plot.get().getNoInteract())));
                 event.setCancelled(true);
+            }else{
+                if(plotManager.hasTag(loc, plot.get())){
+                    plotManager.remTag(plot.get());
+                }
             }
         }
     }
@@ -269,6 +296,11 @@ public class PlotListener {
                     aplayer.getLevel() != 10){
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
+            }else{
+                if(plotManager.hasTag(loc, plot.get())){
+                    event.setCancelled(true);
+                    plotManager.remTag(plot.get());
+                }
             }
         }
     }
@@ -306,27 +338,47 @@ public class PlotListener {
     
     @Listener
     public void onFluidBlock(ChangeBlockEvent.Modify event) {
-        if(event.getTransactions().contains(FLOWING_WATER) || event.getTransactions().contains(FLOWING_LAVA)){
-            Optional<Player> optPlayer = event.getCause().first(Player.class);
-            if (!optPlayer.isPresent()) {
-                return;
-            }
-            Player player = optPlayer.get();
-            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            Transaction<BlockSnapshot> block = event.getTransactions().get(0);
-
+        //Actus.plugin.getLogger().info(event.getTransactions().toString());
+        if(event.getTransactions().contains(FLOWING_WATER) || event.getTransactions().contains(WATER)
+                || event.getTransactions().contains(FLOWING_LAVA) || event.getTransactions().contains(LAVA)){
+            //Optional<Player> optPlayer = event.getCause().first(Player.class);
+            //if (optPlayer.isPresent()) {
+                //Player player = optPlayer.get();
+               // APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+                Transaction<BlockSnapshot> block = event.getTransactions().get(0);
+            //}
             Optional<Location<World>> optLoc = block.getOriginal().getLocation();
             Location loc = optLoc.get();
 
             Optional<Plot> plot = plotManager.getPlot(loc);
             if (plot.isPresent()){
-                if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
+                //if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
                     //player.sendMessage(PLOT_PROTECTED());
-                    player.sendMessage(MESSAGE("modify"));
+                    Actus.plugin.getLogger().info("modify");
+                    block.setCustom(block.getOriginal());
                     event.setCancelled(true);
-                }
+                //}
             }
         }
+    }
+    
+    @Listener
+    public void onBlockStartBurn(IgniteEntityEvent e){
+                
+                Entity b = e.getTargetEntity();
+                Cause ignit = e.getCause(); 
+                if (b == null){
+                               return;
+                }
+                
+                plugin.getLogger().info("Is BlockIgniteEvent event. Canceled? " + e.isCancelled());
+                
+                if (ignit.first(Player.class).isPresent()){
+                        Player p = ignit.first(Player.class).get();                                   
+                        e.setCancelled(true);
+                }else{
+                    e.setCancelled(true);
+                }
     }
     
     @Listener
@@ -335,22 +387,31 @@ public class PlotListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         Optional<Plot> plot = plotManager.getPlot(loc);
-        if (plot.isPresent()){            
+        if (plot.isPresent()){   
             if(block.getFinal().getState().getType().equals(FIRE) && plot.get().getNoFire() == 1){    
                 Actus.plugin.getLogger().info("stop");
-                //block.getDefault().getLocation().get().setBlock(block.getOriginal().getState());
-                block.setCustom(block.getOriginal());
-                //event.setCancelled(true);
-                return;
+                Actus.plugin.getLogger().info(block.getOriginal().getState().getType().getName());
+                if(block.getOriginal().getState().getType().equals(FIRE)){    
+                    Actus.plugin.getLogger().info("stop2");
+                    event.getTransactions().stream().forEach((bt) -> {bt.setCustom(BlockSnapshot.NONE);});
+                    event.setCancelled(true);
+                }else{
+                    event.getTransactions().stream().forEach((bt) -> {bt.setCustom(bt.getOriginal());});
+                    event.setCancelled(true);
+                }
             }
+            
                         
-            Optional<Player> optPlayer = event.getCause().first(Player.class);
+            /*Optional<Player> optPlayer = event.getCause().first(Player.class);
             Optional<Explosive> optExplosive = event.getCause().first(Explosive.class);
             
-            if(block.getFinal().getState().getType() == AIR && block.getOriginal().getState().getType() != FLOWING_LAVA && 
-            block.getOriginal().getState().getType() != FLOWING_WATER && !optPlayer.isPresent() && !optExplosive.isPresent() && plot.get().getNoFire() == 1){
-                event.setCancelled(true);   
-            }
+            if(block.getFinal().getState().getType().equals(AIR) && !block.getOriginal().getState().getType().equals(FLOWING_LAVA) && 
+            !block.getOriginal().getState().getType().equals(FLOWING_WATER) && !optPlayer.isPresent() && !optExplosive.isPresent() && plot.get().getNoFire() == 1){
+                Actus.plugin.getLogger().info("fire2");
+                for (Transaction<BlockSnapshot> bt:event.getTransactions()){
+                    bt.setCustom(bt.getOriginal());                    
+                }
+            }*/
         }
     }
         

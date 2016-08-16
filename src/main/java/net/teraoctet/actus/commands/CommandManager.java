@@ -1,5 +1,10 @@
 package net.teraoctet.actus.commands;
 
+import net.teraoctet.actus.commands.chest.CommandChestAdd;
+import net.teraoctet.actus.commands.chest.CommandChest;
+import net.teraoctet.actus.commands.chest.CommandChestInfo;
+import net.teraoctet.actus.commands.chest.CommandChestRemove;
+import net.teraoctet.actus.commands.economy.CommandBank;
 import net.teraoctet.actus.commands.economy.CommandSignBank;
 import net.teraoctet.actus.commands.portal.CommandPortalList;
 import net.teraoctet.actus.commands.portal.CommandPortalMsg;
@@ -37,8 +42,10 @@ import net.teraoctet.actus.commands.plot.CommandPlotLevel;
 import net.teraoctet.actus.commands.plot.CommandPlotTP;
 import net.teraoctet.actus.commands.economy.CommandSetName;
 import net.teraoctet.actus.commands.economy.CommandShopCreate;
+import net.teraoctet.actus.commands.economy.CommandShopList;
 import net.teraoctet.actus.commands.economy.CommandShopPurchase;
 import net.teraoctet.actus.commands.economy.CommandShopSell;
+import net.teraoctet.actus.commands.plot.CommandPlotTag;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
@@ -156,7 +163,7 @@ public class CommandManager {
                 .permission("actus.plot.addplayer") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
+                        GenericArguments.optional(GenericArguments.string(Text.of("player"))),
                         GenericArguments.optional(GenericArguments.string(Text.of("name")))))
                 .executor(new CommandPlotAddplayer()) 
                 .build();
@@ -223,6 +230,12 @@ public class CommandManager {
                 .executor(new CommandPlotLevel()) 
                 .build(); 
         
+        public CommandSpec CommandPlotTag = CommandSpec.builder()
+                .description(Text.of("/plot tag")) 
+                .permission("actus.plot.tag") 
+                .executor(new CommandPlotTag()) 
+                .build(); 
+        
         public CommandSpec CommandPlot = CommandSpec.builder()
                 .description(Text.of("/plot")) 
                 .permission("actus.plot") 
@@ -240,6 +253,7 @@ public class CommandManager {
                 .child(CommandPlotMsg, "msg")
                 .child(CommandPlotTP, "tp")
                 .child(CommandPlotLevel, "level")
+                .child(CommandPlotTag, "tag", "borne", "balise")
                 .executor(new CommandPlot())
                 .build();
 
@@ -611,5 +625,77 @@ public class CommandManager {
                 .description(Text.of("/tpaccept"))
                 .permission("actus.tpa")
                 .executor(new CommandTPaccept())
+                .build();
+        
+        public CommandSpec CommandVanish = CommandSpec.builder()
+                .description(Text.of("/vanish [player]"))
+                .permission("actus.vanish")
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("target")))))
+                .executor(new CommandVanish())
+                .build();
+        
+        public CommandSpec CommandEnchant = CommandSpec.builder()
+                .description(Text.of("/enchant <enchantement> <level> [player]"))
+                .permission("actus.enchant")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(Text.of("enchantment"))),
+                    GenericArguments.optional(GenericArguments.integer(Text.of("level"))),
+                GenericArguments.optional(GenericArguments.player(Text.of("target"))))
+                .executor(new CommandEnchant())
+                .build();
+        
+        public CommandSpec CommandRule = CommandSpec.builder()
+                .description(Text.of("/rule"))
+                .permission("actus.rule")
+                .executor(new CommandRule())
+                .build();
+        
+        public CommandSpec CommandBank = CommandSpec.builder()
+                .description(Text.of("/bank"))
+                .permission("actus.bank")
+                .executor(new CommandBank())
+                .build();
+        
+        public CommandSpec CommandShopList = CommandSpec.builder()
+                .description(Text.of("/shoplist"))
+                .permission("actus.admin.shoplist")
+                .executor(new CommandShopList())
+                .build();
+        
+        public CommandSpec CommandChestAdd = CommandSpec.builder()
+                .description(Text.of("/chest add [player]"))
+                .permission("actus.chest")
+                .arguments(GenericArguments.seq(
+                    GenericArguments.optional(GenericArguments.string(Text.of("target")))))
+                .executor(new CommandChestAdd())
+                .build();
+        
+        public CommandSpec CommandChestRemove = CommandSpec.builder()
+                .description(Text.of("/chest remove [player]"))
+                .permission("actus.chest")
+                .arguments(GenericArguments.seq(
+                    GenericArguments.optional(GenericArguments.string(Text.of("target")))))
+                .executor(new CommandChestRemove())
+                .build();
+        
+        public CommandSpec CommandChestInfo = CommandSpec.builder()
+                .description(Text.of("/chest info"))
+                .permission("actus.chest")
+                .executor(new CommandChestInfo())
+                .build();
+        
+        public CommandSpec CommandChest = CommandSpec.builder()
+                .description(Text.of("/chest")) 
+                .permission("actus.chest") 
+                .child(CommandChestAdd, "add", "lock")
+                .child(CommandChestRemove, "remove", "sup", "del")
+                .child(CommandChestInfo, "info", "inf")
+                .executor(new CommandChest())
+                .build();
+        
+        public CommandSpec CommandNPC = CommandSpec.builder()
+                .description(Text.of("/npc"))
+                .permission("actus.npc")
+                .executor(new CommandNPC())
                 .build();
 }

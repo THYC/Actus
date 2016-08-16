@@ -9,6 +9,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.world.BlockChangeFlag;
 
 public class Restore{
     
@@ -16,7 +17,7 @@ public class Restore{
     private Integer i = 0;
     private Task task = null;
     
-    public Restore(final List<Transaction<BlockSnapshot>> bs) { 
+    public Restore(final List<Transaction<BlockSnapshot>> bs) {
         this.bs = bs;
     }
     
@@ -26,7 +27,7 @@ public class Restore{
             
         task = taskBuilder
                 .execute(() -> {
-                    try{ bs.get(i).getOriginal().restore(true, false);} catch(Exception e) {}
+                    try{ bs.get(i).getOriginal().restore(true, BlockChangeFlag.ALL);} catch(Exception e) {}
                     i++;
                     if(i==bs.size()-1){ task.cancel();}
         })

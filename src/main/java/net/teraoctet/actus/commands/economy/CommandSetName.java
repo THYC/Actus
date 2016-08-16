@@ -38,7 +38,7 @@ public class CommandSetName implements CommandExecutor {
                     // on vérifie que le paramètre name a été renseigné sinon on prends la valeur itemType de l'objet ItemStack
                     if(name.isPresent()){item = "&4" + name.get();}else{item = "&4" + is.getItem().getName();} 
                     
-                    LoreData loreData = is.getOrCreate(LoreData.class).get();
+                    //LoreData loreData = is.getOrCreate(LoreData.class).get();
                     is.offer(Keys.DISPLAY_NAME, MESSAGE(item));
 
                     //List<Text> newLore = loreData.lore().get();

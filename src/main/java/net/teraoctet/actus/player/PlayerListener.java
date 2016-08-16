@@ -4,21 +4,24 @@ import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import static net.teraoctet.actus.Actus.bookManager;
 
 import static net.teraoctet.actus.Actus.inputDouble;
+import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.mapCountDown;
+import static net.teraoctet.actus.Actus.playerManager;
 import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plugin;
+import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import net.teraoctet.actus.utils.CooldownToTP;
-import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.addAPlayer;
 import static net.teraoctet.actus.utils.Data.commit;
-import static net.teraoctet.actus.utils.Data.getUUID;
-import static net.teraoctet.actus.utils.Data.getWorld;
-import static net.teraoctet.actus.utils.Data.removeAPlayer;
-import static net.teraoctet.actus.utils.Data.removeUUID;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getUUID;
+import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.removeUUID;
 import net.teraoctet.actus.utils.DeSerialize;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
 import net.teraoctet.actus.utils.SettingCompass;
 
 import static org.spongepowered.api.Sponge.getGame;
@@ -42,14 +45,12 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.event.filter.cause.Last;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import static org.spongepowered.api.item.ItemTypes.COMPASS;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.crafting.CraftingInventory;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.chat.ChatTypes;
@@ -66,6 +67,18 @@ import static net.teraoctet.actus.utils.MessageManager.NAME_CHANGE;
 import static net.teraoctet.actus.utils.MessageManager.FIRSTJOIN_BROADCAST_MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.EVENT_LOGIN_MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.world.WorldManager.getWorld;
+import org.spongepowered.api.Sponge;
+import static org.spongepowered.api.block.BlockTypes.CHEST;
+import org.spongepowered.api.data.Transaction;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import static org.spongepowered.api.item.ItemTypes.STICK;
+import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 public class PlayerListener {
     
@@ -92,15 +105,16 @@ public class PlayerListener {
         event.setMessageCancelled(true);
     	
         if(aplayer == null) {
-            aplayer = new APlayer(uuid, 0, name, "", 0, "", 20, "", "", System.currentTimeMillis(), System.currentTimeMillis(),"N",0,0,0);
+            aplayer = new APlayer(uuid, 0, name, "", 0, "", 20, "", "", 0, serverManager.dateToLong(),"N",0,0,0);
             aplayer.insert();
             commit();
             player.sendMessage(FIRSTJOIN_MESSAGE(player)); 
         } else {
             addAPlayer(aplayer.getUUID(), aplayer);
             player.sendMessage(JOIN_MESSAGE(player));
+            player.sendMessage(MESSAGE("&7Derniere connection : " + serverManager.longToDateString(aplayer.getLastonline())));
         }
-	
+	PlayerManager.addFirstTime(player.getIdentifier(), serverManager.dateToLong());
         APlayer player_uuid = getAPlayer(uuid);
         
         if(player_uuid != null && getUUID(name) == null) {
@@ -117,10 +131,15 @@ public class PlayerListener {
     public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
         Player player = (Player) event.getTargetEntity();
         APlayer aplayer = getAPlayer(player.getIdentifier());
-        aplayer.setLastonline(System.currentTimeMillis());
+        long timeConnect = serverManager.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
+        long onlineTime = (long)aplayer.getOnlinetime() + timeConnect;
+        PlayerManager.removeFirstTime(player.getIdentifier());
+        aplayer.setLastonline(serverManager.dateToLong());
+        aplayer.setOnlinetime(onlineTime);
+        aplayer.update();
         event.setMessage(EVENT_DISCONNECT_MESSAGE(player));
     }
-    
+        
     //-Credits : 
     //CommandLogger : https://github.com/prism/CommandLogger
     //Author : viveleroi
@@ -153,12 +172,38 @@ public class PlayerListener {
             String smessage = event.getOriginalMessage().toPlain();
             smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
             try{
-            Double d = Double.valueOf(smessage);
-            inputDouble.replace(player, d);
-            event.setMessage(MESSAGE("&eMaintenant cliques de nouveau sur le panneau pour confirmer/n")
+                Double d = Double.valueOf(smessage);
+                if(d==0){
+                    inputDouble.remove(player);
+                    player.sendMessage(MESSAGE("&bL'action a \351t\351 annul\351"));
+                    event.clearMessage();
+                    return;
+                }
+                inputDouble.replace(player, d);
+                event.setMessage(MESSAGE("&eMaintenant cliques de nouveau sur le panneau pour confirmer/n")
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
             }catch(Exception ex){
-                player.sendMessage(MESSAGE("&bNOOB uniquement des chiffres ! recommences :"));
+                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :"));
+                player.sendMessage(MESSAGE("&bTapes 0 pour annuler"));
+                event.clearMessage();
+            }
+        }
+        if(inputShop.containsKey(player)){
+            String smessage = event.getOriginalMessage().toPlain();
+            smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
+            try{
+                Double d = Double.valueOf(smessage);
+                if(d==0){
+                    inputShop.remove(player);
+                    player.sendMessage(MESSAGE("&bL'action a \351t\351 annul\351"));
+                    event.clearMessage();
+                    return;
+                }
+                Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
+                event.clearMessage();
+            }catch(Exception ex){
+                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :"));
+                player.sendMessage(MESSAGE("&bTapes 0 pour annuler"));
                 event.clearMessage();
             }
         }
@@ -170,43 +215,37 @@ public class PlayerListener {
         smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
         Text message = MESSAGE(/*Permissions.getPrefix(player) +*/ "&a[" + player.getName() + "] &7" + smessage);
         Text prefixWorld = MESSAGE(getWorld(player.getWorld().getName()).getPrefix()) ;
-        Text newMessage = prefixWorld.builder().append(message).build();
+        Text newMessage = Text.builder().append(message).build();
         event.setMessage(newMessage);
     }
     
     @Listener
-    public void onPlayerCraft(CraftingInventory event, @First Player player)
+    public void onPlayerCraft(ClickInventoryEvent event)
     {
-        getGame().getServer().getConsole().sendMessage(MESSAGE("crafting"));
-        if(event.contains(COMPASS)){
-            getGame().getServer().getConsole().sendMessage(MESSAGE("crafting"));
+        List<SlotTransaction> slots = event.filter(Predicate.isEqual(STICK));
+        
+        for(SlotTransaction slot : slots){
+            //getGame().getServer().getConsole().sendMessage(MESSAGE(slot.getSlot().slots().toString()));
         }
+        //getGame().getServer().getConsole().sendMessage(MESSAGE("crafting"));
+        //if(event.contains(COMPASS)){
+            //getGame().getServer().getConsole().sendMessage(MESSAGE("crafting"));
+        //}
     }
     
     @Listener
     public void onPlayerCraft2(DropItemEvent.Dispense event, @First Player player)
     {
-        getGame().getServer().getConsole().sendMessage(MESSAGE("dispense"));
+        player.sendMessage(MESSAGE("onPlayerCraft2 dispense"));
+        getGame().getServer().getConsole().sendMessage(MESSAGE("onPlayerCraft2 dispense"));
         
-        getGame().getServer().getConsole().sendMessage(MESSAGE(event.getEntities().get(0).toString()));
+        //getGame().getServer().getConsole().sendMessage(MESSAGE("onPlayerCraft2 : " + event.getEntities().get(0).toString()));
         
     }
     
-    @Listener
+    /*@Listener
     public void onEntityDeath(DestructEntityEvent.Death event) {
-        //try{
-            //GServer.broadcast(event.getMessage().get());
-        //} catch(Exception e){}
-        
-        /*Optional<Player> optPlayer = event.getCause().first(Player.class);
-        if (optPlayer.isPresent()) {
-            Player player = optPlayer.get();
-            // The player caused the entity to die
-        } else {
-            // The entity died from a non-player cause
-        }*/
-        
-        
+
         Living living = event.getTargetEntity();
         if(living instanceof Player) {
             
@@ -220,16 +259,9 @@ public class PlayerListener {
             Optional<TileEntity> chestBlock = location.getTileEntity();
             
             TileEntity tileChest = chestBlock.get();
-            Chest chest =(Chest)tileChest;
-                       
-            //for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
-                //Optional<ItemStack> peek = slotInv.peek();
-                //if(peek.isPresent()){
-                   // chest.getInventory().offer(peek.get());
-                   // slotInv.clear();
-                //}
-            //}
             
+            Chest chest = (Chest) location.getTileEntity().get();
+                       
             
             Inventory inv = player.getInventory();
             List<ItemStack> isl = new ArrayList();
@@ -237,67 +269,70 @@ public class PlayerListener {
                 if(it.peek().isPresent()){
                     chest.getInventory().offer(it.peek().get());
                 }
-                //player.sendMessage(MESSAGE(it.peek().get().getItem().getName()));
+                
             }
         }
-    }
+    }*/
         
     @Listener
-    public void onPlayerDead(DestructEntityEvent.Death event, @Last Player player) {
-        if(event.getTargetEntity() instanceof Player == false) return;
-    	
-    	String lastdead = DeSerialize.location(player.getLocation());
-    	APlayer aplayer = Data.getAPlayer(player.getUniqueId().toString());
-    	aplayer.setLastdeath(lastdead);
-        aplayer.setLastposition(lastdead);
-    	aplayer.update();
-             
-        if (player.hasPermission("actus.grave")) {
-            
-            Location location = player.getLocation().add(0, -2, 0);
-            location.setBlockType(BlockTypes.CHEST);
-            Optional<TileEntity> chestBlock = location.getTileEntity();
-            
-            TileEntity tileChest = chestBlock.get();
-            Chest chest =(Chest)tileChest;
-                       
-            for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
-                Optional<ItemStack> peek = slotInv.peek();
-                if(peek.isPresent()){
-                    chest.getInventory().offer(peek.get());
-                    slotInv.clear();
-                }
-            }
-            
-            location = controlBlock(location);
-            location.setBlockType(STANDING_SIGN);  
-            Optional<TileEntity> signBlock = location.getTileEntity();
-            TileEntity tileSign = signBlock.get();
-            Sign sign=(Sign)tileSign;
-            Optional<SignData> opSign = sign.getOrCreate(SignData.class);
-                
-            SignData signData = opSign.get();
-            List<Text> rip = new ArrayList<>();
-            rip.add(MESSAGE("&5+++++++++++++"));
-            rip.add(MESSAGE("&o&5 Repose En Paix"));
-            rip.add(MESSAGE("&5&l" + player.getName()));
-            rip.add(MESSAGE("&5+++++++++++++"));
-            signData.set(Keys.SIGN_LINES,rip );
-            sign.offer(signData);
-               
-            /*actus.game.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    nb.getLocation().getBlock().setType(Material.AIR);
-                    player.sendMessage(formatMsg.format(conf.getStringYAML("messages.yml", "graveDespawn"),player));
-                    if (GraveListener.inventorys.size() > 0)
-                    {
-                        inventorys.remove(0);
+    public void onPlayerDead(DestructEntityEvent.Death event) {
+        Living living = event.getTargetEntity();
+        if(living instanceof Player) {  
+            Player player = (Player) living;
+
+            String lastdead = DeSerialize.location(player.getLocation());
+            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+            aplayer.setLastdeath(lastdead);
+            aplayer.setLastposition(lastdead);
+            aplayer.update();
+
+            if (player.hasPermission("actus.grave")) {
+
+                Location location = player.getLocation().add(0, -2, 0);
+                location.setBlockType(BlockTypes.CHEST,Cause.of(NamedCause.source(player)));
+                Optional<TileEntity> chestBlock = location.getTileEntity();
+
+                TileEntity tileChest = chestBlock.get();
+                Chest chest =(Chest)tileChest;
+
+                for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
+                    Optional<ItemStack> peek = slotInv.peek();
+                    if(peek.isPresent()){
+                        chest.getInventory().offer(peek.get());
+                        slotInv.clear();
                     }
                 }
-            }*/
+                
+                location = controlBlock(location);
+                location.setBlockType(STANDING_SIGN,Cause.of(NamedCause.source(player)));  
+                Optional<TileEntity> signBlock = location.getTileEntity();
+                TileEntity tileSign = signBlock.get();
+                Sign sign=(Sign)tileSign;
+                Optional<SignData> opSign = sign.getOrCreate(SignData.class);
+
+                SignData signData = opSign.get();
+                List<Text> rip = new ArrayList<>();
+                rip.add(MESSAGE("&5+++++++++++++"));
+                rip.add(MESSAGE("&o&5 Repose En Paix"));
+                rip.add(MESSAGE("&5&l" + player.getName()));
+                rip.add(MESSAGE("&5+++++++++++++"));
+                signData.set(Keys.SIGN_LINES,rip );
+                sign.offer(signData);
+
+                /*actus.game.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        nb.getLocation().getBlock().setType(Material.AIR);
+                        player.sendMessage(formatMsg.format(conf.getStringYAML("messages.yml", "graveDespawn"),player));
+                        if (GraveListener.inventorys.size() > 0)
+                        {
+                            inventorys.remove(0);
+                        }
+                    }
+                }*/
+            }
         
         }
     }
@@ -326,6 +361,27 @@ public class PlayerListener {
     }
     
     @Listener
+    public void onInteractLore(InteractBlockEvent event, @First Player player) {
+        BlockSnapshot b = event.getTargetBlock();                   
+        if(b.get(Keys.DISPLAY_NAME).isPresent()){
+            Optional<Text> displayName = b.get(Keys.DISPLAY_NAME);
+            if(!displayName.get().toPlain().contains(player.getName())){
+                player.sendMessage(MESSAGE("&eoups ! ce coffre est verouill\351 !"));
+                event.setCancelled(true);
+            }
+        }
+    }
+    
+    @Listener
+    public void onEntityInteract(InteractEntityEvent.Secondary event) {
+        Entity entity = event.getTargetEntity();
+        if(entity.get(Keys.REPRESENTED_ITEM).isPresent()) {
+            plugin.getLogger().info(entity.get(Keys.REPRESENTED_ITEM).get().getType().getName());
+        }
+    }
+                    
+    
+    @Listener
     public void onCompassInteract(InteractBlockEvent event, @First Player player) {
         Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
         SettingCompass sc = new SettingCompass();
@@ -333,8 +389,17 @@ public class PlayerListener {
         if (is.isPresent()) {
             // Event click droit
             if (event instanceof InteractBlockEvent.Secondary){
-                if(is.get().getItem().equals(COMPASS)){      
+                if(is.get().getItem().equals(COMPASS)){  
                     
+                    if(is.get().get(Keys.DISPLAY_NAME).isPresent()){
+                        if(is.get().get(Keys.ITEM_LORE).isPresent()){
+                            Optional<Text> displayName = is.get().get(Keys.DISPLAY_NAME);
+                            Optional<List<Text>> ist = is.get().get(Keys.ITEM_LORE);
+                            player.sendMessage(displayName.get());
+                            player.sendMessage(ist.get().get(0));
+                        }
+                    }
+                        
                     // si interact sur sign "Parcelle a vendre"
                     Optional<Location<World>> loc = event.getTargetBlock().getLocation();
                     if(loc.isPresent()){
@@ -459,7 +524,44 @@ public class PlayerListener {
                 mapCountDown.remove(player);
                 player.sendMessage(MESSAGE("&eCombat d\351tect\351: T\351l\351portation annul\351e"));
             }
+        }  
+    }
+    
+    @Listener
+    public void onPlaceChest(ChangeBlockEvent.Place event) {
+        Optional<Player> optPlayer = event.getCause().first(Player.class);
+        if (!optPlayer.isPresent()) {
+            return;
         }
+        Player player = optPlayer.get();
+        Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         
+        Optional<Location<World>> optLoc = block.getOriginal().getLocation();
+        Location loc = optLoc.get();
+        if(block.getFinal().getState().getType().equals(CHEST)){
+            Optional<Location> locChest = serverManager.locDblChest(loc);
+            if(locChest.isPresent()){
+                Optional<TileEntity> chest = locChest.get().getTileEntity();
+                if(chest.get().get(Keys.DISPLAY_NAME).isPresent()){
+                    String chestName = chest.get().get(Keys.DISPLAY_NAME).get().toPlain();
+                    String players[] = chestName.split(" ");
+                    if(!players[0].contains(player.getName())){
+                        player.sendMessage(MESSAGE("&bImpossible, le coffre \351xistant ne t'appartient pas !"));
+                        player.sendMessage(MESSAGE("&bDemande a &e" + players[0] + " &bpour placer ce coffre !"));
+                        event.setCancelled(true);
+                    }
+                    String chestName1 = "&b" + player.getName();
+                    Optional<TileEntity> chestBlock = loc.getTileEntity();
+                    TileEntity tileChest = chestBlock.get();
+                    tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
+                }
+            }else{
+                String chestName = "&b" + player.getName();
+                Optional<TileEntity> chestBlock = loc.getTileEntity();
+                TileEntity tileChest = chestBlock.get();
+                tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
+            }
+            
+        }
     }
 }

@@ -1,8 +1,8 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.NOT_FOUND;
@@ -45,6 +45,7 @@ public class CommandLevel implements CommandExecutor {
 
             aplayer = getAPlayer(player.getUniqueId().toString()); 
             aplayer.setLevel(level.get());
+            aplayer.update();
             src.sendMessage(MESSAGE("&6%name% est mont\351e au level %var1%",player,String.valueOf(level.get())));
             return CommandResult.success();
         }

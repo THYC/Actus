@@ -10,12 +10,12 @@ public class Home {
 	private int z;
 	
 	public Home(String uuid, String name, String world, int x, int y, int z) {
-		this.uuid = uuid;
-		this.name = name;
-		this.world = world;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+            this.uuid = uuid;
+            this.name = name;
+            this.world = world;
+            this.x = x;
+            this.y = y;
+            this.z = z;
 	}
 	
 	public void insert() {

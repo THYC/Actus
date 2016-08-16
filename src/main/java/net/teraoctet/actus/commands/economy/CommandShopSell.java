@@ -2,6 +2,7 @@ package net.teraoctet.actus.commands.economy;
 
 import static java.lang.Math.round;
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.economy.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -26,7 +27,12 @@ public class CommandShopSell implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.admin.shop")) {
             Player player = (Player) src;
-            
+            if(!action.containsKey(player)){
+                player.sendMessages(MESSAGE("&eVous n'avez pas de transaction en cours"));
+                player.sendMessages(MESSAGE("&eVous devez d'abord faire un click droit sur le Shop d'achat"));
+                return CommandResult.empty();
+            }
+            action.remove(player);
             Optional<String> locationString = ctx.<String> getOne("locationstring");
             Optional<ItemShop> itemShop = itemShopManager.getItemShop(locationString.get());
             if(itemShop.isPresent()){
@@ -48,7 +54,7 @@ public class CommandShopSell implements CommandExecutor {
                                     slotInv.clear();
                                     slotInv.offer(itemShopManager.addCoin(coin, peek.get()).get());
                                     player.setItemInHand(HandTypes.MAIN_HAND,null);
-                                    player.sendMessages(MESSAGE("&ela somme a ete ajoute a votre bourse :)"));
+                                    player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a votre bourse :)"));
                                     return CommandResult.success();
                                 }
                             }
@@ -61,7 +67,7 @@ public class CommandShopSell implements CommandExecutor {
                                     slotInv.clear();
                                     slotInv.offer(itemShopManager.addCoin(coin, peek.get()).get());
                                     player.setItemInHand(HandTypes.MAIN_HAND,null);
-                                    player.sendMessages(MESSAGE("&ela somme a ete ajoute a votre bourse :)"));
+                                    player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a ta bourse :)"));
                                     return CommandResult.success();
                                 }
                             }
@@ -71,7 +77,7 @@ public class CommandShopSell implements CommandExecutor {
                         player.setItemInHand(HandTypes.MAIN_HAND,itemShopManager.CoinPurses(player, coin).get());
                         return CommandResult.success();
                     } else {
-                        player.sendMessage(MESSAGE("&bVotre item ne correspond pas à la demande"));
+                        player.sendMessage(MESSAGE("&bTon item ne correspond pas a la demande"));
                         return CommandResult.success();
                     }
                 } else {

@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.economy;
 
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
@@ -19,8 +19,8 @@ public class CommandBank implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.")) {
             Player player = (Player)src;
-            APlayer gp = getAPlayer(player.getIdentifier());
-            player.sendMessage(MESSAGE(String.valueOf(gp.getMoney())));
+            APlayer aplayer = getAPlayer(player.getIdentifier());
+            player.sendMessage(MESSAGE("&6Tu disposes de " + String.valueOf(aplayer.getMoney()) + " Emeraude(s)"));
             return CommandResult.success();
         } 
         
@@ -28,7 +28,6 @@ public class CommandBank implements CommandExecutor {
             src.sendMessage(NO_CONSOLE());
         }
         
-        //si on arrive jusqu'ici c'est que la source n'a pas les permissions pour cette commande ou que quelque chose s'est mal passé
         else {
             src.sendMessage(NO_PERMISSIONS());
         }

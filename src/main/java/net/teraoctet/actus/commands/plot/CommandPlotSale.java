@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
 import org.spongepowered.api.block.BlockTypes;
@@ -30,6 +31,8 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 
 public class CommandPlotSale implements CommandExecutor {
        
@@ -47,7 +50,7 @@ public class CommandPlotSale implements CommandExecutor {
                 return CommandResult.empty();  
             }
 
-            Optional<Plot> plot = Optional.empty();
+            Optional<Plot> plot = plotManager.getPlot(player.getLocation());
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
@@ -59,20 +62,21 @@ public class CommandPlotSale implements CommandExecutor {
                     return CommandResult.empty();
                 }       
             } else {
-                plot = plotManager.getPlot(player.getLocation());
-                if (plot == null){
-                    player.sendMessage(MESSAGE("&7Vous devez renseigner le nom de la parcelle ou \352tre dessus"));
+                if (!plot.isPresent()){
+                    player.sendMessage(MESSAGE("&7Tu dois renseigner le nom de la parcelle ou \352tre dessus"));
                     player.sendMessage(USAGE("/plot sale <price> [plotName]"));
                     return CommandResult.empty(); 
                 }
             }
-
-            if (!plot.get().getUuidOwner().equalsIgnoreCase(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
-                player.sendMessage(ALREADY_OWNED_PLOT());
-                return CommandResult.empty();
+            
+            if(plot.isPresent()){
+                if (!plot.get().getUuidOwner().equalsIgnoreCase(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
+                    player.sendMessage(ALREADY_OWNED_PLOT());
+                    return CommandResult.empty();
+                }
             }
 
-            Location location = null;
+            Optional<Location> optlocation = Optional.empty();
 
             BlockRay<World> playerBlockRay = BlockRay.from(player).blockLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
@@ -82,17 +86,17 @@ public class CommandPlotSale implements CommandExecutor {
                 if (player.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.WALL_SIGN) || 
                         player.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.STANDING_SIGN)) 
                 { 
-                    location = currentHitRay.getLocation(); 
+                    optlocation = Optional.of(currentHitRay.getLocation()); 
                     break;
                 }                     
             } 
 
-            if (location == null){
-                location = player.getLocation();
-                location.setBlockType(STANDING_SIGN);  
+            if (!optlocation.isPresent()){
+                optlocation = Optional.of(player.getLocation());
+                optlocation.get().setBlockType(STANDING_SIGN,Cause.of(NamedCause.source(plugin)));  
             }
 
-            Optional<TileEntity> signBlock = location.getTileEntity();
+            Optional<TileEntity> signBlock = optlocation.get().getTileEntity();
             TileEntity tileSign = signBlock.get();
             Sign sign=(Sign)tileSign;
             Optional<SignData> opSign = sign.getOrCreate(SignData.class);
@@ -107,7 +111,7 @@ public class CommandPlotSale implements CommandExecutor {
             signData.set(Keys.SIGN_LINES,sale );
             sign.offer(signData);
 
-            plot.get().addSale(location);
+            plot.get().addSale(optlocation.get());
             Data.commit();
             return CommandResult.success();
         } 
