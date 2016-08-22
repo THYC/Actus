@@ -23,8 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.player.PlayerListener;
 import net.teraoctet.actus.player.PlayerManager;
@@ -47,21 +45,16 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 @Plugin(
-        id = "net.teraoctet.actus", 
+        id = "actus", 
         name = "Actus", 
         version = "0.1.0",
         description = "Server management plugin",
         url = "http://actus.teraoctet.net",
-        authors = {"thyc82"}
+        authors = {"thyc82","Votop"}
         )
 
 public class Actus {
- 
-    public static void main() {
-        Logger logger = null;
-        logger.info("Actus");
-    }
-    
+     
     @Inject private Logger logger;
     public static ServerManager serverManager = new ServerManager();
     public static PlotManager plotManager = new PlotManager();
@@ -81,12 +74,7 @@ public class Actus {
     public static Map<Player,String>action = new HashMap<>();
     public static final ArrayList<TPAH> Atpa = new ArrayList<>();
     public static Config config = new Config();
-    
-    @EventHandler
-    public void load (FMLInitializationEvent event) {
-       ModRecipes.init();
-   }
-   
+       
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 	        
@@ -98,7 +86,6 @@ public class Actus {
         MessageManager.init();
         BookManager.init();
         ItemShopManager.init();
-        ModRecipes.init();
 
         getGame().getEventManager().registerListeners(this, new PlotListener());
         getGame().getEventManager().registerListeners(this, new PortalListener());

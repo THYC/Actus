@@ -13,9 +13,6 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
-import static net.teraoctet.actus.utils.MessageManager.ERROR;
-import static net.teraoctet.actus.utils.MessageManager.ERROR;
-import static net.teraoctet.actus.utils.MessageManager.ERROR;
 
 public class CooldownToTP {
     

@@ -10,7 +10,6 @@ import static net.teraoctet.actus.Actus.bookManager;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.mapCountDown;
-import static net.teraoctet.actus.Actus.playerManager;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;

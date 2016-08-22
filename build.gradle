@@ -1,41 +1,10 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            url = 'https://oss.sonatype.org/content/groups/public' 
-    }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
-    }
+plugins {
+    id 'org.spongepowered.plugin' version '0.6'
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+group = 'net.teraoctet.actus'
 version = '0.1.0'
-group = "net.teraoctet.actus"
-archivesBaseName = "Actus"
-
-minecraft {
-    version = "1.10.2-12.18.1.2011"
-    runDir = "run"
-    mappings = "snapshot_20160518"
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        name 'Sponge maven repo'
-        url 'http://repo.spongepowered.org/maven'
-    }
-}
+description = 'Server management plugin'
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.13'

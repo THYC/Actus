@@ -3,7 +3,6 @@ package net.teraoctet.actus.utils;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.Optional;
 import java.util.UUID;
-import net.teraoctet.actus.Actus;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;

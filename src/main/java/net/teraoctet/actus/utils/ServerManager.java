@@ -148,14 +148,9 @@ public class ServerManager {
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
         
-        int year = 1900 + now.getYear();
-        int month = now.getMonth();
-        int day = now.getDate();
-        int h = now.getHours();
-        int mn = now.getMinutes();
-        int s = now.getSeconds();
+        cal.setTime(now);
+        cal.add(Calendar.YEAR, 1900);
         
-	cal.set(year, month, day, h, mn, s);
 	SimpleDateFormat simpleDate = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
 	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT+02"));
 	return simpleDate.format(cal.getTime());
@@ -168,15 +163,9 @@ public class ServerManager {
     public Long dateToLong(){
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
+        cal.setTime(now);
+        cal.add(Calendar.YEAR, 1900);
         
-        int year = 1900 + now.getYear();
-        int month = now.getMonth();
-        int day = now.getDate();
-        int h = now.getHours();
-        int mn = now.getMinutes();
-        int s = now.getSeconds();
-        
-	cal.set(year, month, day, h, mn, s);
 	return cal.getTimeInMillis();
     }
     

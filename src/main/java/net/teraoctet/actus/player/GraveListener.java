@@ -15,6 +15,7 @@ import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
+import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -22,6 +23,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.text.Text;
@@ -52,8 +54,7 @@ public class GraveListener {
                 for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
                     Optional<org.spongepowered.api.item.inventory.ItemStack> peek = slotInv.peek();
                     if(peek.isPresent()){
-                        //dh.copyFrom(player.getInventory().)
-                        //realChest.getContainers().;
+                        //chest.offer(ItemStack.class,peek.get());
                         slotInv.clear();
                     }
                 }
