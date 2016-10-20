@@ -78,7 +78,7 @@ public class CommandPlotSale implements CommandExecutor {
 
             Optional<Location> optlocation = Optional.empty();
 
-            BlockRay<World> playerBlockRay = BlockRay.from(player).blockLimit(10).build(); 
+            BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
             { 
                 BlockRayHit<World> currentHitRay = playerBlockRay.next(); 

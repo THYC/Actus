@@ -46,6 +46,7 @@ import net.teraoctet.actus.commands.economy.CommandShopList;
 import net.teraoctet.actus.commands.economy.CommandShopPurchase;
 import net.teraoctet.actus.commands.economy.CommandShopSell;
 import net.teraoctet.actus.commands.plot.CommandPlotTag;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
@@ -307,16 +308,19 @@ public class CommandManager {
                         GenericArguments.onlyOne(GenericArguments.string(Text.of("head")))))
                 .executor(new CommandHead())
                 .build();
-        
+                
         public CommandSpec CommandWorldCreate = CommandSpec.builder()
                 .description(Text.of("/worldCreate <name> <environment> <gamemode> <difficulty>"))
                 .permission("actus.admin.world.worldcreate")
                 .arguments(
-                    GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.string(Text.of("name"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("environment"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("gamemode"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("difficulty")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))), GenericArguments.flags()
+                        .valueFlag(GenericArguments.string(MESSAGE("dimension")),"d")
+                        .valueFlag(GenericArguments.string(MESSAGE("generator")),"g")
+                        .valueFlag(GenericArguments.string(MESSAGE("modifier")),"m")
+                        .valueFlag(GenericArguments.string(MESSAGE("seed")),"s")
+                        .valueFlag(GenericArguments.string(MESSAGE("gamemode")),"gm")
+                        .valueFlag(GenericArguments.string(MESSAGE("difficulty")),"di")
+                        .buildWith(GenericArguments.none()))
                 .executor(new CommandWorldCreate())
                 .build();
         
@@ -572,6 +576,14 @@ public class CommandManager {
                 .executor(new CommandSignHelp())
                 .build();
         
+        public CommandSpec CommandSignCmd = CommandSpec.builder()
+                .description(Text.of("/signcmd <cmd>"))
+                .permission("actus.admin.sign.cmd")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(Text.of("cmd"))))
+                .executor(new CommandSignCmd())
+                .build();
+        
         public CommandSpec CommandSignBank = CommandSpec.builder()
                 .description(Text.of("/signbank <type>"))
                 .permission("actus.admin.sign.bank")
@@ -581,10 +593,10 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandShopCreate = CommandSpec.builder()
-                .description(Text.of("/shopcreate <locationstring> <transacttype> <price> <qte>"))
+                .description(Text.of("/shopcreate <uuid> <transacttype> <price> <qte>"))
                 .permission("actus.admin.shop")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("locationstring"))),
+                    GenericArguments.optional(GenericArguments.string(Text.of("uuid"))),
                     GenericArguments.optional(GenericArguments.string(Text.of("transacttype"))),
                     GenericArguments.optional(GenericArguments.doubleNum(Text.of("price"))),
                     GenericArguments.optional(GenericArguments.integer(Text.of("qte"))))
@@ -592,18 +604,18 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandShopPurchase = CommandSpec.builder()
-                .description(Text.of("/shopcreate <locationstring> <transacttype> <price> <qte>"))
+                .description(Text.of("/shoppurchase <uuid>"))
                 .permission("actus.admin.shop")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("locationstring"))))
+                    GenericArguments.optional(GenericArguments.string(Text.of("uuid"))))
                 .executor(new CommandShopPurchase())
                 .build();
         
         public CommandSpec CommandShopSell = CommandSpec.builder()
-                .description(Text.of("/shopcreate <locationstring> <transacttype> <price> <qte>"))
+                .description(Text.of("/shopsell <uuid>"))
                 .permission("actus.admin.shop")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("locationstring"))))
+                    GenericArguments.optional(GenericArguments.string(Text.of("uuid"))))
                 .executor(new CommandShopSell())
                 .build();
         
@@ -698,4 +710,37 @@ public class CommandManager {
                 .permission("actus.npc")
                 .executor(new CommandNPC())
                 .build();
+        
+        public CommandSpec CommandSetSpawn = CommandSpec.builder()
+                .description(Text.of("/spawn set"))
+                .permission("actus.admin.setspawn")
+                .executor(new CommandSetspawn())
+                .build();
+        
+        public CommandSpec CommandSpawn = CommandSpec.builder()
+                .description(Text.of("/spawn")) 
+                .permission("actus.spawn") 
+                .child(CommandSetSpawn, "set")
+                .executor(new CommandSpawn())
+                .build();
+        
+        public CommandSpec CommandSetspawn = CommandSpec.builder()
+                .description(Text.of("/setspawn"))
+                .permission("actus.admin.setspawn")
+                .executor(new CommandSetspawn())
+                .build();
+        
+        public CommandSpec CommandButcher = CommandSpec.builder()
+                .description(Text.of("/butcher [worldName]"))
+                .permission("actus.butcher")
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("worldName")))))
+                .executor(new CommandButcher())
+                .build();
+        
+        public CommandSpec CommandTPR = CommandSpec.builder()
+                .description(Text.of("/tpr")) 
+                .permission("actus.tpr") 
+                .executor(new CommandTPR())
+                .build();
+        
 }

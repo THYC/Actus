@@ -5,9 +5,9 @@ import java.util.concurrent.TimeUnit;
 import static net.teraoctet.actus.Actus.plugin;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.Transaction;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.world.BlockChangeFlag;
 
@@ -27,12 +27,14 @@ public class Restore{
             
         task = taskBuilder
                 .execute(() -> {
-                    try{ bs.get(i).getOriginal().restore(true, BlockChangeFlag.ALL);} catch(Exception e) {}
+                    try { 
+                        bs.get(i).getOriginal().restore(true, BlockChangeFlag.ALL);
+                    } catch(Exception e) {}
                     i++;
                     if(i==bs.size()-1){ task.cancel();}
         })
                 /*.async()*/.delay(100, TimeUnit.MILLISECONDS)
-                .interval(50, TimeUnit.MILLISECONDS)
+                .interval(100, TimeUnit.MILLISECONDS)
                 .name("Restore")
                 .submit(plugin);
 

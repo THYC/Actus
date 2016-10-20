@@ -24,7 +24,7 @@ public class TraceManager {
                     + " AND y = " + loc.getY()
                     + " AND z = " + loc.getZ());
             
-            if (rs != null){
+            if (rs.isBeforeFirst()){
                 while (rs.next()){
                     trace = trace + 
                             "&bDate : &e" + serverManager.longToDateString(rs.getDouble("date")) + "\n" +

@@ -1,5 +1,8 @@
 package net.teraoctet.actus.commands;
 
+import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.OTHER_TELEPORTED_TO_WORLD;
 import static net.teraoctet.actus.utils.MessageManager.TELEPORTED_TO_WORLD;
@@ -15,6 +18,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
     
 public class CommandWorldTP implements CommandExecutor {
@@ -51,7 +55,11 @@ public class CommandWorldTP implements CommandExecutor {
                     //si [player] n'est pas renseigné, la source est ciblé (doit être un joueur)
                     if(!ctx.getOne("target").isPresent()) {
                         Player player = (Player)src;
+                        Location lastLocation = player.getLocation();
                         player.setLocation(world.getSpawnLocation());
+                        APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+                        aplayer.setLastposition(DeSerialize.location(lastLocation));
+                        aplayer.update();
                         player.offer(Keys.GAME_MODE, aworld.getGamemode());
                         src.sendMessage(TELEPORTED_TO_WORLD(player,worldName));
                         return CommandResult.success();
@@ -62,7 +70,11 @@ public class CommandWorldTP implements CommandExecutor {
                         if(src.hasPermission("actus.admin.world.worldtp")){
                             Player target = ctx.<Player> getOne("target").get();
                             if(target != null) {
+                                Location lastLocation = target.getLocation();
                                 target.setLocation(world.getSpawnLocation());
+                                APlayer aplayer = getAPlayer(target.getUniqueId().toString());
+                                aplayer.setLastposition(DeSerialize.location(lastLocation));
+                                aplayer.update();
                                 target.offer(Keys.GAME_MODE, aworld.getGamemode());
                                 src.sendMessage(OTHER_TELEPORTED_TO_WORLD(target,worldName));
                                 target.sendMessage(TELEPORTED_TO_WORLD(target,worldName));

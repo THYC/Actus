@@ -114,6 +114,11 @@ public class MessageManager {
     private static Text SHOP_BUY;
     private static Text WITHDRAW_SUCCESS;
     private static Text GUILD_MISSING_BALANCE;
+    private static Text BUTCHER;
+    private static Text GRAVE;
+    private static Text CHEST_LOCK;
+    private static Text LAST_CONNECT;
+    private static Text CLICK_TO_CONFIRM;
        
     public static File file = new File("config/actus/message.conf");
     public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
@@ -227,6 +232,27 @@ public class MessageManager {
                     manager.save(message);
                 }
                 
+                if(message.getNode("SERVER","BUTCHER").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&b%var1% &7a Entit\351es ont \351t\351 supprim\351es");
+                    message.getNode("SERVER","BUTCHER").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("SERVER","GRAVE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&eTombe de %name%");
+                    message.getNode("SERVER","GRAVE").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("SERVER","LAST_CONNECT").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7Derniere connection : %var1%");
+                    message.getNode("SERVER","LAST_CONNECT").setValue(msg);
+                    manager.save(message);
+                }
+                                
                 //-------------------------
                 // Message Exception/Error
                 //-------------------------
@@ -337,39 +363,51 @@ public class MessageManager {
                     manager.save(message);
                 }
                 
-                msg = new ArrayList<>();
-                msg.add("&e%name% &6a programm\351 l'orage sur &e%world%");
-                message.getNode("WEATHER-TIME","STORM_MESSAGE").setValue(msg);
-                manager.save(message);
+                if(message.getNode("WEATHER-TIME","STORM_MESSAGE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&e%name% &6a programm\351 l'orage sur &e%world%");
+                    message.getNode("WEATHER-TIME","STORM_MESSAGE").setValue(msg);
+                    manager.save(message);
+                }
                 
-                msg = new ArrayList<>();
-                msg.add("&e%name% &6a mis le jour sur &e%world%");
-                message.getNode("WEATHER-TIME","DAY_MESSAGE").setValue(msg);
-                manager.save(message);
+                if(message.getNode("WEATHER-TIME","DAY_MESSAGE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&e%name% &6a mis le jour sur &e%world%");
+                    message.getNode("WEATHER-TIME","DAY_MESSAGE").setValue(msg);
+                    manager.save(message);
+                }
                 
-                msg = new ArrayList<>();
-                msg.add("&e%name% &6a mis la nuit sur &e%world%");
-                message.getNode("WEATHER-TIME","NIGHT_MESSAGE").setValue(msg);
-                manager.save(message);
+                if(message.getNode("WEATHER-TIME","NIGHT_MESSAGE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&e%name% &6a mis la nuit sur &e%world%");
+                    message.getNode("WEATHER-TIME","NIGHT_MESSAGE").setValue(msg);
+                    manager.save(message);
+                }
                 
                 //-------------------------
-                // Message Faction
+                // Message Guild
                 //-------------------------
                 
-                msg = new ArrayList<>();
-                msg.add("&cVous n'\352tes dans aucune guild !");
-                message.getNode("GUILD","NO_GUILD").setValue(msg);
-                manager.save(message);
+                if(message.getNode("GUILD","NO_GUILD").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&cVous n'\352tes dans aucune guild !");
+                    message.getNode("GUILD","NO_GUILD").setValue(msg);
+                    manager.save(message);
+                }
                 
-                msg = new ArrayList<>();
-                msg.add("&cVous \352tes d\351j\340 dans une guild !");
-                message.getNode("GUILD","ALREADY_GUILD_MEMBER").setValue(msg);
-                manager.save(message);
+                if(message.getNode("GUILD","ALREADY_GUILD_MEMBER").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&cVous \352tes d\351j\340 dans une guild !");
+                    message.getNode("GUILD","ALREADY_GUILD_MEMBER").setValue(msg);
+                    manager.save(message);
+                }
                 
-                msg = new ArrayList<>();
-                msg.add("&cVotre rang dans la guild ne vous permet pas d'utiliser \347a !");
-                message.getNode("GUILD","WRONG_RANK").setValue(msg);
-                manager.save(message);
+                if(message.getNode("GUILD","WRONG_RANK").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&cVotre rang dans la guild ne vous permet pas d'utiliser \347a !");
+                    message.getNode("GUILD","WRONG_RANK").setValue(msg);
+                    manager.save(message);
+                }
                         
                 msg = new ArrayList<>();
                 msg.add("&c%var1% ne fait pas parti de votre guild !");
@@ -604,6 +642,13 @@ public class MessageManager {
                 message.getNode("ECONOMY","GUILD_MISSING_BALANCE").setValue(msg);
                 manager.save(message);
                 
+                if(message.getNode("ECONOMY","CLICK_TO_CONFIRM").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&eMaintenant cliques de nouveau sur le panneau pour confirmer/n");
+                    message.getNode("ECONOMY","CLICK_TO_CONFIRM").setValue(msg);
+                    manager.save(message);
+                }
+                
                 //-------------------------
                 // Message TELEPORTATION
                 //-------------------------
@@ -703,11 +748,42 @@ public class MessageManager {
                 // Message PORTAL
                 //-------------------------
                 
-                msg = new ArrayList<>();
-                msg.add("&cPortail prot\351g\351");
-                message.getNode("PORTAL","PROTECT_PORTAL").setValue(msg);
-                manager.save(message);        
-            //}
+                if(message.getNode("PORTAL","PROTECT_PORTAL").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&cPortail prot\351g\351");
+                    message.getNode("PORTAL","PROTECT_PORTAL").setValue(msg);
+                    manager.save(message); 
+                }
+                
+                //-------------------------
+                // Message SHOP
+                //-------------------------
+                
+                if(message.getNode("SHOP","SHOP_SALE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&bVEND:");
+                    message.getNode("SHOP","SHOP_SALE").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("SHOP","SHOP_BUY").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&bACHAT:");
+                    message.getNode("SHOP","SHOP_BUY").setValue(msg);
+                    manager.save(message); 
+                }
+                
+                //-------------------------
+                // Message CHEST
+                //-------------------------
+                
+                if(message.getNode("CHEST","CHEST_LOCK").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&eoups ! ce coffre est verouill\351 !");
+                    message.getNode("CHEST","CHEST_LOCK").setValue(msg);
+                    manager.save(message);
+                }
+              
             message = manager.load();
 
         } catch (IOException e) {}
@@ -847,6 +923,12 @@ public class MessageManager {
     public static Text FLY_GIVEN(String player){return format(FLY_GIVEN, "SERVER", "FLY_GIVEN",player, "");}
     
     public static Text FLY_RETIRED(String player){return format(FLY_RETIRED, "SERVER", "FLY_RETIRED",player, "");}
+    
+    public static Text BUTCHER(String worldName){return format(BUTCHER, "SERVER", "BUTCHER", worldName, "");}
+    
+    public static Text GRAVE(Player player){return format(GRAVE, "SERVER", "GRAVE", player);}
+    
+    public static Text LAST_CONNECT(String lastConnect){return format(LAST_CONNECT, "SERVER", "LAST_CONNECT", lastConnect, "");}
     
     //-------------------------
     // Message EXCEPTION / ERROR
@@ -1000,6 +1082,8 @@ public class MessageManager {
     
     public static Text DEPOSIT_SUCCESS(String amount){return format(DEPOSIT_SUCCESS, "ECONOMY", "DEPOSIT_SUCCESS",amount, "");}
     
+    public static Text CLICK_TO_CONFIRM(){return format(CLICK_TO_CONFIRM, "ECONOMY", "CLICK_TO_CONFIRM");}
+    
     //-------------------------
     // Message TELEPORATION
     //-------------------------
@@ -1058,6 +1142,11 @@ public class MessageManager {
     
     public static Text SHOP_BUY(){return format(SHOP_BUY, "SHOP","SHOP_BUY");}
               
+    //-------------------------
+    // Message CHEST
+    //-------------------------
+    
+    public static Text CHEST_LOCK(){return format(CHEST_LOCK, "CHEST","CHEST_LOCK");}
     
     public static Text USAGE(String usage){
         Text USAGE = (Text.of(TextColors.DARK_RED, "Usage: ", TextColors.RED, usage)); 

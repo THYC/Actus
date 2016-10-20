@@ -15,9 +15,9 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.ARROW;
 import static org.spongepowered.api.item.ItemTypes.FLINT_AND_STEEL;
+import static org.spongepowered.api.item.ItemTypes.LAVA_BUCKET;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -29,7 +29,7 @@ public class TraceListener {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
-        Location<World> loc = optLoc.get();              
+        Location<World> loc = optLoc.get(); 
         if(aplayer.getLevel() != 10){
             Trace trace = new Trace(player, loc, "BREAK",block.getOriginal().getState().getId());  
             trace.insert();
@@ -53,13 +53,14 @@ public class TraceListener {
     public void onBurnBlock(InteractBlockEvent event, @First Player player) {
         BlockSnapshot b = event.getTargetBlock(); 
         Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
-        if(item.isPresent()){
+        Optional<Location<World>> loc = event.getTargetBlock().getLocation();
+        if(item.isPresent() && loc.isPresent()){
             if(item.get().getItem().equals(FLINT_AND_STEEL)){
-                Trace trace = new Trace(player, event.getTargetBlock().getLocation().get(), "BURNING",event.getTargetBlock().getState().getId());  
+                Trace trace = new Trace(player, loc.get(), "BURNING",event.getTargetBlock().getState().getId());  
                 trace.insert();
             }
-            if(item.get().getItem().equals(ItemTypes.LAVA_BUCKET)){
-                Trace trace = new Trace(player, event.getTargetBlock().getLocation().get(), "LAVA",event.getTargetBlock().getState().getId());  
+            if(item.get().getItem().equals(LAVA_BUCKET)){
+                Trace trace = new Trace(player, loc.get(), "LAVA",event.getTargetBlock().getState().getId());  
                 trace.insert();
             }
         }
@@ -69,11 +70,12 @@ public class TraceListener {
     public void onInteractBlock(InteractBlockEvent.Secondary event, @First Player player) {
         BlockSnapshot b = event.getTargetBlock(); 
         Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
-        if(item.isPresent()){
+        Optional<Location<World>> loc = event.getTargetBlock().getLocation();
+        if(item.isPresent() && loc.isPresent()){
             if(item.get().getItem().equals(ARROW)){
-                String trace = traceManager.load(b.getLocation().get());
+                traceManager.refresh();
+                String trace = traceManager.load(loc.get());
                 player.sendMessage(MESSAGE(trace));
-                event.setCancelled(true);
             }
         }
     }
@@ -84,6 +86,7 @@ public class TraceListener {
         Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
         if(item.isPresent()){
             if(item.get().getItem().equals(ARROW)){
+                traceManager.refresh();
                 String trace = traceManager.load(entity.getLocation());
                 player.sendMessage(MESSAGE(trace));
             }

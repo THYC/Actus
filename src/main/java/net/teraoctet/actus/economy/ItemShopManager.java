@@ -6,7 +6,7 @@ import static java.lang.Math.round;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import net.teraoctet.actus.utils.DeSerialize;
+import java.util.UUID;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -18,12 +18,11 @@ import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
-import org.spongepowered.api.data.translator.ConfigurateTranslator;
+import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Location;
 
 public class ItemShopManager {
     
@@ -41,73 +40,39 @@ public class ItemShopManager {
     }
     
     public static Object serializeItemStack(ItemStack itemStack){
-        ConfigurationNode node = ConfigurateTranslator.instance().translateData(itemStack.toContainer());
+        ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(itemStack.toContainer());
         return node.getValue();
     }
 
     public static Optional<ItemStack> getItemStack(ConfigurationNode node){
-        DataView view = ConfigurateTranslator.instance().translateFrom(node);
+        DataView view = DataTranslators.CONFIGURATION_NODE.translate(node);
         view = (DataView) view.get(DataQuery.of(String.valueOf("item"))).get();
         return Sponge.getDataManager().deserialize(ItemStack.class, view);
     }
-    
+        
     /**
      * Sauvegarde un ItemShop
-     * @param location location objet Location
-     * @param itemShop Object ItemShop
-     * @return Boolean
-     * @throws IOException Exception
-     */
-    public boolean saveShop(Location location, ItemShop itemShop) throws IOException{
-        shop.getNode(DeSerialize.location(location),"item").setValue(serializeItemStack(itemShop.getItemStack()));
-        shop.getNode(DeSerialize.location(location),"transacttype").setValue(itemShop.getTransactType());
-        shop.getNode(DeSerialize.location(location),"price").setValue(itemShop.getPrice());
-        shop.getNode(DeSerialize.location(location),"qte").setValue(itemShop.getQte());
-        manager.save(shop);
-        return true;
-    }
-    
-    /**
-     * Sauvegarde un ItemShop
-     * @param location objet Location de type String au format: UUID:X:Y:Z
+     * @param uuid UUID de l'ItemFrame/ArmorStand
      * @param itemShop object ItemShop à sauvegarder
      * @return Boolean 
      * @throws IOException Exception
      */
-    public boolean saveShop(String location, ItemShop itemShop) throws IOException{
-        shop.getNode(location,"item").setValue(serializeItemStack(itemShop.getItemStack()));
-        shop.getNode(location,"transacttype").setValue(itemShop.getTransactType());
-        shop.getNode(location,"price").setValue(itemShop.getPrice());
-        shop.getNode(location,"qte").setValue(itemShop.getQte());
+    public boolean saveShop(UUID uuid, ItemShop itemShop) throws IOException{
+        shop.getNode(uuid.toString(),"item").setValue(serializeItemStack(itemShop.getItemStack()));
+        shop.getNode(uuid.toString(),"transacttype").setValue(itemShop.getTransactType());
+        shop.getNode(uuid.toString(),"price").setValue(itemShop.getPrice());
+        shop.getNode(uuid.toString(),"qte").setValue(itemShop.getQte());
         manager.save(shop);
         return true;
     }
-    
+        
     /**
      * Retourne un ItemShop 
-     * @param location objet Location
-     * @return ItemShop
-     */    
-    public Optional<ItemShop> getItemShop(Location location){
-	ConfigurationNode node = shop.getNode(DeSerialize.location(location));
-	Optional<ItemStack> optItemStack = getItemStack(node);
-        if(optItemStack.isPresent()){
-            String transactType = node.getNode("transacttype").getString();
-            Double price = node.getNode("price").getDouble();
-            int qte = node.getNode("qte").getInt();
-            ItemShop is = new ItemShop(optItemStack.get(),transactType,price,qte);
-            return Optional.of(is);
-        }
-        return Optional.empty(); 
-    }
-    
-    /**
-     * Retourne un ItemShop 
-     * @param location objet Location de type String au format: UUID:X:Y:Z
+     * @param uuid UUID de l'ItemFrame/ArmorStand
      * @return ItemShop
      */
-    public Optional<ItemShop> getItemShop(String location){
-	ConfigurationNode node = shop.getNode(location);
+    public Optional<ItemShop> getItemShop(UUID uuid){
+	ConfigurationNode node = shop.getNode(uuid.toString());
 	Optional<ItemStack> optItemStack = getItemStack(node);
         if(optItemStack.isPresent()){
             String transactType = node.getNode("transacttype").getString();
@@ -118,27 +83,25 @@ public class ItemShopManager {
         }
         return Optional.empty(); 
     }
-    
+        
     /**
      * Supprime un object ItemShop
-     * @param location Object Location position de l'object ItemShop
+     * @param uuid UUID de l'ItemFrame/ArmorStand
      * @throws IOException Exception
      */
-    public void delItemShop(Location location) throws IOException{
-        String locationString = DeSerialize.location(location);
-	ConfigurationNode node = shop.getNode(locationString);
-	shop.removeChild(locationString);
+    public void delItemShop(UUID uuid) throws IOException{
+	shop.removeChild(uuid.toString());
         manager.save(shop);
         shop = manager.load();
     }
     
     /**
-     * Retourne TRUE si l'Objet Location contient un ItemShop
-     * @param location Location du block
+     * Retourne TRUE si Entity contient un ItemShop
+     * @param uuid UUID de l'ItemFrame/ArmorStand
      * @return Boolean
      */
-    public boolean hasShop(Location location){
-        return !shop.getNode(DeSerialize.location(location)).isVirtual();
+    public boolean hasShop(UUID uuid){
+        return !shop.getNode(uuid.toString()).isVirtual();
     }
     
     /**

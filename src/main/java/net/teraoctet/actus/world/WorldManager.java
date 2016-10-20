@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static net.teraoctet.actus.Actus.plugin;
 
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -19,9 +20,13 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import static org.spongepowered.api.Sponge.getGame;
+import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.WorldBorder;
 
 public class WorldManager {
     private static final HashMap<String, AWorld> aworlds = new HashMap<>();
@@ -33,6 +38,20 @@ public class WorldManager {
     public static AWorld getWorld(String name) { return aworlds.containsKey(name) ? aworlds.get(name) : null; }
     public static AWorld getWorldUUID( String uuid) { return aworlds.containsKey(uuid) ? aworlds.get(uuid) : null; }
     public static HashMap<String, AWorld> getWorlds() { return aworlds; }
+    
+    public static void load(){
+        for(World world : getGame().getServer().getWorlds()){
+
+            world.getProperties().setGameMode(getGame().getRegistry().getType(GameMode.class,worlds.getNode("worlds", world.getName(), "gamemode").getString()).get());
+            world.getProperties().setPVPEnabled(worlds.getNode("worlds", world.getName(), "pvp").getBoolean());
+            world.getWorldBorder().setCenter(worlds.getNode("worlds", world.getName(), "spawn.x").getDouble(), worlds.getNode("worlds", world.getName(), "spawn.z").getDouble());
+            world.getWorldBorder().setDiameter(worlds.getNode("worlds", world.getName(), "border").getDouble());
+            world.getWorldBorder().setDamageAmount(worlds.getNode("worlds", world.getName(), "border-damage").getDouble());
+            WorldBorder border = world.getWorldBorder();
+            WorldBorder.ChunkPreGenerate generator = border.newChunkPreGenerate(world).owner(plugin);
+            generator.start();
+        }
+    }
         
     public static void init() {
 	//try {
@@ -49,10 +68,10 @@ public class WorldManager {
                         worlds.getNode(new Object[] { "worlds", world.getName(), "prefix" }).setValue("&6[" + world.getName() + "] ");
                         return world;
                     }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "difficulty" }).setValue("easy");
+                        worlds.getNode(new Object[] { "worlds", world.getName(), "difficulty" }).setValue(world.getProperties().getDifficulty().getName());
                         return world;
                     }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "gamemode" }).setValue("survival");
+                        worlds.getNode(new Object[] { "worlds", world.getName(), "gamemode" }).setValue(world.getProperties().getGameMode().getName());
                         return world;
                     }).map((world) -> {
                         worlds.getNode(new Object[] { "worlds", world.getName(), "monsters" }).setValue(true);
@@ -61,7 +80,7 @@ public class WorldManager {
                         worlds.getNode(new Object[] { "worlds", world.getName(), "animals" }).setValue(true);
                         return world;
                     }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "pvp" }).setValue(true);
+                        worlds.getNode(new Object[] { "worlds", world.getName(), "pvp" }).setValue(world.getProperties().isPVPEnabled());
                         return world;
                     }).map((world) -> {
                         worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "x" }).setValue(world.getSpawnLocation().getX());
@@ -79,10 +98,10 @@ public class WorldManager {
                         worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "pitch" }).setValue(0);
                         return world;
                     }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "border" }).setValue("0.0");
+                        worlds.getNode(new Object[] { "worlds", world.getName(), "border" }).setValue(world.getProperties().getWorldBorderDiameter());
                         return world;
                     }).forEach((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "border-damage" }).setValue("2.0");
+                        worlds.getNode(new Object[] { "worlds", world.getName(), "border-damage" }).setValue(world.getProperties().getWorldBorderDamageAmount());
                     });
                     manager.save(worlds);
                 } catch (IOException ex) {

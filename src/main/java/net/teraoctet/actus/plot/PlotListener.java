@@ -2,7 +2,6 @@ package net.teraoctet.actus.plot;
 
 import java.util.Optional;
 import net.teraoctet.actus.Actus;
-
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.utils.Data;
@@ -43,30 +42,12 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import static org.spongepowered.api.item.ItemTypes.COMPASS;
 
-import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
-import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.block.BlockTypes.LAVA;
 import static org.spongepowered.api.block.BlockTypes.WATER;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.IgniteEntityEvent;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
-import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
-import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
-import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
@@ -336,7 +317,7 @@ public class PlotListener {
         }
     }
     
-    @Listener
+   @Listener
     public void onFluidBlock(ChangeBlockEvent.Modify event) {
         //Actus.plugin.getLogger().info(event.getTransactions().toString());
         if(event.getTransactions().contains(FLOWING_WATER) || event.getTransactions().contains(WATER)
@@ -362,14 +343,41 @@ public class PlotListener {
         }
     }
     
+    /*@Listener(order = Order.FIRST)
+    public void onBlockNotify(NotifyNeighborBlockEvent event, @Root BlockSnapshot blockSource) {
+        Optional<User> user = event.getCause().first(User.class);
+        if  (!blockSource.getLocation().isPresent()) {
+            return;
+        }
+
+        Location<World> loc = blockSource.getLocation().get();
+        Optional<Plot> plot = plotManager.getPlot(loc);
+        if (plot.isPresent()){
+            plugin.getLogger().info("Ca coule1");
+            event.setCancelled(true);
+        }
+        
+        Iterator<Direction> iterator = event.getNeighbors().keySet().iterator();
+        while (iterator.hasNext()) {
+            Direction direction = iterator.next();
+            Location<World> locd = loc.getRelative(direction);
+            Optional<Plot> plotd = plotManager.getPlot(locd);
+            if(plotd.isPresent()){
+                plugin.getLogger().info("Ca coule2");
+                event.setCancelled(true);
+            }
+            iterator.remove();
+        }
+    }*/
+    
     @Listener
     public void onBlockStartBurn(IgniteEntityEvent e){
                 
                 Entity b = e.getTargetEntity();
                 Cause ignit = e.getCause(); 
-                if (b == null){
+                /*if (b == null){
                                return;
-                }
+                }*/
                 
                 plugin.getLogger().info("Is BlockIgniteEvent event. Canceled? " + e.isCancelled());
                 

@@ -2,12 +2,12 @@ package net.teraoctet.actus.economy;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.commands.economy.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
-import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -47,29 +47,27 @@ public class EconomyListener {
         /*----------------------------------------------*/
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Entity entity = event.getTargetEntity();
-        Location loc = entity.getLocation();
+        UUID uuid = entity.getUniqueId();
         
         //On verifie si le joueur a cliqué sur un ItemFame ou un ArmorStand
         if(entity.getType().getName().contains("itemframe") || entity.getType().getName().contains("armorstand")){
             
             //Si aucum ItemShop est enregistré a cette coordonnée on propose d'en creer un
-            if(!itemShopManager.hasShop(loc) && player.hasPermission("actus.admin.shop") && aplayer.getLevel()==10){ 
+            if(!itemShopManager.hasShop(uuid) && player.hasPermission("actus.admin.shop") && aplayer.getLevel()==10){ 
                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                 if(is.isPresent()){
-                    String locationString = DeSerialize.location(loc);
                     player.sendMessage(MESSAGE("\n\n"));
                     player.sendMessage(MESSAGE("&l&e-------------------------"));
                     player.sendMessage(MESSAGE("&7Voulez vous cr\351er un nouveau ItemShop ?"));
-                    player.sendMessage(Text.builder("Clique ici pour lancer la cr\351ation d'un ItemShop").onClick(TextActions.runCommand("/shopcreate " + locationString)).color(TextColors.AQUA).build()); 
+                    player.sendMessage(Text.builder("Clique ici pour lancer la cr\351ation d'un ItemShop").onClick(TextActions.runCommand("/shopcreate " + uuid.toString())).color(TextColors.AQUA).build()); 
                     player.sendMessage(MESSAGE("&l&e-------------------------"));
                     event.setCancelled(true);
                 }
             }else{
-                if(itemShopManager.hasShop(loc) && aplayer.getLevel()!=10){
-                    Optional<ItemShop> is = itemShopManager.getItemShop(loc);
+                if(itemShopManager.hasShop(uuid) && aplayer.getLevel()!=10){
+                    Optional<ItemShop> is = itemShopManager.getItemShop(uuid);
                     if(is.isPresent()){
                         ItemStack itemStack = is.get().getItemStack();
-                        String locationString = DeSerialize.location(loc);
                         String name = "";
                         Optional<DisplayNameData> displayData = itemStack.get(DisplayNameData.class);
                         if(displayData.isPresent()){
@@ -102,9 +100,9 @@ public class EconomyListener {
                                                 .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n"))
                                                 .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n")).build().concat(
                                 Text.builder()  .append(MESSAGE("&b - Clique ici pour vendre les items de ta main seulemeent\n"))
-                                                .onClick(TextActions.runCommand("/shopsell " + locationString)).build()).concat(  
+                                                .onClick(TextActions.runCommand("/shopsell " + uuid)).build()).concat(  
                                 Text.builder()  .append(MESSAGE("&b - ici pour vendre tous les items present dans ton stuff\n\n"))
-                                                .onClick(TextActions.executeCallback(cb.callShopSellAll(locationString))).build());
+                                                .onClick(TextActions.executeCallback(cb.callShopSellAll(uuid.toString()))).build());
                         
                         //--------
                         //  VENTE 
@@ -122,7 +120,7 @@ public class EconomyListener {
                                                 .append(MESSAGE("&b" + enchantment + "\n"))
                                                 .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n")).build().concat(
                                 Text.builder()  .append(MESSAGE("&b    Cliquer ici pour confirmer la transaction\n"))
-                                                .onClick(TextActions.runCommand("/shoppurchase " + locationString)).build());        
+                                                .onClick(TextActions.runCommand("/shoppurchase " + uuid.toString())).build());        
                         }
                         
                         player.sendMessage(text);
@@ -137,16 +135,17 @@ public class EconomyListener {
     public void onInteractShopLeft(InteractEntityEvent.Primary event, @First Player player) throws IOException{     
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Entity entity = event.getTargetEntity();
-        Location loc = entity.getLocation();
+        UUID uuid = entity.getUniqueId();
         
         if(entity.getType().getName().contains("itemframe") || entity.getType().getName().contains("armorstand")){
-            if(itemShopManager.hasShop(loc) && player.hasPermission("actus.admin.shop") && aplayer.getLevel()==10){ 
-                itemShopManager.delItemShop(loc);
-                player.sendMessage(MESSAGE("&e-------------------------"));
-                player.sendMessage(MESSAGE("&4ItemShop supprim\351"));
-                player.sendMessage(MESSAGE("&e-------------------------"));                
-            }else{
-                if(itemShopManager.hasShop(loc)){
+            if(itemShopManager.hasShop(uuid)){
+                if(aplayer.getLevel() == 10){ 
+                    entity.remove();
+                    itemShopManager.delItemShop(uuid);
+                    player.sendMessage(MESSAGE("&e-------------------------"));
+                    player.sendMessage(MESSAGE("&4ItemShop supprim\351"));
+                    player.sendMessage(MESSAGE("&e-------------------------")); 
+                }else{
                     event.setCancelled(true);
                 }
             }

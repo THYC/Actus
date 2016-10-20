@@ -2,6 +2,7 @@ package net.teraoctet.actus.commands.economy;
 
 import static java.lang.Math.round;
 import java.util.Optional;
+import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.economy.ItemShop;
@@ -33,14 +34,14 @@ public class CommandShopSell implements CommandExecutor {
                 return CommandResult.empty();
             }
             action.remove(player);
-            Optional<String> locationString = ctx.<String> getOne("locationstring");
-            Optional<ItemShop> itemShop = itemShopManager.getItemShop(locationString.get());
+            Optional<String> uuid = ctx.<String> getOne("uuid");
+            Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid.get()));
             if(itemShop.isPresent()){
                 ItemStack is = itemShop.get().getItemStack();
                 double price = itemShop.get().getPrice();
                 
                 if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-                    if(player.getItemInHand(HandTypes.MAIN_HAND).get().getItem().equals(is.getItem())){
+                    if(player.getItemInHand(HandTypes.MAIN_HAND).get().equals(is)){
                         int qte = player.getItemInHand(HandTypes.MAIN_HAND).get().getQuantity();
                         double coin = price*qte*100;
                         coin = round(coin);

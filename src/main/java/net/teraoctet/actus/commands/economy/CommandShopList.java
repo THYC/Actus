@@ -2,14 +2,19 @@ package net.teraoctet.actus.commands.economy;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.economy.ItemShop;
-import static net.teraoctet.actus.utils.DeSerialize.getLocation;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
+import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.world.Location;
@@ -20,32 +25,42 @@ public class CommandShopList implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
+        if(src instanceof Player && src.hasPermission("actus.admin.shoplist")) {
+            Player player = (Player)src;
 
-        if(src.hasPermission("actus.admin.shoplist")) {
             if(!itemShopManager.getListItemShop().isEmpty()){
                 src.sendMessage(MESSAGE("&e------------------------------"));
                 src.sendMessage(MESSAGE("&e     Liste des ItemShop"));
                 src.sendMessage(MESSAGE("&e------------------------------"));
-                for(String s : itemShopManager.getListItemShop()){
-                    Optional<Location<World>> loc = getLocation(s);
-                    if(loc.isPresent()){
-                        String worldName = loc.get().getExtent().getName();
-                        String X = String.valueOf(loc.get().getBlockX());
-                        String Y = String.valueOf(loc.get().getBlockX());
-                        String Z = String.valueOf(loc.get().getBlockX());
-                        Optional<ItemShop> itemShop = itemShopManager.getItemShop(s);
+                itemShopManager.getListItemShop().stream().forEach((uuid) -> {
+                    Optional<Entity> frame = player.getLocation().getExtent().getEntity(UUID.fromString(uuid));
+                    if(frame.isPresent()){
+                        Location<World> loc = frame.get().getLocation();
+                        String worldName = loc.getExtent().getName();
+                        String X = String.valueOf(loc.getBlockX());
+                        String Y = String.valueOf(loc.getBlockY());
+                        String Z = String.valueOf(loc.getBlockZ());
+                        Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid));
                         String item = itemShop.get().getItemStack().getItem().getTranslation().get(Locale.FRENCH);
                         String transaction = itemShop.get().getTransactType();
                         Double price = itemShop.get().getPrice();
                         src.sendMessages(Text.builder()
-                                .append(MESSAGE("&8 - " + worldName + " XYZ: " + X + " " + Y + " " + Z + " ! &e" + transaction + " " + item + " &b" + price))
-                                .onClick(TextActions.executeCallback(cb.callRemoveShop(s)))
+                                .append(MESSAGE("&a - " + worldName + " : " + X + " : " + Y + " : " + Z + " : &e" + transaction + " " + item + " &b" + price))
+                                .onClick(TextActions.executeCallback(cb.callRemoveShop(player.getWorld(),uuid)))
                                 .onHover(TextActions.showText(MESSAGE("&4Click ici pour supprimer le shop"))).build());
                     }
-                }
+                });
                 return CommandResult.success();
+                
             }
-        }                    
+        }else if (src instanceof ConsoleSource) {
+            src.sendMessage(NO_CONSOLE());
+        }
+       
+        else {
+            src.sendMessage(NO_PERMISSIONS());
+        }
+                
         return CommandResult.empty();
     }
 }

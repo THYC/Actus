@@ -1,6 +1,7 @@
 package net.teraoctet.actus.utils;
 import java.io.File;
 import java.io.IOException;
+import net.teraoctet.actus.Actus;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -31,6 +32,9 @@ public class Config {
                 config.getNode("guild", "NAME_MAX_SIZE").setValue(25);
                 config.getNode("guild", "NAME_MIN_SIZE").setValue(5);
                 config.getNode("server", "COOLDOWN_TO_TP").setValue(10);
+                config.getNode("server", "UNIQUE_SPAWN_WORLD").setValue(0);
+                config.getNode("server", "SPAWN_WORLD").setValue("World");
+                config.getNode("server", "DIAMETER_MAX_TPR").setValue(2000);
                 config.getNode("version").setValue(1);
                 manager.save(config);
             }
@@ -55,4 +59,7 @@ public class Config {
     public static int GUILD_NAME_MAX_SIZE() { return config.getNode("guild", "NAME_MAX_SIZE").getInt(); }
     public static int GUILD_NAME_MIN_SIZE() { return config.getNode("guild", "NAME_MIN_SIZE").getInt(); }
     public static int COOLDOWN_TO_TP() { return config.getNode("server", "COOLDOWN_TO_TP").getInt(); }
+    public static int UNIQUE_SPAWN_WORLD() { return config.getNode("server", "UNIQUE_SPAWN_WORLD").getInt(); }
+    public static int DIAMETER_MAX_TPR() { return config.getNode("server", "DIAMETER_MAX_TPR").getInt(); }
+    public static String SPAWN_WORLD() { return config.getNode("server", "SPAWN_WORLD").getString(); }
 }

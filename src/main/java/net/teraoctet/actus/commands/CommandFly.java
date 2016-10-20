@@ -19,7 +19,7 @@ public class CommandFly implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-         Optional<Player> tplayer = ctx.<Player> getOne("player");
+        Optional<Player> tplayer = ctx.<Player> getOne("player");
         
         if (tplayer.isPresent() && src.hasPermission("actus.fly.others")) {           
             Optional<FlyingData> optFlying = tplayer.get().get(FlyingData.class);

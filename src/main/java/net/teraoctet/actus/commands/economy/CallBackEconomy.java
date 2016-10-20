@@ -3,6 +3,7 @@ package net.teraoctet.actus.commands.economy;
 import java.io.IOException;
 import static java.lang.Math.round;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,18 +13,18 @@ import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.economy.ItemShop;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
-import static net.teraoctet.actus.utils.DeSerialize.getLocation;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import static org.spongepowered.api.item.ItemTypes.EMERALD;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.type.GridInventory;
-import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 public class CallBackEconomy {
@@ -105,7 +106,7 @@ public class CallBackEconomy {
         };
     }
     
-    public Consumer<CommandSource> callShopSellAll(String locationstring) {
+    public Consumer<CommandSource> callShopSellAll(String uuid) {
         /*----------------------------------------------*/
         /* Achat multiple                               */
         /*----------------------------------------------*/
@@ -117,7 +118,7 @@ public class CallBackEconomy {
                 return;
             }
             action.remove(player);
-            Optional<ItemShop> itemShop = itemShopManager.getItemShop(locationstring);
+            Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid));
             if(itemShop.isPresent()){
                 ItemStack is = itemShop.get().getItemStack();
                 double price = itemShop.get().getPrice();
@@ -187,12 +188,13 @@ public class CallBackEconomy {
         };
     }
     
-    public Consumer<CommandSource> callRemoveShop(String loc) {
+    public Consumer<CommandSource> callRemoveShop(World world, String uuid) {
 	return (CommandSource src) -> {
-            Optional<Location<World>> location = getLocation(loc);
-            if(location.isPresent()){
+            Optional<Entity> frame = world.getEntity(UUID.fromString(uuid));                   
+            if(frame.isPresent()){
                 try {
-                    itemShopManager.delItemShop(location.get());
+                    itemShopManager.delItemShop(UUID.fromString(uuid));
+                    frame.get().remove();
                     src.sendMessage(MESSAGE("&e-------------------------"));
                     src.sendMessage(MESSAGE("&4ItemShop supprim\351"));  
                     src.sendMessage(MESSAGE("&e-------------------------"));

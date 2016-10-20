@@ -20,8 +20,10 @@ import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.effect.particle.ParticleType.Block;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.animal.Animal;
@@ -33,6 +35,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.entity.ConstructEntityEvent;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.ExplosionEvent;
@@ -62,31 +66,20 @@ public class WorldListener {
     	}	
     }  
     
-    /*@Listener 
-    public void onTeleportEvent(DisplaceEntityEvent.Teleport event){ 
-        
-        System.out.println("################### tp ######################");
-                
- 	Location<World> fromWorld = event.getFromTransform().getLocation();
-        Location<World> toWorld = event.getToTransform().getLocation();
-        Player player = (Player) event.getTargetEntity();
-        
-        if(fromWorld.getExtent() != toWorld.getExtent()){
-            spawnParticles(fromWorld, 0.5, true); 
-            spawnParticles(fromWorld.getRelative(Direction.UP), 0.5, true); 
-            spawnParticles(toWorld, 1.0, false); 
-            spawnParticles(toWorld.getRelative(Direction.UP), 1.0, false);
-            
-            String world = fromWorld.getExtent().getName();
-            double x = fromWorld.getBlockX();
-            double y = fromWorld.getBlockY();
-            double z = fromWorld.getBlockZ();
-            String lastposition = DeSerialize.location(world, x, y, z);
-            APlayer aplayer = Data.getAPlayer(player.getUniqueId().toString());
-            aplayer.setLastposition(lastposition);
-            aplayer.update();
-        }
-    } */
+    /*@Listener
+    public void onBlockUpdate(NotifyNeighborBlockEvent event) {
+        BlockSnapshot source;
+        if(event.getCause().first(BlockSnapshot.class).isPresent())
+            source = event.getCause().first(BlockSnapshot.class).get();
+        else
+            return;
+
+        if(isValid(source.getLocation().get())) {
+            PoweredProperty poweredProperty = source.getLocation().get().getProperty(PoweredProperty.class).orElse(null);
+            updateState(source.getLocation().get(), poweredProperty == null ? false : poweredProperty.getValue());
+    }*/
+    
+    
     
     public static void spawnParticles(Location<World> location, double range, boolean sub){
         
@@ -118,7 +111,7 @@ public class WorldListener {
     }
     
     @Listener
-    public void onTNTexplode(final ExplosionEvent.Detonate event){ 
+    public void onTNTexplode(final ExplosionEvent.Post event){ 
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
         Optional<Plot> plot = plotManager.getPlot(loc);
@@ -129,8 +122,8 @@ public class WorldListener {
         }
     }
     
-    @Listener(order = Order.LAST) 
-    public void onExplosion(final ExplosionEvent.Detonate event){ 
+    @Listener
+    public void onExplosionPlot(final ExplosionEvent.Post event){ 
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
         Optional<Plot> plot = plotManager.getPlot(loc);
@@ -142,40 +135,40 @@ public class WorldListener {
             }
         }
     }
-        
+                
     @Listener 
-    public void itemDrop(DropItemEvent.Destruct event){
+    public void creeperItemDrop(DropItemEvent.Destruct event){
         if (event.getCause().first(Creeper.class).isPresent()){
-            plugin.getLogger().info("event.getCause().first(Creeper.class).isPresent()");
             event.getEntities().clear();
             event.setCancelled(true);
         }
-        event.setCancelled(true);
+    } 
+    
+    @Listener 
+    public void test(DestructEntityEvent event){
+        plugin.getLogger().info("DestructEntityEvent");
     } 
     
     @Listener 
     public void saplingDrop(DropItemEvent.Dispense event){ 
+        plugin.getLogger().info("aa");
         if(!event.getEntities().isEmpty()){
-            Entity drop = event.getEntities().get(0);
-
-            Optional<ItemStackSnapshot> item = drop.get(Keys.REPRESENTED_ITEM);
-            if (item.get().getType().getBlock().isPresent()) {
-
-                if (item.get().getType().getBlock().get().equals(BlockTypes.SAPLING)){
-
-                    //Logger.getLogger("INFO").info(drop.getKeys().toString());
-                    //Logger.getLogger("INFO").info(drop.getValue(Keys.TREE_TYPE).get().toString());
-
-                    Reforestation reforestation = new Reforestation(drop);
-                    reforestation.run();
-                }    
-            }
+            List<Entity> entitys = event.getEntities();
+            entitys.stream().forEach((ent) -> {
+                Optional<ItemStackSnapshot> item = ent.get(Keys.REPRESENTED_ITEM);
+                if (item.get().getType().getBlock().isPresent()) {
+                    if (item.get().getType().getBlock().get().equals(BlockTypes.SAPLING)) {
+                        plugin.getLogger().info("bb");
+                        Reforestation reforestation = new Reforestation(ent);
+                        reforestation.run();
+                    }    
+                }
+            });
         }
     }
-        
+            
     @Listener
     public void treeBreak(ChangeBlockEvent.Break breakEvent) throws Exception {
-        //Logger.getLogger("INFO").info(breakEvent.getTransactions().get(0).getFinal().get(Keys.TREE_TYPE).toString());
         if (!firedEvents.contains(breakEvent) && breakEvent.getCause().first(Player.class).isPresent() && 
                 !breakEvent.isCancelled() && breakEvent.getTransactions().size() == 1 &&
                 TreeDetector.isWood(breakEvent.getTransactions().get(0).getOriginal())) {

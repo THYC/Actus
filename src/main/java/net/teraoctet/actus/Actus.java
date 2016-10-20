@@ -29,6 +29,7 @@ import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.trace.TraceListener;
 import net.teraoctet.actus.trace.TraceManager;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.warp.WarpManager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.channel.MessageChannel;
 
 @Plugin(
         id = "actus", 
@@ -78,6 +80,8 @@ public class Actus {
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 	        
+        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &edevelopped by THYC and Votop ... Init..."));
+        
         File folder = new File("config/actus");
     	if(!folder.exists()) folder.mkdir();
     	Config.setup();
@@ -134,11 +138,11 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandShopList, "shoplist", "shopl");
         getGame().getCommandManager().register(this, new CommandManager().CommandChest, "chest", "coffre", "lwc");
         getGame().getCommandManager().register(this, new CommandManager().CommandNPC, "npc");
-
-        getLogger().info("-----------------------------"); 
-	getLogger().info("........... Actus ..........."); 
-        getLogger().info("developped by THYC and Votop"); 
-        getLogger().info("-----------------------------"); 
+        getGame().getCommandManager().register(this, new CommandManager().CommandSpawn, "spawn");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSetspawn, "setspawn", "spawnset");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSignCmd, "signcmd", "cmd", "scmd");
+        getGame().getCommandManager().register(this, new CommandManager().CommandButcher, "butcher", "massacre");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTPR, "tpr", "rtp");
     }
         
     @Listener
@@ -158,15 +162,16 @@ public class Actus {
     @Listener
     public void onServerLoadComplete(GameLoadCompleteEvent event)
     {
-        getLogger().info("actus: charging is complete");
+        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &echarging is complete"));
     }  
     
     @Listener
     public void onServerStarted(GameStartedServerEvent event)
     {
         game = Sponge.getGame();    	
-    	plugin = Sponge.getPluginManager().getPlugin("net.teraoctet.actus").get();
+    	plugin = Sponge.getPluginManager().getPlugin("actus").get();
         WorldManager.init();
+        WorldManager.load();
     }   
     
     

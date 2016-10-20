@@ -31,22 +31,15 @@ public class ServerManager {
      * @param player nom du joueur à retourner
      * @return Player
      */
-    public Optional<Player> getPlayer(String player){
-        Optional<ProviderRegistration<UserStorageService>> opt_provider = Sponge.getServiceManager().getRegistration(UserStorageService.class);
-        if(opt_provider.isPresent()) {
-            ProviderRegistration<UserStorageService> provider = opt_provider.get();
-            UserStorageService service = provider.getProvider();
-            Optional<User> opt_user = service.get(player);
-            
-            if(opt_user.isPresent()) {
-                return Optional.of(opt_user.get().getPlayer().get());
-            }else{
-                return Optional.empty();
-            }
+    public Optional<Player> getPlayer(String player) {
+        Optional<Player> onlinePlayer = Sponge.getServer().getPlayer(player);
+        if (onlinePlayer.isPresent()) {
+            return onlinePlayer;
         }
-        return Optional.empty();
+        Optional<UserStorageService> userStorage = Sponge.getServiceManager().provide(UserStorageService.class);
+        return userStorage.get().get(player).get().getPlayer();
     }
-    
+        
     /**
      * retourne l'idetifier UUID du joueur
      * @param player nom du joueur à retourner
@@ -164,7 +157,7 @@ public class ServerManager {
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
-        cal.add(Calendar.YEAR, 1900);
+        //cal.add(Calendar.YEAR, 1900);
         
 	return cal.getTimeInMillis();
     }

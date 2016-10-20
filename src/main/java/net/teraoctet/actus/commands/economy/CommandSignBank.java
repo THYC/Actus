@@ -52,7 +52,7 @@ public class CommandSignBank implements CommandExecutor {
             }
             
             Location location = null;
-            BlockRay<World> playerBlockRay = BlockRay.from(player).blockLimit(10).build(); 
+            BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
             { 
                 BlockRayHit<World> currentHitRay = playerBlockRay.next(); 
