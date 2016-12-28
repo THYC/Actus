@@ -55,6 +55,7 @@ public class MessageManager {
     private static Text PROTECT_LOADED_PLOT;
     private static Text UNDEFINED_PLOT_ANGLES;
     private static Text ALREADY_OWNED_PLOT;
+    private static Text EXPAND_NOT_ALLOWED;
     private static Text NAME_ALREADY_USED;
     private static Text NO_PLOT;
     private static Text PLOT_INFO;
@@ -119,7 +120,24 @@ public class MessageManager {
     private static Text CHEST_LOCK;
     private static Text LAST_CONNECT;
     private static Text CLICK_TO_CONFIRM;
-       
+    private static Text CHEST_ROTATION;
+    private static Text HEAD_ROTATION;
+    private static Text LEFT_ARM_ROTATION;
+    private static Text RIGHT_ARM_ROTATION;
+    private static Text LEFT_LEG_ROTATION;
+    private static Text RIGHT_LEG_ROTATION;
+    private static Text POSITION_X_AS;
+    private static Text POSITION_Y_AS;
+    private static Text POSITION_Z_AS;
+    private static Text ROTATION_AS;
+    private static Text AS_HAS_BASE_PLATE;
+    private static Text AS_HAS_GRAVITY;
+    private static Text AS_IS_SMALL;
+    private static Text AS_NAME_VISIBLE;
+    private static Text AS_MARKER;
+    private static Text AS_HAS_ARMS;
+    private static Text AS_INVISIBLE;
+    
     public static File file = new File("config/actus/message.conf");
     public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
     public static ConfigurationNode message = manager.createEmptyNode(ConfigurationOptions.defaults());
@@ -579,8 +597,13 @@ public class MessageManager {
                 manager.save(message);
                                 
                 msg = new ArrayList<>();
-                msg.add("&cVous ne pouvez pas cr\351er cette parcelle, d\351j\340 une parcelle prot\351g\351e dans cette s\351lection !");         
+                msg.add("&cVous ne pouvez pas cr\351er cette parcelle, il y a d\351j\340 une parcelle prot\351g\351e dans cette s\351lection !");         
                 message.getNode("PLOT","ALREADY_OWNED_PLOT").setValue(msg);
+                manager.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&cVous ne pouvez pas \351tendre cette parcelle dans cette direction, une parcelle existe d\351ja  !");         
+                message.getNode("PLOT","EXPAND_NOT_ALLOWED").setValue(msg);
                 manager.save(message);
                 
                 msg = new ArrayList<>();
@@ -783,7 +806,130 @@ public class MessageManager {
                     message.getNode("CHEST","CHEST_LOCK").setValue(msg);
                     manager.save(message);
                 }
-              
+                
+                //-------------------------
+                // Message ARMOR STAND
+                //-------------------------
+                
+                if(message.getNode("ARMORSTAND","CHEST_ROTATION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation du corps : ");
+                    message.getNode("ARMORSTAND","CHEST_ROTATION").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","HEAD_ROTATION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation de la t\352te : ");
+                    message.getNode("ARMORSTAND","HEAD_ROTATION").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","LEFT_ARM_ROTATION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation du bras gauche : ");
+                    message.getNode("ARMORSTAND","LEFT_ARM_ROTATION").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","RIGHT_ARM_ROTATION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation du bras droit : ");
+                    message.getNode("ARMORSTAND","RIGHT_ARM_ROTATION").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","LEFT_LEG_ROTATION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation de la jambe gauche : ");
+                    message.getNode("ARMORSTAND","LEFT_LEG_ROTATION").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","RIGHT_LEG_ROTATION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation de la jambe droite : ");
+                    message.getNode("ARMORSTAND","RIGHT_LEG_ROTATION").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","POSITION_X_AS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Position sur l'axe X : ");
+                    message.getNode("ARMORSTAND","POSITION_X_AS").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","POSITION_Y_AS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Position sur l'axe Y : ");
+                    message.getNode("ARMORSTAND","POSITION_Y_AS").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","POSITION_Z_AS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Position sur l'axe Z : ");
+                    message.getNode("ARMORSTAND","POSITION_Z_AS").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","ROTATION_AS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 - Rotation : ");
+                    message.getNode("ARMORSTAND","ROTATION_AS").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","AS_HAS_BASE_PLATE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + (Des)Activation de la plaque de base ");
+                    message.getNode("ARMORSTAND","AS_HAS_BASE_PLATE").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","AS_HAS_GRAVITY").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + (Des)Activation de la gravit\351 ");
+                    message.getNode("ARMORSTAND","AS_HAS_GRAVITY").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","AS_HAS_ARMS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + (Des)Activation des bras ");
+                    message.getNode("ARMORSTAND","AS_HAS_ARMS").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","AS_IS_SMALL").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + Taille petit ou grand ");
+                    message.getNode("ARMORSTAND","AS_IS_SMALL").setValue(msg);
+                    manager.save(message);
+                }
+                                
+                if(message.getNode("ARMORSTAND","AS_NAME_VISIBLE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + (Des)Affiche le nom ");
+                    message.getNode("ARMORSTAND","AS_NAME_VISIBLE").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","AS_MARKER").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + (Des)Affiche le marker ");
+                    message.getNode("ARMORSTAND","AS_MARKER").setValue(msg);
+                    manager.save(message);
+                }
+                
+                if(message.getNode("ARMORSTAND","AS_INVISIBLE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&7 + (In)Visible ");
+                    message.getNode("ARMORSTAND","AS_INVISIBLE").setValue(msg);
+                    manager.save(message);
+                }
+                
             message = manager.load();
 
         } catch (IOException e) {}
@@ -1048,6 +1194,8 @@ public class MessageManager {
         
     public static Text ALREADY_OWNED_PLOT(){return format(ALREADY_OWNED_PLOT, "PLOT", "ALREADY_OWNED_PLOT");}
     
+    public static Text EXPAND_NOT_ALLOWED(){return format(EXPAND_NOT_ALLOWED, "PLOT", "EXPAND_NOT_ALLOWED");}
+    
     public static Text NO_PLOT(){return format(NO_PLOT, "PLOT", "NO_PLOT");}
     
     public static Text PLOT_INFO(Player player, String owner, String allow, String plot){return format(PLOT_INFO, "PLOT", "PLOT_INFO", player, "","", owner, allow, plot);}
@@ -1147,6 +1295,44 @@ public class MessageManager {
     //-------------------------
     
     public static Text CHEST_LOCK(){return format(CHEST_LOCK, "CHEST","CHEST_LOCK");}
+    
+    //-------------------------
+    // Message ARMORSTAND
+    //-------------------------
+    
+    public static Text CHEST_ROTATION(){return format(CHEST_ROTATION, "ARMORSTAND","CHEST_ROTATION");}
+    
+    public static Text HEAD_ROTATION(){return format(HEAD_ROTATION, "ARMORSTAND","HEAD_ROTATION");}
+    
+    public static Text LEFT_ARM_ROTATION(){return format(LEFT_ARM_ROTATION, "ARMORSTAND","LEFT_ARM_ROTATION");}
+    
+    public static Text RIGHT_ARM_ROTATION(){return format(RIGHT_ARM_ROTATION, "ARMORSTAND","RIGHT_ARM_ROTATION");}
+    
+    public static Text LEFT_LEG_ROTATION(){return format(LEFT_LEG_ROTATION, "ARMORSTAND","LEFT_LEG_ROTATION");}
+    
+    public static Text RIGHT_LEG_ROTATION(){return format(RIGHT_LEG_ROTATION, "ARMORSTAND","RIGHT_LEG_ROTATION");}
+    
+    public static Text POSITION_X_AS(){return format(POSITION_X_AS, "ARMORSTAND","POSITION_X_AS");}
+    
+    public static Text POSITION_Y_AS(){return format(POSITION_Y_AS, "ARMORSTAND","POSITION_Y_AS");}
+    
+    public static Text POSITION_Z_AS(){return format(POSITION_Z_AS, "ARMORSTAND","POSITION_Z_AS");}
+    
+    public static Text ROTATION_AS(){return format(ROTATION_AS, "ARMORSTAND","ROTATION_AS");}
+    
+    public static Text AS_HAS_BASE_PLATE(){return format(AS_HAS_BASE_PLATE, "ARMORSTAND","AS_HAS_BASE_PLATE");}
+    
+    public static Text AS_HAS_GRAVITY(){return format(AS_HAS_GRAVITY, "ARMORSTAND","AS_HAS_GRAVITY");}
+    
+    public static Text AS_IS_SMALL(){return format(AS_IS_SMALL, "ARMORSTAND","AS_IS_SMALL");}
+    
+    public static Text AS_NAME_VISIBLE(){return format(AS_NAME_VISIBLE, "ARMORSTAND","AS_NAME_VISIBLE");}
+    
+    public static Text AS_MARKER(){return format(AS_MARKER, "ARMORSTAND","AS_MARKER");}
+    
+    public static Text AS_HAS_ARMS(){return format(AS_HAS_ARMS, "ARMORSTAND","AS_HAS_ARMS");}
+    
+    public static Text AS_INVISIBLE(){return format(AS_INVISIBLE, "ARMORSTAND","AS_INVISIBLE");}
     
     public static Text USAGE(String usage){
         Text USAGE = (Text.of(TextColors.DARK_RED, "Usage: ", TextColors.RED, usage)); 

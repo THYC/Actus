@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.plugin;
@@ -20,10 +21,9 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import static org.spongepowered.api.Sponge.getGame;
-import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.WorldBorder;
@@ -54,60 +54,59 @@ public class WorldManager {
     }
         
     public static void init() {
-	//try {
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();                 
-                    getGame().getServer().getWorlds().stream().map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "uuid" }).setValue(world.getUniqueId().toString());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "message" }).setValue("&6" + world.getName());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "prefix" }).setValue("&6[" + world.getName() + "] ");
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "difficulty" }).setValue(world.getProperties().getDifficulty().getName());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "gamemode" }).setValue(world.getProperties().getGameMode().getName());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "monsters" }).setValue(true);
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "animals" }).setValue(true);
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "pvp" }).setValue(world.getProperties().isPVPEnabled());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "x" }).setValue(world.getSpawnLocation().getX());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "y" }).setValue(world.getSpawnLocation().getY());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "z" }).setValue(world.getSpawnLocation().getZ());
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "yaw" }).setValue(0);
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "pitch" }).setValue(0);
-                        return world;
-                    }).map((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "border" }).setValue(world.getProperties().getWorldBorderDiameter());
-                        return world;
-                    }).forEach((world) -> {
-                        worlds.getNode(new Object[] { "worlds", world.getName(), "border-damage" }).setValue(world.getProperties().getWorldBorderDamageAmount());
-                    });
-                    manager.save(worlds);
-                } catch (IOException ex) {
-                    Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        if (!file.exists()) {
+            try {
+                file.createNewFile();                 
+                getGame().getServer().getWorlds().stream().map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "uuid" }).setValue(world.getUniqueId().toString());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "message" }).setValue("&6" + world.getName());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "prefix" }).setValue("&6[" + world.getName() + "] ");
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "difficulty" }).setValue(world.getProperties().getDifficulty().getName());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "gamemode" }).setValue(world.getProperties().getGameMode().getName());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "monsters" }).setValue(true);
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "animals" }).setValue(true);
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "pvp" }).setValue(world.getProperties().isPVPEnabled());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "x" }).setValue(world.getSpawnLocation().getX());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "y" }).setValue(world.getSpawnLocation().getY());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "z" }).setValue(world.getSpawnLocation().getZ());
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "yaw" }).setValue(0);
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "spawn", "pitch" }).setValue(0);
+                    return world;
+                }).map((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "border" }).setValue(world.getProperties().getWorldBorderDiameter());
+                    return world;
+                }).forEach((world) -> {
+                    worlds.getNode(new Object[] { "worlds", world.getName(), "border-damage" }).setValue(world.getProperties().getWorldBorderDamageAmount());
+                });
+                manager.save(worlds);
+            } catch (IOException ex) {
+                Logger.getLogger(WorldManager.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
         try {
             worlds = manager.load();
         } catch (IOException ex) {
@@ -179,5 +178,29 @@ public class WorldManager {
         worlds.getNode("worlds", world.getName(), "border-damage").setValue(world.getBorderDamage());
 		
         try { manager.save(worlds); worlds = manager.load(); } catch (IOException e) {}
-    }  
+    }
+    
+    public static void spawnParticles(Location<World> location, double range, boolean sub){
+        
+        Random random = new Random(); 
+ 		 
+        for(int i = 0; i < 5; i++){ 
+            double v1 = 0.0 + (range - 0.0) * random.nextDouble(); 
+            double v2 = 0.0 + (range - 0.0) * random.nextDouble(); 
+            double v3 = 0.0 + (range - 0.0) * random.nextDouble(); 
+            
+            ParticleEffect effect = ParticleEffect.builder().type(ParticleTypes.PORTAL).build();
+
+            location.getExtent().spawnParticles(effect, location.getPosition().add(v3,v1,v2)); 
+            location.getExtent().spawnParticles(effect, location.getPosition().add(0,v1,0)); 
+            if(sub){ 
+                    location.getExtent().spawnParticles(effect, location.getPosition().sub(v1,v2,v3)); 
+                    location.getExtent().spawnParticles(effect, location.getPosition().sub(0,v2,0)); 
+            }else{ 
+                    location.getExtent().spawnParticles(effect, location.getPosition().add(v3,v1,v1)); 
+                    location.getExtent().spawnParticles(effect, location.getPosition().add(v2,v3,v2)); 
+            } 
+        } 
+        
+    }
 }

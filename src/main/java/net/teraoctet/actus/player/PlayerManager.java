@@ -3,7 +3,6 @@ package net.teraoctet.actus.player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
 
 public class PlayerManager {
     private static final HashMap<String, APlayer> players = new HashMap<>();

@@ -3,9 +3,9 @@ package net.teraoctet.actus.commands.plot;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
+import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import static net.teraoctet.actus.utils.MessageManager.formatText;
 import static org.spongepowered.api.Sponge.getGame;
@@ -23,8 +23,11 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.text.action.TextActions;
 
 public class CommandPlotFlag implements CommandExecutor {
+    
+    private static final CallBackPlot  cb  = new CallBackPlot();
        
     @Override
     @SuppressWarnings("null")
@@ -42,10 +45,10 @@ public class CommandPlotFlag implements CommandExecutor {
                 plot = plotManager.getPlot(player.getLocation());
             }
 
-            if (plot == null){
+            if (!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
-                player.sendMessage(USAGE("/plot flag <flag> <0|1> : modifie la valeur &6Oui = 1 Non = 0, vous devez \352tre sur la parcelle"));
-                player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag &6Oui = 1 Non = 0"));
+                player.sendMessage(USAGE("/plot flag <flag> <0|1> : modifie la valeur Oui = 1 Non = 0, vous devez \352tre sur la parcelle"));
+                player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
                 player.sendMessage(USAGE("/plot flag> : liste les flags de la parcelle, vous devez \352tre sur la parcelle"));
                 player.sendMessage(USAGE("/plot flaglist <NomParcelle> : liste les flags de la parcelle nomm\351e"));
                 return CommandResult.empty();
@@ -60,23 +63,53 @@ public class CommandPlotFlag implements CommandExecutor {
 
                 builder.title(formatText("&6Plot Flag"))
                     .contents(  formatText("&e/plot flag <flag> <0|1> : &7modifie la valeur d'un flag"),
-                                formatText("&enoEnter : &b[" + plot.get().getNoEnter() + "] &7ils peuvent entrer sur la parcelle"),
-                                formatText("&enoFly : &b[" + plot.get().getNoFly() + "] &7ils peuvent pas voler au dessus"),
-                                formatText("&enoBuild : &b[" + plot.get().getNoBuild() + "] &7ils peuvent construirent"),
-                                formatText("&enoBreak : &b[" + plot.get().getNoBreak() + "] &7ils peuvent casser"),
-                                formatText("&enoInteract : &b[" + plot.get().getNoInteract() + "] &7ils peuvent ouvrir les portes,coffres..."),
-                                formatText("&enoTeleport : &b[" + plot.get().getNoTeleport() + "] &7ils peuvent se t\351l\351porter"),
-                                formatText("&enoFire : &b[" + plot.get().getNoFire() + "] &7mettre le feu"),
-                                formatText("&enoMob : &b[" + plot.get().getNoMob() + "] &7les monstres spawn"),
-                                formatText("&enoTNT : &b[" + plot.get().getNoTNT() + "] &7activation de la TNT"),
-                                formatText("&enoCommand : &b[" + plot.get().getNoCommand() + "] &7ils peuvent taper des commandes"))
-                    .header(formatText("&ePlot " + plot.get().getName() + " : &7Droits accord\351s aux autres joueurs, 0 = Oui, 1 = Non"))
+                                Text.builder().append(MESSAGE("&enoEnter___: &b[" + plot.get().getNoEnter() + "] &7Interdiction d'entrer sur la parcelle"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "noenter", getValue(plot.get().getNoEnter()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoFly_____: &b[" + plot.get().getNoFly() + "] &7Fly interdit sur la parcelle"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nofly", getValue(plot.get().getNoFly()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoBuild____: &b[" + plot.get().getNoBuild() + "] &7Interdiction de construire"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nobuild", getValue(plot.get().getNoBuild()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+
+                                Text.builder().append(MESSAGE("&enoBreak___: &b[" + plot.get().getNoBreak() + "] &7Interdiction de casser"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nobreak", getValue(plot.get().getNoBreak()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoInteract_: &b[" + plot.get().getNoInteract() + "] &7Interdiction d'ouvrir portes,coffres..."))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nointeract", getValue(plot.get().getNoInteract()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoTeleport_: &b[" + plot.get().getNoTeleport() + "] &7Interdiction de se t\351l\351porter"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "noteleport", getValue(plot.get().getNoTeleport()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoFire_____: &b[" + plot.get().getNoFire() + "] &7Interdiction de mettre le feu"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nofire", getValue(plot.get().getNoFire()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoMob_____: &b[" + plot.get().getNoMob() + "] &7Les mob ne spawnerons pas"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nomob", getValue(plot.get().getNoMob()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoTNT_____: &b[" + plot.get().getNoTNT() + "] &7TNT d\351sactiv\351 sur la parcelle"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "notnt", getValue(plot.get().getNoTNT()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                
+                                Text.builder().append(MESSAGE("&enoCommand_: &b[" + plot.get().getNoCommand() + "] &7Interdiction de taper des commandes"))
+                                    .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nocommand", getValue(plot.get().getNoCommand()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText())
+  
+                    .header(formatText("&ePlot " + plot.get().getName() + " : &aDroits accord\351s aux autres joueurs, Oui = 1, Non = 0"))
                     .padding(Text.of("-"))
                     .sendTo(src);
 	
             } else {
                 if(!ctx.getOne("value").isPresent()){
-                    player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag &6Oui = 1 Non = 0"));
+                    player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
                     return CommandResult.empty();
                 }
 
@@ -84,10 +117,10 @@ public class CommandPlotFlag implements CommandExecutor {
                 Integer value = ctx.<Integer> getOne("value").get(); 
 
                 if (value != 1 && value != 0){
-                    player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag &6Oui = 1 Non = 0"));
+                    player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
                     return CommandResult.empty();	
                 }
-
+                               
                 switch (flag.toLowerCase()){
                     case "noenter":
                         plot.get().setNoEnter(value);
@@ -145,5 +178,18 @@ public class CommandPlotFlag implements CommandExecutor {
         }
         
     return CommandResult.empty();	
+    }
+    
+    private Integer getValue(Integer value){
+        int val = 0;
+        switch(value){
+            case 0:
+                val = 1;
+                break;
+            case 1:
+                val = 0;
+                break;
+        }
+        return val;
     }
 }

@@ -16,7 +16,7 @@ public class CommandDataSave implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.data.save")) {
+        if(src instanceof Player && src.hasPermission("actus.admin.data")) {
             Data.commit();
             src.sendMessage(MESSAGE("&7Data sauvegard\351"));
             return CommandResult.success();

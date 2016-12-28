@@ -17,12 +17,15 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import static java.lang.Math.abs;
 import java.util.Optional;
+import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.BUYING_COST_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.NO_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.PROTECT_LOADED_PLOT;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 public class CommandPlotExpand implements CommandExecutor {
            
@@ -167,28 +170,49 @@ public class CommandPlotExpand implements CommandExecutor {
             point = ctx.<Integer> getOne("point").get();    // on récupére le nouveau point de coordonnée 
             
             Boolean SuccessTransaction = false;
+            Location<World> loc;
             
             switch(axe){ 
                 case "Z1": 
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
+                    loc = new Location<>(plot.get().getWorld().get(), new Vector3d(plot.get().getX1(), plot.get().getY1(), point));
+                    if(IsAllowed(loc,aplayer)){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
                     nbBlock = expand * abs(plot.get().getX1() - plot.get().getX2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
                     if (SuccessTransaction == true)plot.get().setZ1(point);
                     break;
                 case "Z2":
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
+                    loc = new Location<>(plot.get().getWorld().get(), new Vector3d(plot.get().getX2(), plot.get().getY2(), point));
+                    if(IsAllowed(loc,aplayer)){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
                     nbBlock = expand * abs(plot.get().getX1() - plot.get().getX2()); 
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
                     if (SuccessTransaction == true)plot.get().setZ2(point);
                     break; 
                 case "X1":
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
+                    loc = new Location<>(plot.get().getWorld().get(), new Vector3d(point, plot.get().getY1(), plot.get().getZ1()));
+                    if(IsAllowed(loc,aplayer)){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
                     nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
                     if (SuccessTransaction == true)plot.get().setX1(point);
                     break;     
                 case "X2":
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
+                    loc = new Location<>(plot.get().getWorld().get(), new Vector3d(point, plot.get().getY2(), plot.get().getZ2()));
+                    if(IsAllowed(loc,aplayer)){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
                     nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
                     if (SuccessTransaction == true)plot.get().setX2(point);
@@ -218,5 +242,14 @@ public class CommandPlotExpand implements CommandExecutor {
             if(aplayer.getLevel() != 10){ aplayer.debitMoney(amount);}
             return true;
         } else { return false; }
+    }
+    
+    private boolean IsAllowed(Location<World> loc, APlayer aplayer){
+        if(plotManager.plotAllow(loc, loc)){
+            if(aplayer.getLevel() != 10){
+                return false;
+            }
+        }
+        return true;
     }
 }

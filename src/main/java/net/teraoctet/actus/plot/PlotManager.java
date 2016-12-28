@@ -3,16 +3,12 @@ package net.teraoctet.actus.plot;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.Data.jails;
 import static net.teraoctet.actus.utils.Data.plots;
 import static net.teraoctet.actus.utils.Data.setts;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import static org.spongepowered.api.block.BlockTypes.AIR;
-import static org.spongepowered.api.block.BlockTypes.GLOWSTONE;
-import static org.spongepowered.api.block.BlockTypes.OBSIDIAN;
 import static org.spongepowered.api.block.BlockTypes.TORCH;
 
 import org.spongepowered.api.entity.living.player.Player;
@@ -77,9 +73,9 @@ public class PlotManager {
         int Z = location.getBlockZ();
         
         if (plot.getworldName().equalsIgnoreCase(world.getExtent().getName()) == false){return false;}
-        else if ((X < plot.getX1()) || (X > plot.getX2())){return false;}
-        else if ((Z < plot.getZ1()) || (Z > plot.getZ2())){return false;}
-        else if ((Y < plot.getY1()) || (Y > plot.getY2())){return false;}
+        else if (((X < plot.getX1()) || (X > plot.getX2())) && ((X > plot.getX1()) || (X < plot.getX2()))){return false;}
+        else if (((Z < plot.getZ1()) || (Z > plot.getZ2())) && ((Z > plot.getZ1()) || (Z < plot.getZ2()))){return false;}
+        else if (((Y < plot.getY1()) || (Y > plot.getY2())) && ((Y > plot.getY1()) || (Y < plot.getY2()))){return false;}
         return true;
     }
     
@@ -90,9 +86,9 @@ public class PlotManager {
         int Z = vector.getFloorZ();
         
         if (plot.getworldName().equalsIgnoreCase(world) == false){return false;}
-        else if ((X < plot.getX1()) || (X > plot.getX2())){return false;}
-        else if ((Z < plot.getZ1()) || (Z > plot.getZ2())){return false;}
-        else if ((Y < plot.getY1()) || (Y > plot.getY2())){return false;}
+        else if (((X < plot.getX1()) || (X > plot.getX2())) && ((X > plot.getX1()) || (X < plot.getX2()))){return false;}
+        else if (((Z < plot.getZ1()) || (Z > plot.getZ2())) && ((Z > plot.getZ1()) || (Z < plot.getZ2()))){return false;}
+        else if (((Y < plot.getY1()) || (Y > plot.getY2())) && ((Y > plot.getY1()) || (Y < plot.getY2()))){return false;}
         return true;
     }
     
@@ -176,38 +172,32 @@ public class PlotManager {
         }
     }
     
-    public Location getBorder1(){
-        if ((this.border1 != null) && (this.border2 != null)){
-            int x0 = this.border1.getBlockX();
-            int y0 = this.border1.getBlockY();
-            int z0 = this.border1.getBlockZ();
-            int x1 = this.border2.getBlockX();
-            int y1 = this.border2.getBlockY();
-            int z1 = this.border2.getBlockZ();
-            
+    public Optional<Location> getBorder1(){
+        if (this.border1 != null){
+            int x = this.border1.getBlockX();
+            int y = this.border1.getBlockY();
+            int z = this.border1.getBlockZ();
+
             Extent extent = this.border1.getExtent();
-            
-            return new Location(extent, Math.min(x0, x1), Math.min(y0, y1), Math.min(z0, z1));
+            Location loc = new Location(extent, x, y, z);
+            return Optional.of(loc);
         }
-        return this.border1;
+        return Optional.empty();
     }
     
-    public Location getBorder2()
+    public Optional<Location> getBorder2()
     {
-        if ((this.border1 != null) && (this.border2 != null))
+        if (this.border2 != null)
         {
-            int x0 = this.border1.getBlockX();
-            int y0 = this.border1.getBlockY();
-            int z0 = this.border1.getBlockZ();
-            int x1 = this.border2.getBlockX();
-            int y1 = this.border2.getBlockY();
-            int z1 = this.border2.getBlockZ();
+            int x = this.border2.getBlockX();
+            int y = this.border2.getBlockY();
+            int z = this.border2.getBlockZ();
             
-            Extent extent = this.border1.getExtent();
-            
-          return new Location(extent, Math.max(x0, x1), Math.max(y0, y1), Math.max(z0, z1));
+            Extent extent = this.border2.getExtent();
+            Location loc = new Location(extent,x, y, z);
+            return Optional.of(loc);
         }
-        return this.border2;
+        return Optional.empty();
     }
     
     /**
@@ -268,7 +258,7 @@ public class PlotManager {
     public boolean plotAllow(Location l1, Location l2){                
         Location <World> w = l1;
         World world = w.getExtent();
-        Plot newPlot = new Plot(world.getName(),this.border1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
+        Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
                 
         return plots.stream().filter((plot) -> (plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))).anyMatch((plot) -> ( 
                 foundPlot(plot.getLocX1Y1Z1(),newPlot) || foundPlot(plot.getLocX2Y2Z2(),newPlot) ||
@@ -276,9 +266,9 @@ public class PlotManager {
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
                 foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot)));
     }
-    
+        
     public void spawnTag (Location loc){
-        loc.setBlockType(GLOWSTONE, Cause.of(NamedCause.source(plugin)));
+        loc.setBlockType(TORCH, Cause.of(NamedCause.source(plugin)));
     }  
     
     public void remTag (Plot plot){
@@ -298,7 +288,7 @@ public class PlotManager {
         if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
             if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
                 if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
-                    if(block.equals(GLOWSTONE))return true;     
+                    if(block.equals(TORCH))return true;     
                 }
             }
         }
@@ -311,7 +301,7 @@ public class PlotManager {
         if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
             if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
                 if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
-                    if(block.equals(GLOWSTONE))return true;     
+                    if(block.equals(TORCH))return true;     
                 }
             }
         }

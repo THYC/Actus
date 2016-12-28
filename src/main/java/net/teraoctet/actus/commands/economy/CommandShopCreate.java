@@ -154,8 +154,8 @@ public class CommandShopCreate implements CommandExecutor {
                                 armorStand.offer(Keys.INVISIBLE, false);
                                 armorStand.setBoots(is);
                             }else{
-                                armorStand.setLocation(armorStand.getLocation().add(-0.18, -0.39, -0.2));
-                                armorStand.offer(Keys.INVISIBLE, true);
+                                armorStand.setLocation(armorStand.getLocation());//.add(-0.18, -0.39, -0.2));
+                                armorStand.offer(Keys.INVISIBLE, false);
                                 armorStand.offer(Keys.ARMOR_STAND_HAS_ARMS,true);
                                 armorStand.offer(Keys.ARMOR_STAND_IS_SMALL, true);
                                 armorStand.offer(Keys.RIGHT_ARM_ROTATION,Vector3d.from(-35,700, 8));

@@ -1,8 +1,11 @@
 package net.teraoctet.actus.commands.economy;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.economy.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -45,9 +48,23 @@ public class CommandShopList implements CommandExecutor {
                         String transaction = itemShop.get().getTransactType();
                         Double price = itemShop.get().getPrice();
                         src.sendMessages(Text.builder()
-                                .append(MESSAGE("&a - " + worldName + " : " + X + " : " + Y + " : " + Z + " : &e" + transaction + " " + item + " &b" + price))
+                                .append(MESSAGE("&d[+] "))
+                                .onClick(TextActions.runCommand("/as " + uuid))
+                                .onHover(TextActions.showText(MESSAGE("&eClick ici pour modifier l'ArmorStand"))).build()
+                                .concat(Text.builder()
+                                .append(MESSAGE("&a - " + worldName + " : " + X + " : " + Y + " : " + Z + " : "))
+                                .onClick(TextActions.executeCallback(cb.callTPShop(player.getWorld(),uuid)))
+                                .onHover(TextActions.showText(MESSAGE("&eClick ici pour te TP sur le shop"))).build())
+                                .concat(Text.builder()
+                                .append(MESSAGE("&e" + transaction + " " + item + " &b" + price))
                                 .onClick(TextActions.executeCallback(cb.callRemoveShop(player.getWorld(),uuid)))
-                                .onHover(TextActions.showText(MESSAGE("&4Click ici pour supprimer le shop"))).build());
+                                .onHover(TextActions.showText(MESSAGE("&4Click ici pour supprimer le shop"))).build()));
+                    }else{
+                        try {
+                            itemShopManager.delItemShop(UUID.fromString(uuid));
+                        } catch (IOException ex) {
+                            Logger.getLogger(CommandShopList.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 });
                 return CommandResult.success();

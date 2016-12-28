@@ -1,7 +1,6 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.KILLED_BY;
 import static net.teraoctet.actus.utils.MessageManager.SUICIDE;
@@ -29,7 +28,7 @@ public class CommandKill implements CommandExecutor {
         else if (src.hasPermission("actus.kills")){
             if(src instanceof Player) {
                 Player player = (Player) src;
-                player.offer(Keys.HEALTH_SCALE, 0d);
+                player.offer(Keys.HEALTH, 0d);
                 getGame().getServer().getBroadcastChannel().send(SUICIDE(src.getName())); 
                 return CommandResult.success();
             } else {

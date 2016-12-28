@@ -1,7 +1,6 @@
 package net.teraoctet.actus.utils;
 import java.io.File;
 import java.io.IOException;
-import net.teraoctet.actus.Actus;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -26,6 +25,7 @@ public class Config {
                 config.getNode("mysql", "database").setValue("minecraft");
                 config.getNode("limits", "MAX_TEMPBAN_TIME_IN_SECONDS").setValue(3600);
                 config.getNode("limits", "MAX_MUTE_TIME_IN_SECONDS").setValue(600);
+                config.getNode("limits", "DEFAULT_TEMP_JAIL_IN_SECONDS").setValue(3600);
                 config.getNode("plot", "DEL_SIGN_AFTER_SALE").setValue(true);
                 config.getNode("plot", "DISPLAY_PLOT_MSG_FOR_OWNER").setValue(true);
                 config.getNode("guild", "MAX_NUMBER_OF_MEMBER").setValue(20);
@@ -35,6 +35,8 @@ public class Config {
                 config.getNode("server", "UNIQUE_SPAWN_WORLD").setValue(0);
                 config.getNode("server", "SPAWN_WORLD").setValue("World");
                 config.getNode("server", "DIAMETER_MAX_TPR").setValue(2000);
+                config.getNode("server", "TNT_DISABLE").setValue(false);
+                config.getNode("server", "CREEPER_DISABLE").setValue(false);
                 config.getNode("version").setValue(1);
                 manager.save(config);
             }
@@ -53,6 +55,7 @@ public class Config {
     public static String MYSQL_DATABASE() { return config.getNode("mysql", "database").getString(); }
     public static int LIMITS_MAX_TEMPBAN_TIME_IN_SECONDS() { return config.getNode("limits", "MAX_TEMPBAN_TIME_IN_SECONDS").getInt(); }
     public static int LIMITS_MAX_MUTE_TIME_IN_SECONDS() { return config.getNode("limits", "MAX_MUTE_TIME_IN_SECONDS").getInt(); }
+    public static int DEFAULT_TEMP_JAIL_IN_SECONDS() { return config.getNode("limits", "DEFAULT_TEMP_JAIL_IN_SECONDS").getInt(); }
     public static boolean DEL_SIGN_AFTER_SALE() { return config.getNode("plot", "DEL_SIGN_AFTER_SALE").getBoolean(); }
     public static boolean DISPLAY_PLOT_MSG_FOR_OWNER() { return config.getNode("plot", "DISPLAY_PLOT_MSG_FOR_OWNER").getBoolean(); }
     public static int GUILD_MAX_NUMBER_OF_MEMBER() { return config.getNode("guild", "MAX_NUMBER_OF_MEMBER").getInt(); }
@@ -62,4 +65,6 @@ public class Config {
     public static int UNIQUE_SPAWN_WORLD() { return config.getNode("server", "UNIQUE_SPAWN_WORLD").getInt(); }
     public static int DIAMETER_MAX_TPR() { return config.getNode("server", "DIAMETER_MAX_TPR").getInt(); }
     public static String SPAWN_WORLD() { return config.getNode("server", "SPAWN_WORLD").getString(); }
+    public static boolean TNT_DISABLE() { return config.getNode("server", "TNT_DISABLE").getBoolean(); }
+    public static boolean CREEPER_DISABLE() { return config.getNode("server", "CREEPER_DISABLE").getBoolean(); }
 }

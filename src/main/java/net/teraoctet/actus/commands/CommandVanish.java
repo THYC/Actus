@@ -21,17 +21,19 @@ public class CommandVanish implements CommandExecutor {
             Optional<Player> target = ctx.<Player> getOne("player");
             Player player = (Player) src;
             
-            if(target.isPresent() && src.hasPermission("actus.vanish.others")){
-		player = target.get();
-            }else{
-                src.sendMessage(NO_PERMISSIONS());
+            if(target.isPresent()){
+                if(src.hasPermission("actus.vanish.others")){
+                    player = target.get();
+                }else{
+                    src.sendMessage(NO_PERMISSIONS());
+                }
             }
 
-            if (player.get(Keys.INVISIBLE).isPresent() && !player.get(Keys.INVISIBLE).get()){
-                player.offer(Keys.INVISIBLE, true);
+            if (player.get(Keys.VANISH).isPresent() && !player.get(Keys.VANISH).get()){
+                player.offer(Keys.VANISH, true);
                 player.sendMessage(MESSAGE("&eTu es maintenant invisible ..."));
-            }else if(player.get(Keys.INVISIBLE).isPresent() && player.get(Keys.INVISIBLE).get()){
-                player.offer(Keys.INVISIBLE, false);
+            }else if(player.get(Keys.VANISH).isPresent() && player.get(Keys.VANISH).get()){
+                player.offer(Keys.VANISH, false);
                 player.sendMessage(MESSAGE("&eTu es de nouveau visible ..."));
             }
             return CommandResult.success();

@@ -3,6 +3,7 @@ package net.teraoctet.actus.utils;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import static net.teraoctet.actus.Actus.mapCountDown;
 import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -50,6 +51,7 @@ public class CooldownToTP {
             try{
             Location lastLocation = player.getLocation();
             player.transferToWorld(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z));
+            mapCountDown.remove(player);
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             aplayer.setLastposition(DeSerialize.location(lastLocation));
             aplayer.update();

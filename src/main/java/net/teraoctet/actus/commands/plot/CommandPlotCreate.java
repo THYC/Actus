@@ -1,9 +1,11 @@
 package net.teraoctet.actus.commands.plot;
 
+import java.util.function.Consumer;
 import net.teraoctet.actus.plot.PlotManager;
-import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.utils.MessageManager.USAGE;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.plot.Plot;
+import net.teraoctet.actus.utils.Data;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -18,9 +20,16 @@ import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.NAME_ALREADY_USED;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
-import static net.teraoctet.actus.utils.MessageManager.UNDEFINED_PLOT_ANGLES;
+import static net.teraoctet.actus.utils.MessageManager.BEDROCK2SKY_PROTECT_PLOT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.utils.MessageManager.PROTECT_LOADED_PLOT;
+import static net.teraoctet.actus.utils.MessageManager.PROTECT_PLOT_SUCCESS;
+import static net.teraoctet.actus.utils.MessageManager.UNDEFINED_PLOT_ANGLES;
+import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.world.World;
 
 public class CommandPlotCreate implements CommandExecutor {
            
@@ -46,17 +55,19 @@ public class CommandPlotCreate implements CommandExecutor {
             Boolean strict = false;
 
             if (plotManager.hasPlot(name) == false){
-                Location[] c = {plotManager.getBorder1(), plotManager.getBorder2()};
-                if ((c[0] == null) || (c[1] == null)){
+                if(!plotManager.getBorder1().isPresent() || !plotManager.getBorder2().isPresent()){
                     player.sendMessage(UNDEFINED_PLOT_ANGLES());
                     return CommandResult.empty();
                 }
-
-                if(plotManager.plotAllow(plotManager.getBorder1(), plotManager.getBorder2())){
-                    if(!player.hasPermission("actus.admin.plot")){
+                Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
+                int level = 0;
+                
+                if(plotManager.plotAllow(plotManager.getBorder1().get(), plotManager.getBorder2().get())){
+                    if(aplayer.getLevel() != 10){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
+                    level = 1;
                 }
 
                 int X = (int) Math.round(c[0].getX()-c[1].getX());
@@ -76,7 +87,7 @@ public class CommandPlotCreate implements CommandExecutor {
                         if (ctx.<String> getOne("strict").get().equalsIgnoreCase("strict")) strict = true;
                     }
                     player.sendMessage(MESSAGE("&7Le co\373t de cette transaction est de : &e" + amount + " \351meraudes"));
-                    player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation de ta parcelle").onClick(TextActions.runCommand("/p createok " + name + " " + amount + " " + strict)).color(TextColors.AQUA).build());  
+                    player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation de ta parcelle").onClick(TextActions.executeCallback(callCreate(name,strict,amount,level))).color(TextColors.AQUA).build());  
                     return CommandResult.success();
                 } else {
                     player.sendMessage(BUYING_COST_PLOT(player,String.valueOf(amount),String.valueOf(aplayer.getMoney())));
@@ -95,5 +106,46 @@ public class CommandPlotCreate implements CommandExecutor {
         }
         
         return CommandResult.empty();
+    }
+    
+    public Consumer<CommandSource> callCreate(String plotName, Boolean strict, int amount, int level) {
+	return (CommandSource src) -> {
+            Player player = (Player) src;
+            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+            PlotManager plotManager = PlotManager.getSett(player);
+            Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
+
+            String playerUUID = player.getUniqueId().toString();
+            if(aplayer.getLevel() == 10){ playerUUID = "ADMIN";} else { aplayer.debitMoney(amount);}
+
+            int y1 = (int)c[0].getY();
+            int y2 = (int)c[1].getY();
+
+            if(strict == false) { 
+                player.sendMessage(BEDROCK2SKY_PROTECT_PLOT_SUCCESS(player,plotName));
+                y1 = 0;
+                y2 = 500;
+            } else {
+                player.sendMessage((ChatType) PROTECT_PLOT_SUCCESS(player,plotName),Text.of(TextColors.GREEN," Y " + y1 + " : " + y2));
+            }
+
+            Location <World> world = c[0];
+            String worldName = world.getExtent().getName();
+            
+            int x1 = c[0].getBlockX();
+            int z1 = c[0].getBlockZ();
+            int x2 = c[1].getBlockX();
+            int z2 = c[1].getBlockZ();
+                        
+            String message = "&b-- SECURISED --";
+
+            Plot plot = new Plot(plotName,level,worldName,x1,y1,z1,x2,y2,z2,0,0,1,1,1,0,1,1,message,0,1,1,1,playerUUID,playerUUID);
+            plot.insert();
+            Data.commit();
+            Data.addPlot(plot);
+
+            player.sendMessage(ChatTypes.ACTION_BAR,PROTECT_LOADED_PLOT(player,plotName));
+            player.sendMessage(Text.builder("Clique ici, pour voir les flags de ta parcelle !").onClick(TextActions.runCommand("/p flaglist " + plotName)).color(TextColors.AQUA).build());  
+        };
     }
 }

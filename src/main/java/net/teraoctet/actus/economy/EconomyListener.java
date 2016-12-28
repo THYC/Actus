@@ -6,6 +6,7 @@ import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.commands.economy.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -32,7 +33,11 @@ import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.data.type.HandTypes;
+import static org.spongepowered.api.entity.EntityTypes.ARMOR_STAND;
+import static org.spongepowered.api.entity.EntityTypes.ITEM_FRAME;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.item.ItemTypes;
 
 public class EconomyListener {
@@ -50,10 +55,10 @@ public class EconomyListener {
         UUID uuid = entity.getUniqueId();
         
         //On verifie si le joueur a cliqué sur un ItemFame ou un ArmorStand
-        if(entity.getType().getName().contains("itemframe") || entity.getType().getName().contains("armorstand")){
+        if(entity.getType().equals(ITEM_FRAME) || entity.getType().equals(ARMOR_STAND)){
             
             //Si aucum ItemShop est enregistré a cette coordonnée on propose d'en creer un
-            if(!itemShopManager.hasShop(uuid) && player.hasPermission("actus.admin.shop") && aplayer.getLevel()==10){ 
+            if(!itemShopManager.hasShop(uuid) && aplayer.getLevel()==10){ 
                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                 if(is.isPresent()){
                     player.sendMessage(MESSAGE("\n\n"));
@@ -273,4 +278,49 @@ public class EconomyListener {
             }
         }
     }
+    
+    /*@Listener
+    //@Exclude(ClickInventoryEvent.Shift.class)
+    public void onClick(ClickInventoryEvent event, @First Player player) {
+        List<SlotTransaction> slots = event.getTransactions();
+        slots.stream().forEach((slot) -> {
+            player.sendMessage(MESSAGE("CLICK : " + slot.getSlot().getName().getId().toString()));
+            player.sendMessage(MESSAGE("CLICK : " + event.getTargetInventory().getName()));
+        });
+    }*/
+    
+    /*@Listener
+    @Exclude(ClickInventoryEvent.Shift.class)
+    public void onClick(ClickInventoryEvent event, @First Player player) {
+        List<SlotTransaction> slots = event.getTransactions();
+        slots.stream().forEach((slot) -> {
+            player.sendMessage(MESSAGE(slot.getSlot().toString()));
+        });
+    }*/
+    
+    @Listener
+    public void test6(ClickInventoryEvent.Transfer event){
+        plugin.getLogger().info("Eco listener TRANSFER : " + event.getTransactions().get(0).getSlot().getName().getId());
+    }
+    
+    @Listener
+    public void tes76(UseItemStackEvent event){
+        plugin.getLogger().info("Eco listener UseItemStackEvent : " + event.getItemStackInUse().getType().getName());
+        plugin.getLogger().info("Eco listener UseItemStackEvent : " + event.getOriginalRemainingDuration());
+    }
+    
+    /*@Listener(order = Order.POST)
+    public void onAffectSlotEvent(AffectSlotEvent event, @Root Player player) {
+        		
+	for(SlotTransaction transaction : event.getTransactions()) {
+            Slot slot = transaction.getSlot();
+            Optional<ItemStack> optionalItem = slot.peek();
+			
+            if(optionalItem.isPresent()) {
+		player.sendMessage(MESSAGE("AFFECT : " + optionalItem.get().getItem().getId()));
+                //player.sendMessage(MESSAGE(event.getTransactions().));
+		//transaction.setValid(false);
+            }
+	}
+    }*/
 }

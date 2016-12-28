@@ -1,5 +1,7 @@
 package net.teraoctet.actus.trace;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.traceManager;
 import net.teraoctet.actus.player.APlayer;
@@ -8,12 +10,10 @@ import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import static org.spongepowered.api.item.ItemTypes.ARROW;
 import static org.spongepowered.api.item.ItemTypes.FLINT_AND_STEEL;
@@ -23,6 +23,8 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 public class TraceListener {
+    static final Map<Player,Location<World>> tmpTrace = new HashMap<>();
+    
     @Listener
     public void onBreakBlock(ChangeBlockEvent.Break event, @First Player player) {
         
@@ -42,7 +44,7 @@ public class TraceListener {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
-        Location<World> loc = optLoc.get();              
+        Location<World> loc = optLoc.get(); 
         if(aplayer.getLevel() != 10){
             Trace trace = new Trace(player, loc, "PLACE",block.getFinal().getState().getId());  
             trace.insert();
@@ -73,22 +75,12 @@ public class TraceListener {
         Optional<Location<World>> loc = event.getTargetBlock().getLocation();
         if(item.isPresent() && loc.isPresent()){
             if(item.get().getItem().equals(ARROW)){
+                if(tmpTrace.containsKey(player) && tmpTrace.containsValue(loc.get())) return;
                 traceManager.refresh();
                 String trace = traceManager.load(loc.get());
                 player.sendMessage(MESSAGE(trace));
-            }
-        }
-    }
-    
-    @Listener
-    public void onEntityInteract(InteractEntityEvent.Secondary event, @First Player player){    
-        Entity entity = event.getTargetEntity();
-        Optional<ItemStack> item = player.getItemInHand(HandTypes.MAIN_HAND);
-        if(item.isPresent()){
-            if(item.get().getItem().equals(ARROW)){
-                traceManager.refresh();
-                String trace = traceManager.load(entity.getLocation());
-                player.sendMessage(MESSAGE(trace));
+                tmpTrace.remove(player);
+                tmpTrace.put(player, loc.get());
             }
         }
     }

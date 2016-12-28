@@ -36,17 +36,8 @@ public class CommandPlotLevel implements CommandExecutor {
                 return CommandResult.empty();
             }
 
-            if(ctx.getOne("level").isPresent()){
-                int level = ctx.<Integer> getOne("level").get();  
-                
-                plot.get().setLevel(level);
-                plot.get().update();
-                player.sendMessage(MESSAGE("&e" + plot.get().getName() + " level :&7" + plot.get().getLevel()));
-                return CommandResult.success();
-            } else {
-                player.sendMessage(MESSAGE("&e" + plot.get().getName() + " level :&7" + plot.get().getLevel()));
-                player.sendMessage(USAGE("/plot level [level]"));
-            }
+            player.sendMessage(MESSAGE("&ePlot : &7" + plot.get().getName() + " &elevel :&7" + plot.get().getLevel()));
+            player.sendMessage(USAGE("/plot setlevel [level]"));
         } 
         
         else if (src instanceof ConsoleSource) {

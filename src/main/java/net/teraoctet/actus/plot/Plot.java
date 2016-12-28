@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plugin;
@@ -23,11 +24,8 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import static org.spongepowered.api.Sponge.getGame;
 import static org.spongepowered.api.block.BlockTypes.AIR;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 
 public class Plot {
@@ -127,7 +125,7 @@ public class Plot {
      */
     public void addSale(Location loc) {
         String location = DeSerialize.location(loc);
-	Data.queue("INSERT INTO gplsale VALUES ('" + plotName + "', '" + location + "')");
+	Data.queue("INSERT INTO plsale VALUES ('" + plotName + "', '" + location + "')");
     }
     
     /**
@@ -140,7 +138,7 @@ public class Plot {
         try {
             Connection c = datasource.getConnection();
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT * FROM gplsale WHERE plotName = '" + plotName + "'");
+            ResultSet rs = s.executeQuery("SELECT * FROM plsale WHERE plotName = '" + plotName + "'");
             while(rs.next()) {
                 Optional<Location<World>> loc = DeSerialize.getLocation(rs.getString("location"));
                 if (loc.get().getBlockType().equals(BlockTypes.STANDING_SIGN) || loc.get().getBlockType().equals(BlockTypes.WALL_SIGN)){
@@ -166,7 +164,7 @@ public class Plot {
             s.close();
             c.close();
         } catch (SQLException e) {}
-	Data.queue("DELETE FROM gplsale WHERE plotName = '" + plotName + "'");
+	Data.queue("DELETE FROM plsale WHERE plotName = '" + plotName + "'");
     }
     
 	
@@ -285,9 +283,22 @@ public class Plot {
         String NameAllowed = "";
         for(String uuid : UUID){
             if (uuid.equalsIgnoreCase("ADMIN")) return "ADMIN";
+            if(getAPlayer(uuid) == null)return "ADMIN";
             NameAllowed = NameAllowed + " " + getAPlayer(uuid).getName();
         }
         return NameAllowed;
+    }
+    
+    /**
+     * List comprenant les noms des joueurs autorisés 
+     * à utiliser la parcelle (Plot)
+     * @return List type String
+     */
+    public List<String> getListUuidAllowed(){
+        String[] UUID = this.uuidAllowed.split(" ");
+        List<String> nameAllowed = new ArrayList();
+        nameAllowed.addAll(Arrays.asList(UUID));
+        return nameAllowed;
     }
     
     /**

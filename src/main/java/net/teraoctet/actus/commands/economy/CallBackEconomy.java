@@ -16,7 +16,6 @@ import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,6 +24,7 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.type.GridInventory;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 public class CallBackEconomy {
@@ -190,17 +190,28 @@ public class CallBackEconomy {
     
     public Consumer<CommandSource> callRemoveShop(World world, String uuid) {
 	return (CommandSource src) -> {
-            Optional<Entity> frame = world.getEntity(UUID.fromString(uuid));                   
-            if(frame.isPresent()){
+            Optional<Entity> entity = world.getEntity(UUID.fromString(uuid));                   
+            if(entity.isPresent()){
                 try {
                     itemShopManager.delItemShop(UUID.fromString(uuid));
-                    frame.get().remove();
+                    entity.get().remove();
                     src.sendMessage(MESSAGE("&e-------------------------"));
                     src.sendMessage(MESSAGE("&4ItemShop supprim\351"));  
                     src.sendMessage(MESSAGE("&e-------------------------"));
                 } catch (IOException ex) {
                     Logger.getLogger(CallBackEconomy.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        };
+    }
+    
+    public Consumer<CommandSource> callTPShop(World world, String uuid) {
+	return (CommandSource src) -> {
+            Optional<Entity> entity = world.getEntity(UUID.fromString(uuid));                   
+            if(entity.isPresent()){
+                Location loc = entity.get().getLocation();
+                Player player = (Player)src;
+                player.setLocation(loc);
             }
         };
     }

@@ -16,7 +16,7 @@ public class CommandData implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.data")) {
+        if(src instanceof Player && src.hasPermission("actus.admin.data")) {
             src.sendMessage(USAGE("/data save"));
             src.sendMessage(USAGE("/data reload"));
             return CommandResult.success();

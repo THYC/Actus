@@ -39,12 +39,12 @@ public class CommandPlotFlaglist implements CommandExecutor {
                 plot = plotManager.getPlot(player.getLocation());
             }
 
-            if (plot == null){
+            if (!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
                 player.sendMessage(USAGE("/plot flag> : liste les flags de la parcelle, vous devez \352tre sur la parcelle"));
                 player.sendMessage(USAGE("/plot flaglist <NomParcelle> : liste les flags de la parcelle nomm\351e"));
                 return CommandResult.empty();
-            } else if (!plot.get().getUuidOwner().equalsIgnoreCase(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
+            } else if (!plot.get().getUuidAllowed().equalsIgnoreCase(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
                 player.sendMessage(ALREADY_OWNED_PLOT());
                 return CommandResult.empty();  
             }
@@ -53,17 +53,16 @@ public class CommandPlotFlaglist implements CommandExecutor {
             Builder builder = paginationService.builder();
 
             builder.title(formatText("&6Flag Plot"))
-                .contents(  formatText("&e/plot flag <flag> <0|1> : &7modifie la valeur d'un flag"),
-                            formatText("&enoEnter : &b" + plot.get().getNoEnter() + " &7ils peuvent entrer sur la parcelle"),
-                            formatText("&enoFly : &b" + plot.get().getNoFly() + " &7ils peuvent pas voler au dessus"),
-                            formatText("&enoBuild : &b" + plot.get().getNoBuild() + " &7ils peuvent construirent"),
-                            formatText("&enoBreak : &b" + plot.get().getNoBreak() + " &7ils peuvent casser"),
-                            formatText("&enoInteract : &b" + plot.get().getNoInteract() + " &7ils peuvent ouvrir les portes,coffres..."),
-                            formatText("&enoTeleport : &b" + plot.get().getNoTeleport() + " &7ils peuvent se t\351l\351porter"),
-                            formatText("&enoFire : &b" + plot.get().getNoFire() + " &7mettre le feu"),
-                            formatText("&enoMob : &b" + plot.get().getNoMob() + " &7les monstres spawn"),
-                            formatText("&enoTNT : &b" + plot.get().getNoTNT() + " &7activation de la TNT"),
-                            formatText("&enoCommand : &b" + plot.get().getNoCommand() + " &7ils peuvent taper des commandes"))
+                .contents(  formatText("&enoEnter : &b" + plot.get().getNoEnter() + " &7Interdiction d'entrer sur la parcelle"),
+                            formatText("&enoFly : &b" + plot.get().getNoFly() + " &7Fly interdit sur la parcelle"),
+                            formatText("&enoBuild : &b" + plot.get().getNoBuild() + " &7Interdiction de construire"),
+                            formatText("&enoBreak : &b" + plot.get().getNoBreak() + " &7Interdiction de casser"),
+                            formatText("&enoInteract : &b" + plot.get().getNoInteract() + " &7Interdiction d'ouvrir portes,coffres..."),
+                            formatText("&enoTeleport : &b" + plot.get().getNoTeleport() + " &7Interdiction de se t\351l\351porter"),
+                            formatText("&enoFire : &b" + plot.get().getNoFire() + " &7Interdiction de mettre le feu"),
+                            formatText("&enoMob : &b" + plot.get().getNoMob() + " &7Les mob ne spawnerons pas"),
+                            formatText("&enoTNT : &b" + plot.get().getNoTNT() + " &7TNT d\351sactiv\351 sur la parcelle"),
+                            formatText("&enoCommand : &b" + plot.get().getNoCommand() + " &7Interdiction de taper des commandes"))
                 .header(formatText("&ePlot " + plot.get().getName() + " : &7Droits accord\351s aux autres joueurs, 0 = Oui, 1 = Non"))
                 .padding(Text.of("-"))
                 .sendTo(src);  

@@ -3,9 +3,9 @@ package net.teraoctet.actus.portal;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import static net.teraoctet.actus.Actus.portalManager;
 import net.teraoctet.actus.utils.DeSerialize;
-import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -18,6 +18,7 @@ import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -32,9 +33,12 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.explosion.Explosion;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.text.action.TextActions;
 
 public class PortalListener {
           
+    private static ThreadLocalRandom random = ThreadLocalRandom.current();
+    
     public PortalListener() {}
     
     @Listener
@@ -48,7 +52,9 @@ public class PortalListener {
             if(player.hasPermission("actus.portal." + portal.getName()) || aplayer.getLevel() == 10)
             {
                 if(portal.gettoworld().equalsIgnoreCase("DISABLED")){
-                    player.sendMessage(MESSAGE("&aPoint de spawn du portail non configuré, aller au point d'apparition souhaité et taper &e/portal tpfrom " + portal.getName())); 
+                    player.sendMessage(MESSAGE("&aPoint de spawn du portail non configur\351, aller au point d'apparition souhait\351 ")
+                            .concat(MESSAGE("&aet cliquer ici : &e/portal tpfrom " + portal.getName()).toBuilder()
+                                    .onClick(TextActions.runCommand("/portal tpfrom " + portal.getName())).build())); 
                     return;
                 }
                                 
@@ -65,17 +71,15 @@ public class PortalListener {
                     player.sendMessage(ChatTypes.CHAT,MESSAGE("&o&7" + portal.getName()));
                 }
                 
-                ParticleEffect pEffect = getGame().getRegistry().createBuilder(ParticleEffect.Builder.class)
-                        .type(ParticleTypes.PORTAL)
-                        .count(20)
-                        .build();
-            
+                ParticleEffect effect = ParticleEffect.builder().type(ParticleTypes.PORTAL).build();
+                player.playSound(SoundTypes.ENTITY_BLAZE_SHOOT, player.getLocation().getPosition(), 2);
+                                
                 Vector3d origin = new Vector3d(player.getLocation().getPosition().getX(), player.getLocation().getPosition().getY() + 1, player.getLocation().getPosition().getZ());
                 for (double incr = 0; incr < 3.14; incr += 0.1) {
-                    player.getLocation().getExtent().spawnParticles(pEffect, origin.add(Math.cos(incr), 0, Math.sin(incr)), 500);
-                    player.getLocation().getExtent().spawnParticles(pEffect, origin.add(Math.cos(incr), 0, -Math.sin(incr)), 500);
-                    player.getLocation().getExtent().spawnParticles(pEffect, origin.add(-Math.cos(incr), 0, Math.sin(incr)), 500);
-                    player.getLocation().getExtent().spawnParticles(pEffect, origin.add(-Math.cos(incr), 0, -Math.sin(incr)), 500);
+                    player.getLocation().getExtent().spawnParticles(effect, origin.add(Math.cos(incr), 0, Math.sin(incr)), 500);
+                    player.getLocation().getExtent().spawnParticles(effect, origin.add(Math.cos(incr), 0, -Math.sin(incr)), 500);
+                    player.getLocation().getExtent().spawnParticles(effect, origin.add(-Math.cos(incr), 0, Math.sin(incr)), 500);
+                    player.getLocation().getExtent().spawnParticles(effect, origin.add(-Math.cos(incr), 0, -Math.sin(incr)), 500);
                 }
                 player.offer(Keys.GAME_MODE, player.getWorld().getProperties().getGameMode());
             }

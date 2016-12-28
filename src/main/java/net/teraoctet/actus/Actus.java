@@ -20,10 +20,13 @@ import net.teraoctet.actus.utils.TPAH;
 
 import com.google.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import net.teraoctet.actus.bookmessage.ConfigBook;
 import net.teraoctet.actus.player.APlayer;
+import net.teraoctet.actus.player.GraveListener;
 import net.teraoctet.actus.player.PlayerListener;
 import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -47,13 +50,15 @@ import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.channel.MessageChannel;
 
 @Plugin(
-        id = "actus", 
-        name = "Actus", 
-        version = "0.1.0",
-        description = "Server management plugin",
-        url = "http://actus.teraoctet.net",
-        authors = {"thyc82","Votop"}
-        )
+    id = "actus", 
+    name = "Actus", 
+    version = "0.1.0",
+    description = "Server management plugin",
+    url = "http://actus.teraoctet.net",
+    authors = {
+        "thyc82","Votop"
+    }
+)
 
 public class Actus {
      
@@ -76,7 +81,8 @@ public class Actus {
     public static Map<Player,String>action = new HashMap<>();
     public static final ArrayList<TPAH> Atpa = new ArrayList<>();
     public static Config config = new Config();
-       
+    public ConfigBook configBook;
+        
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 	        
@@ -88,15 +94,16 @@ public class Actus {
     	Data.setup();
     	Data.load();
         MessageManager.init();
-        BookManager.init();
+        //BookManager.init();
         ItemShopManager.init();
-
+        
         getGame().getEventManager().registerListeners(this, new PlotListener());
         getGame().getEventManager().registerListeners(this, new PortalListener());
         getGame().getEventManager().registerListeners(this, new PlayerListener());
         getGame().getEventManager().registerListeners(this, new WorldListener());
         getGame().getEventManager().registerListeners(this, new EconomyListener());
         getGame().getEventManager().registerListeners(this, new TraceListener());
+        getGame().getEventManager().registerListeners(this, new GraveListener());
         
         getGame().getCommandManager().register(this, new CommandManager().CommandActus, "actus");
 	getGame().getCommandManager().register(this, new CommandManager().CommandKill, "kill", "tue");
@@ -122,7 +129,7 @@ public class Actus {
 	getGame().getCommandManager().register(this, new CommandManager().CommandTest, "test");
         getGame().getCommandManager().register(this, new CommandManager().CommandRocket, "rocket");
         getGame().getCommandManager().register(this, new CommandManager().CommandPortal, "portal", "portail", "pl", "po");
-        getGame().getCommandManager().register(this, new CommandManager().CommandHead, "head", "skull", "tete");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSkull, "skull", "head", "tete");
         getGame().getCommandManager().register(this, new CommandManager().CommandMagicCompass, "mc", "magic", "compass", "boussole");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignWrite, "write", "ecrire", "signwrite", "sw", "print");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignHelp, "signhelp", "sh");
@@ -132,6 +139,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandShopPurchase, "shoppurchase", "shopp");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopSell, "shopsell", "shops");
         getGame().getCommandManager().register(this, new CommandManager().CommandVanish, "vanish", "vh");
+        getGame().getCommandManager().register(this, new CommandManager().CommandInvisible, "invisible", "invi", "ghost");
         getGame().getCommandManager().register(this, new CommandManager().CommandEnchant, "enchant");
         getGame().getCommandManager().register(this, new CommandManager().CommandRule, "rules", "rule", "rul");
         getGame().getCommandManager().register(this, new CommandManager().CommandBank, "bank", "banque", "bk");
@@ -143,6 +151,9 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandSignCmd, "signcmd", "cmd", "scmd");
         getGame().getCommandManager().register(this, new CommandManager().CommandButcher, "butcher", "massacre");
         getGame().getCommandManager().register(this, new CommandManager().CommandTPR, "tpr", "rtp");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTPThru, "tpthru", "tpt", "thru");
+        getGame().getCommandManager().register(this, new CommandManager().CommandData, "data");
+        getGame().getCommandManager().register(this, new CommandManager().CommandAS, "as", "armorstand");
     }
         
     @Listener
@@ -171,8 +182,10 @@ public class Actus {
         game = Sponge.getGame();    	
     	plugin = Sponge.getPluginManager().getPlugin("actus").get();
         WorldManager.init();
-        WorldManager.load();
-    }   
+        //WorldManager.load();
+    } 
     
-    
+    public static void main (String[] args){
+        System.out.println("ACTUS Plugin SpongePowered Minecraft");
+    } 
 }

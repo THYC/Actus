@@ -1,6 +1,5 @@
 package net.teraoctet.actus.commands.economy;
 
-import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
@@ -13,11 +12,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
 import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.text.Text;
 
 public class CommandSetName implements CommandExecutor {
         
@@ -26,7 +22,7 @@ public class CommandSetName implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.admin.setname")) {
             Player player = (Player) src;
-            Optional<String> name = ctx.<String> getOne("name");
+            Optional<String> arguments = ctx.<String> getOne("arguments");
             String item = "";
             
             if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
@@ -36,17 +32,18 @@ public class CommandSetName implements CommandExecutor {
                 if(isOpt.isPresent()){
                     ItemStack is = isOpt.get();
                     // on vérifie que le paramètre name a été renseigné sinon on prends la valeur itemType de l'objet ItemStack
-                    if(name.isPresent()){item = "&4" + name.get();}else{item = "&4" + is.getItem().getName();} 
+                    if(arguments.isPresent()){
+                        String[] args = arguments.get().split(" ");
+                        String name = "";
+                        for(int i = 0; i < args.length; i++){
+                            name = name + args[i] + " ";
+                        }
+                        item = name;
+                    }else{
+                        item = "&4" + is.getItem().getName();
+                    } 
                     
-                    //LoreData loreData = is.getOrCreate(LoreData.class).get();
                     is.offer(Keys.DISPLAY_NAME, MESSAGE(item));
-
-                    //List<Text> newLore = loreData.lore().get();
-                    //newLore.add(MESSAGE("&8" + shopType));
-                    //newLore.add(MESSAGE("&5" + itemType));
-                    //newLore.add(MESSAGE("&6PRICE: " + price));
-
-                    //DataTransactionResult dataTransactionResult = is.offer(Keys.ITEM_LORE, newLore);
 
                     player.setItemInHand(HandTypes.MAIN_HAND,is);
                     player.sendMessage(MESSAGE("&6Le nom de votre item a \351t\351 changé\351 en : " + item));
