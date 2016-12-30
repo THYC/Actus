@@ -3,8 +3,6 @@ plugins {
     
 }
 
-mainClassName = 'net.teraoctet.actus.Actus'
-
 group = 'net.teraoctet.actus'
 version = '0.1.0'
 description = 'Server management plugin'

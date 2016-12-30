@@ -1,6 +1,5 @@
 package net.teraoctet.actus;
 
-import net.teraoctet.actus.bookmessage.BookManager;
 import net.teraoctet.actus.plot.PlotListener;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.portal.PortalListener;
@@ -20,7 +19,6 @@ import net.teraoctet.actus.utils.TPAH;
 
 import com.google.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,11 +61,11 @@ import org.spongepowered.api.text.channel.MessageChannel;
 public class Actus {
      
     @Inject private Logger logger;
+    
     public static ServerManager serverManager = new ServerManager();
     public static PlotManager plotManager = new PlotManager();
     public static PortalManager portalManager = new PortalManager();
     public static GuildManager guildManager = new GuildManager();
-    public static BookManager bookManager = new BookManager();
     public static ItemShopManager itemShopManager = new ItemShopManager();
     public static PlayerManager playerManager = new PlayerManager();
     public static WarpManager warpManager = new WarpManager();
@@ -81,22 +79,14 @@ public class Actus {
     public static Map<Player,String>action = new HashMap<>();
     public static final ArrayList<TPAH> Atpa = new ArrayList<>();
     public static Config config = new Config();
-    public ConfigBook configBook;
-        
+    public static ConfigBook configBook = new ConfigBook();
+    
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 	        
-        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &edevelopped by THYC and Votop ... Init..."));
-        
-        File folder = new File("config/actus");
-    	if(!folder.exists()) folder.mkdir();
-    	Config.setup();
-    	Data.setup();
-    	Data.load();
-        MessageManager.init();
-        //BookManager.init();
-        ItemShopManager.init();
-        
+        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &edevelopped by THYC and Votop ... Init..."));        
+        if(!init())plugin.getLogger().error("Erreur init");
+                 
         getGame().getEventManager().registerListeners(this, new PlotListener());
         getGame().getEventManager().registerListeners(this, new PortalListener());
         getGame().getEventManager().registerListeners(this, new PlayerListener());
@@ -133,6 +123,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandMagicCompass, "mc", "magic", "compass", "boussole");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignWrite, "write", "ecrire", "signwrite", "sw", "print");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignHelp, "signhelp", "sh");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSignPost, "signpost", "post", "poste");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignBank, "signbank", "sb");
         getGame().getCommandManager().register(this, new CommandManager().CommandSetName, "setname", "sn", "dn");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopCreate, "shopcreate", "shopc");
@@ -154,19 +145,23 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandTPThru, "tpthru", "tpt", "thru");
         getGame().getCommandManager().register(this, new CommandManager().CommandData, "data");
         getGame().getCommandManager().register(this, new CommandManager().CommandAS, "as", "armorstand");
+        getGame().getCommandManager().register(this, new CommandManager().CommandMailBox, "mailbox", "mb", "bal");
+        getGame().getCommandManager().register(this, new CommandManager().CommandPlotClaim, "claim");
     }
         
     @Listener
     public void onDisable(GameStoppingServerEvent event) {
-        for(Player player : game.getServer().getOnlinePlayers()){
+        game.getServer().getOnlinePlayers().stream().map((player) -> {
             APlayer aplayer = getAPlayer(player.getIdentifier());
             long timeConnect = serverManager.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
             long onlineTime = (long)aplayer.getOnlinetime() + timeConnect;
             PlayerManager.removeFirstTime(player.getIdentifier());
             aplayer.setLastonline(serverManager.dateToLong());
             aplayer.setOnlinetime(onlineTime);
+            return aplayer;
+        }).forEach((aplayer) -> {
             aplayer.update();
-        }
+        });
     	Data.commit();
     }
 
@@ -182,10 +177,22 @@ public class Actus {
         game = Sponge.getGame();    	
     	plugin = Sponge.getPluginManager().getPlugin("actus").get();
         WorldManager.init();
-        //WorldManager.load();
+         //WorldManager.load();
     } 
     
-    public static void main (String[] args){
-        System.out.println("ACTUS Plugin SpongePowered Minecraft");
-    } 
+    private boolean init() {
+        try {
+            File folder = new File("config/actus/book");
+            if(!folder.exists()) folder.mkdir();
+            Config.setup();
+            Data.setup();
+            Data.load();
+            MessageManager.init();
+            ItemShopManager.init();
+        
+            return true;
+        } catch (ObjectMappingException ex) {
+            return false;
+        }
+    }
 }

@@ -54,6 +54,38 @@ public class Plot {
     private int noCommand;
     private String uuidOwner;
     private String uuidAllowed;
+    private int id_guild;
+    
+    public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
+    int jail, int noEnter, int noFly, int noBuild, int noBreak, int noTeleport, int noInteract, int noFire, 
+    String message, int mode, int noMob, int noTNT, int noCommand, String uuidOwner, String uuidAllowed, int id_guild){
+        
+        this.plotName = plotName;
+        this.level = level;
+        this.world = world;
+        this.x1 = x1;
+        this.y1 = y1;
+        this.z1 = z1;
+        this.x2 = x2;
+        this.y2 = y2;
+        this.z2 = z2;
+        this.jail = jail;
+        this.noEnter = noEnter;
+        this.noFly = noFly;
+        this.noBuild = noBuild;
+        this.noBreak = noBreak;
+        this.noTeleport = noTeleport;
+        this.noInteract = noInteract;
+        this.noFire = noFire;
+        this.message = message;
+        this.mode = mode;
+        this.uuidOwner = uuidOwner;
+        this.uuidAllowed = uuidAllowed;
+        this.noMob = noMob;
+        this.noTNT = noTNT;
+        this.noCommand = noCommand;
+        this.id_guild = id_guild;
+    }
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
     int jail, int noEnter, int noFly, int noBuild, int noBreak, int noTeleport, int noInteract, int noFire, 
@@ -83,6 +115,7 @@ public class Plot {
         this.noMob = noMob;
         this.noTNT = noTNT;
         this.noCommand = noCommand;
+        this.id_guild = 0;
     }
     
     public Plot(String world, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -115,7 +148,7 @@ public class Plot {
     public void insert() {
 	Data.queue("INSERT INTO plot VALUES ('" + plotName + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
         + ", " + x2 + ", " + y2 + ", " + z2 + ", " + jail + ", " + noEnter + ", " + noFly + ", " + noBuild + ", " + noBreak + ", " + noTeleport 
-        + ", " + noInteract + ", " + noFire + ", '" + message + "', " + mode + ", " + noMob + ", " + noTNT + ", " + noCommand + ", '" + uuidOwner + "', '" + uuidAllowed + "')");
+        + ", " + noInteract + ", " + noFire + ", '" + message + "', " + mode + ", " + noMob + ", " + noTNT + ", " + noCommand + ", '" + uuidOwner + "', '" + uuidAllowed + "', " + id_guild + ")");
     }
     
     /**
@@ -173,7 +206,7 @@ public class Plot {
         + "', X1 = " + x1 + ", Y1 = " + y1 + ", Z1 = " + z1 + ", X2 = " + x2 + ", Y2 = " + y2 + ", Z2 = " + z2 + ", jail = " + jail 
         + ", noEnter = " + noEnter + ", noFly = " + noFly + ", noBuild = " + noBuild + ", noBreak = " + noBreak + ", noTeleport = " + noTeleport 
         + ", noInteract = " + noInteract + ", noFire = " + noFire + ", message = '" + message + "', mode = " + mode + ", uuidOwner = '" + uuidOwner 
-        + "', uuidAllowed = '" + uuidAllowed + "', noMob = " + noMob + ", noTNT = " + noTNT + ", noCommand = " + noTNT + " WHERE plotName = '" + plotName + "'");
+        + "', uuidAllowed = '" + uuidAllowed + "', noMob = " + noMob + ", noTNT = " + noTNT + ", noCommand = " + noTNT + ", id_guild = " + id_guild + " WHERE plotName = '" + plotName + "'");
     }
 	
     public void delete() {
@@ -225,6 +258,7 @@ public class Plot {
     public void setNoTNT(int noTNT){this.noTNT = noTNT;}
     public void setMode(int mode){this.mode = mode;} 
     public void setNoCommand(int noCommand){this.noCommand = noCommand;} 
+    public void setIdGuild(int id_guild){this.id_guild = id_guild;}
     
     public String getUuidOwner(){return this.uuidOwner;}
     public String getUuidAllowed(){return this.uuidAllowed;}
@@ -249,7 +283,8 @@ public class Plot {
     public int getNoMob(){return this.noMob;}
     public int getNoTNT(){return this.noTNT;}
     public int getMode(){return this.mode;} 
-    public int getNoCommand(){return this.noCommand;} 
+    public int getNoCommand(){return this.noCommand;}
+    public int getIdGuild(){return this.id_guild;}
     
     /**
      * Retourne l'objet World correspondant

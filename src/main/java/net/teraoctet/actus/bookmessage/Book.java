@@ -1,17 +1,52 @@
 package net.teraoctet.actus.bookmessage;
 
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.text.BookView;
+import org.spongepowered.api.text.Text;
 
+@ConfigSerializable
 public class Book {
-
-
-
-           // player.sendBookView(this.config.book);
-            //playerVersionMap.put(uid, currentVersion);
-        //}
-    //}
-
+    
+    @Setting Text author;
+    @Setting Text title;
+    @Setting List<Text> pages;
+    
+    public Book(){}
+    
+    public Book(Text author, Text title, List<Text> pages){
+        this.author = author;
+        this.pages = pages;
+        this.title = title;
+    }
+    
+    public BookView getBookView(){
+        BookView.Builder bv = 
+                BookView.builder()
+                        .author(author)
+                        .title(title);
+        
+        pages.stream().forEach((page) -> {
+            bv.addPage(page);
+        });
+ 
+        return bv.build();
+    }
+    
+    public void setAuthor(Text author){
+        this.author = author;
+    }
+    
+    public void setTitle(Text title){
+        this.title = title;
+    } 
+    
+    public void addPage(Text page){
+        this.pages.add(page);
+    }
+    
+    public void setPages(List<Text> pages){
+        this.pages = pages;
+    }
 }

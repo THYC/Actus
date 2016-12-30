@@ -2,8 +2,11 @@ package net.teraoctet.actus.plot;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plugin;
+import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Data.jails;
 import static net.teraoctet.actus.utils.Data.plots;
 import static net.teraoctet.actus.utils.Data.setts;
@@ -228,7 +231,8 @@ public class PlotManager {
      */
     public Text getListPlot(String playerUUID){
         String listplot = "&6Total : " + plots.size();
-        for(Plot plot : plots){
+        for (Iterator<Plot> it = plots.iterator(); it.hasNext();) {
+            Plot plot = it.next();
             if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
                 listplot = listplot + "\n" + plot.getName();
             }
@@ -247,6 +251,19 @@ public class PlotManager {
         ArrayList<Plot> playerPlots = new ArrayList<>();
         plots.stream().filter((plot) -> (plot.getUuidOwner().equalsIgnoreCase(playerUUID))).forEach((plot) -> {playerPlots.add(plot);});
         return playerPlots;        
+    }
+    
+    /**
+     * Retourne un Array comprenant les parcelles de la guild du joueur
+     * @param player
+     * @return  ArrayList
+     */
+    public static final ArrayList<Plot> guildPlots (Player player)
+    {
+        APlayer aplayer = getAPlayer(player.getIdentifier());
+        ArrayList<Plot> guildPlots = new ArrayList<>();
+        plots.stream().filter((plot) -> (plot.getIdGuild()==aplayer.getID_guild())).forEach((plot) -> {guildPlots.add(plot);});
+        return guildPlots;        
     }
     
     /**
@@ -306,6 +323,12 @@ public class PlotManager {
             }
         }
         return false;
+    }
+    
+    public int getCountPlotGuild(int id_guild){
+        int nb = 0;
+        nb = plots.stream().filter((plot) -> (plot.getIdGuild() == id_guild)).map((_item) -> 1).reduce(nb, Integer::sum);
+        return nb;
     }
 }
 

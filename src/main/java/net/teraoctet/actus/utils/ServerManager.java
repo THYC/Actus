@@ -150,6 +150,22 @@ public class ServerManager {
     }
     
     /**
+     * retourne la date au format dd-MM-yy_HH-mm
+     * @return String
+     */
+    public String dateShortToString(){
+        Date now = new Date();
+        Calendar cal = Calendar.getInstance();
+        
+        cal.setTime(now);
+        cal.add(Calendar.YEAR, 1900);
+        
+	SimpleDateFormat simpleDate = new SimpleDateFormat("dd-MM-yy_HH-mm");
+	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT+02"));
+	return simpleDate.format(cal.getTime());
+    }
+    
+    /**
      * retourne la date au format ss
      * @return Long
      */
@@ -189,6 +205,25 @@ public class ServerManager {
 	return simpleDate.format(cal.getTime());
     }
     
+    /**
+     * Retourne TimeInMillis au format "dd-MM-yy-HH-mm"
+     * @param date de type Double en Milliseconde
+     * @return String
+     */
+    public String longToDateString2(double date){
+        Calendar cal = Calendar.getInstance(); 
+        Long dateL = (long)date;
+	cal.setTimeInMillis(dateL);
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
+	simpleDate.setTimeZone(TimeZone.getTimeZone("GMT+02"));
+	return simpleDate.format(cal.getTime());
+    }
+    
+    /**
+     * Retourne TimeInMillis au format "HH:mm:ss"
+     * @param millis
+     * @return 
+     */
     public String longToTime(Long millis){
         Calendar cal = Calendar.getInstance(); 
 	cal.setTimeInMillis(millis);

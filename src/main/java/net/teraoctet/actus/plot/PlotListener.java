@@ -48,6 +48,7 @@ import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.AIR;
+import static org.spongepowered.api.block.BlockTypes.FIRE;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.data.property.block.MatterProperty.Matter;
@@ -354,17 +355,18 @@ public class PlotListener {
     @Listener	
     public void onFireSpread(NotifyNeighborBlockEvent  event, @First BlockSnapshot source){
         BlockState bstate = source.getState();
-        if ((bstate.getType().equals(BlockTypes.FIRE) || bstate.getType().getName().contains("lava"))){
+        if ((bstate.getType().equals(FIRE) || bstate.getType().getName().contains("lava"))){
             Map<Direction, BlockState> dirs = event.getNeighbors();
             for (Direction dir:dirs.keySet()){
                 Location<World> loc = source.getLocation().get().add(dir.asOffset());
                 Optional<Plot> plot = plotManager.getPlot(loc);
                 if(plot.isPresent()){
                     if(plot.get().getNoFire() == 1){
-                        Optional<Player> player = event.getCause().first(Player.class);
+                        Optional<Player> player = event.getCause().last(Player.class);
                         if(player.isPresent()){
                             APlayer aplayer = getAPlayer(player.get().getIdentifier());
                             if(plot.get().getUuidAllowed().contains(player.get().getUniqueId().toString()) || aplayer.getLevel() == 10){
+                                event.getNeighbors().clear();
                                 return;
                             }
                         }

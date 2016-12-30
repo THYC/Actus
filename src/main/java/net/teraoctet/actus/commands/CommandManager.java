@@ -43,6 +43,7 @@ import net.teraoctet.actus.commands.economy.CommandShopCreate;
 import net.teraoctet.actus.commands.economy.CommandShopList;
 import net.teraoctet.actus.commands.economy.CommandShopPurchase;
 import net.teraoctet.actus.commands.economy.CommandShopSell;
+import net.teraoctet.actus.commands.plot.CommandPlotClaim;
 import net.teraoctet.actus.commands.plot.CommandPlotListNameAllowed;
 import net.teraoctet.actus.commands.plot.CommandPlotSetLevel;
 import net.teraoctet.actus.commands.plot.CommandPlotTag;
@@ -572,6 +573,14 @@ public class CommandManager {
                 .executor(new CommandSignHelp())
                 .build();
         
+        public CommandSpec CommandSignPost = CommandSpec.builder()
+                .description(Text.of("/signpost <name>"))
+                .permission("actus.admin.sign.post")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+                .executor(new CommandSignPost())
+                .build();
+        
         public CommandSpec CommandSignCmd = CommandSpec.builder()
                 .description(Text.of("/signcmd <cmd>"))
                 .permission("actus.admin.sign.cmd")
@@ -778,4 +787,15 @@ public class CommandManager {
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("uuid")))))
                 .executor(new CommandAS())
                 .build();
+        
+        public CommandSpec CommandMailBox = CommandSpec.builder()
+                .description(Text.of("/mailbox")) 
+                .executor(new CommandMailBox())
+                .build();
+        
+        public CommandSpec CommandPlotClaim = CommandSpec.builder() 
+                .description(Text.of("/claim")) 
+                .permission("actus.plot.create") 
+                .executor(new CommandPlotClaim()) 
+                .build(); 
 }

@@ -1,10 +1,11 @@
 package net.teraoctet.actus.player;
 
 import com.flowpowered.math.vector.Vector3d;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.bookManager;
+import static net.teraoctet.actus.Actus.configBook;
 
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.inputShop;
@@ -12,8 +13,10 @@ import static net.teraoctet.actus.Actus.mapCountDown;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;
+import net.teraoctet.actus.bookmessage.Book;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayerName;
 import net.teraoctet.actus.utils.CooldownToTP;
 import static net.teraoctet.actus.utils.Data.commit;
 import static net.teraoctet.actus.player.PlayerManager.getUUID;
@@ -61,6 +64,7 @@ import static net.teraoctet.actus.utils.MessageManager.LAST_CONNECT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.utils.Permissions;
 import static net.teraoctet.actus.world.WorldManager.getWorld;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
 import org.spongepowered.api.command.CommandManager;
@@ -68,6 +72,8 @@ import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
+import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
 
 public class PlayerListener {
     
@@ -114,6 +120,7 @@ public class PlayerListener {
             player_uuid.update();
             commit();
         }
+        if(configBook.getCountMessageBook(player) > 0)configBook.OpenListBookMessage(player);
     }
     
     @Listener
@@ -310,7 +317,7 @@ public class PlayerListener {
                 CooldownToTP tp = mapCountDown.get(victim);
                 tp.stopTP();
                 mapCountDown.remove(victim);
-                victim.sendMessage(ChatTypes.ACTION_BAR,MESSAGE("&l&e*** PVP : TP ANNULE ***"));
+                victim.sendMessage(ChatTypes.ACTION_BAR,MESSAGE("&l&e*** tu recois des d\351gats, ta demande de TP est annul\351 ***"));
             }
             
             Optional<EntityDamageSource> entityDamage = event.getCause().first(EntityDamageSource.class);
@@ -321,7 +328,7 @@ public class PlayerListener {
                         CooldownToTP tp = mapCountDown.get(striker);
                         tp.stopTP();
                         mapCountDown.remove(striker);
-                        striker.sendMessage(ChatTypes.ACTION_BAR,MESSAGE("&l&e*** PVP : TP ANNULE ***"));
+                        striker.sendMessage(ChatTypes.ACTION_BAR,MESSAGE("&l&e*** Combat d\351tect\351, ta demande de TP est annul\351 "));
                     }
                 }
             }
@@ -333,7 +340,7 @@ public class PlayerListener {
     }
     
     @Listener
-    public void onInteractSign(InteractBlockEvent event){ 
+    public void onInteractSign(InteractBlockEvent event) throws ObjectMappingException, IOException{ 
         Optional<Player> optPlayer = event.getCause().first(Player.class);
         if (!optPlayer.isPresent()) {
             return;
@@ -353,10 +360,13 @@ public class PlayerListener {
                     if (optional.isPresent()) {
                         SignData offering = optional.get();
                         Text txt1 = offering.lines().get(0);
+                        
                         if (txt1.equals(MESSAGE("&l&1[?]"))){
                             String tag = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
-                            getGame().getServer().getConsole().sendMessage(MESSAGE(tag));
-                            player.sendBookView(bookManager.getBookMessage(tag));
+                            Optional<Book> book = configBook.load(tag);
+                            if(book.isPresent()){
+                                player.sendBookView(book.get().getBookView());
+                            }
                         }
                         
                         if (txt1.equals(MESSAGE("&l&1[CMD]"))){
@@ -365,6 +375,56 @@ public class PlayerListener {
                             String command = tag;
                             if (player.hasPermission("actus.use.commandsign")){
                                 cmdService.process(player, command);
+                            }
+                        }
+                        
+                        if (txt1.equals(MESSAGE("&l&8[POST]"))){
+                            String dest = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
+                            Optional<APlayer> aplayer = getAPlayerName(dest);
+                            if(aplayer.isPresent()){
+                                Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
+                                if(is.isPresent()){
+                                    if(dest.equalsIgnoreCase(player.getName())){
+                                        
+                                    }
+                                    if(is.get().getItem().equals(WRITTEN_BOOK) || is.get().getItem().equals(WRITABLE_BOOK)){
+                                        Book book = new Book();
+                                        if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
+                                            book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
+                                        }else{
+                                            book.setAuthor(MESSAGE(player.getName()));
+                                        }
+                                        book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + serverManager.dateShortToString()));
+                                        String tmp;
+                                        List<Text> pages = new ArrayList();
+                                        for(Text text : is.get().get(Keys.BOOK_PAGES).get()){
+                                            tmp = text.toString();
+                                            tmp = tmp.replace("\\\\", "\\");
+                                            tmp = tmp.replace("Text{{", "");
+                                            tmp = tmp.replace("Text{", "");
+                                            tmp = tmp.replace("}}", "");
+                                            tmp = tmp.replace("}", "");
+                                            tmp = tmp.replace("\"", "");
+                                            tmp = tmp.replace("text:", "");
+                                            tmp = tmp.replace("\\n", "\n");
+                                            pages.add(MESSAGE(tmp));
+                                        }
+                                        book.setPages(pages);
+                                        configBook.saveBook(book);
+                                        player.sendMessage(MESSAGE("&dTa lettre a bien ete poste !"));
+                                    }else{
+                                        player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et le tenir dans ta main"));
+                                    }
+                                }
+                            }else{
+                                    List<Text> help = new ArrayList<>();
+                                    help.add(MESSAGE("&l&8[POST]"));
+                                    help.add(MESSAGE("&o&8Boite aux lettres de :"));
+                                    help.add(MESSAGE("&l&4" + player.getName()));
+                                    help.add(MESSAGE("&8Clique droit ici"));
+                                    offering.set(Keys.SIGN_LINES,help );
+                                    sign.offer(offering);
+                                    player.sendMessage(MESSAGE("&eCette boite aux lettres est maintenant à ton nom"));
                             }
                         }
                     }
