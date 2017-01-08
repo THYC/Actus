@@ -41,8 +41,12 @@ public class CommandSignCmd implements CommandExecutor {
                 player.sendMessage(USAGE("/signcmd <cmd>"));
                 return CommandResult.empty();  
             }
-            String name = ctx.<String> getOne("cmd").get();
+            String name = ctx.<String> getOne("cmd").get();           
+            String arg1 = ctx.<String> getOne("arg1").orElse("");
+            String arg2 = ctx.<String> getOne("arg2").orElse("");
             
+            name = name + " " + arg1 + " " + arg2;
+                        
             Optional<Location> optlocation = Optional.empty();
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
             while (playerBlockRay.hasNext()) 

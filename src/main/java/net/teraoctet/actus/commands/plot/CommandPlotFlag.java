@@ -60,51 +60,45 @@ public class CommandPlotFlag implements CommandExecutor {
             if(!ctx.getOne("flag").isPresent()){
                 PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
                 Builder builder = paginationService.builder();
-
-                builder.title(formatText("&6Plot Flag"))
-                    .contents(  formatText("&e/plot flag <flag> <0|1> : &7modifie la valeur d'un flag"),
-                                Text.builder().append(MESSAGE("&enoEnter___: &b[" + plot.get().getNoEnter() + "] &7Interdiction d'entrer sur la parcelle"))
+                player.sendMessage(MESSAGE("&\n\n\n\n\n\n"));
+                builder.title(formatText("&ePlot " + plot.get().getName() ))
+                    .contents(  
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "noenter", getValue(plot.get().getNoEnter()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoFly_____: &b[" + plot.get().getNoFly() + "] &7Fly interdit sur la parcelle"))
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoFly()) + " ] &7Fly interdit sur la parcelle"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nofly", getValue(plot.get().getNoFly()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoBuild____: &b[" + plot.get().getNoBuild() + "] &7Interdiction de construire"))
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoBuild()) + " ] &7Interdiction de construire"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nobuild", getValue(plot.get().getNoBuild()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-
-                                Text.builder().append(MESSAGE("&enoBreak___: &b[" + plot.get().getNoBreak() + "] &7Interdiction de casser"))
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoBreak()) + " ] &7Interdiction de casser"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nobreak", getValue(plot.get().getNoBreak()))))    
-                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoInteract_: &b[" + plot.get().getNoInteract() + "] &7Interdiction d'ouvrir portes,coffres..."))
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                               
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoInteract()) + " ] &7Interdiction d'ouvrir portes,coffres..."))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nointeract", getValue(plot.get().getNoInteract()))))    
-                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoTeleport_: &b[" + plot.get().getNoTeleport() + "] &7Interdiction de se t\351l\351porter"))
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                             
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoTeleport()) + " ] &7Interdiction de se t\351l\351porter"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "noteleport", getValue(plot.get().getNoTeleport()))))    
-                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoFire_____: &b[" + plot.get().getNoFire() + "] &7Interdiction de mettre le feu"))
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                                
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoFire()) + " ] &7Interdiction de mettre le feu"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nofire", getValue(plot.get().getNoFire()))))    
-                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoMob_____: &b[" + plot.get().getNoMob() + "] &7Les mob ne spawnerons pas"))
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                                
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoMob()) + " ] &7Les mob ne spawnerons pas"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nomob", getValue(plot.get().getNoMob()))))    
-                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoTNT_____: &b[" + plot.get().getNoTNT() + "] &7TNT d\351sactiv\351 sur la parcelle"))
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                              
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoTNT()) + " ] &7TNT d\351sactiv\351 sur la parcelle"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "notnt", getValue(plot.get().getNoTNT()))))    
-                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                
-                                Text.builder().append(MESSAGE("&enoCommand_: &b[" + plot.get().getNoCommand() + "] &7Interdiction de taper des commandes"))
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                              
+                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoCommand()) + " ] &7Interdiction de taper des commandes"))
                                     .onClick(TextActions.executeCallback(cb.callChangeFlag(plot.get(), "nocommand", getValue(plot.get().getNoCommand()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText())
   
-                    .header(formatText("&ePlot " + plot.get().getName() + " : &aDroits accord\351s aux autres joueurs, Oui = 1, Non = 0"))
-                    .padding(Text.of("-"))
+                    .header(formatText("&o&eListe des droits accord\351s aux autres joueurs :"))
+                    .footer(Text.builder().append(MESSAGE("&o&9 Besoin d'aide ?"))
+                                    .onClick(TextActions.executeCallback(cb.callHelpPlotFlag()))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour afficher l'aide"))).toText())
+                    .padding(MESSAGE("&9-"))
                     .sendTo(src);
 	
             } else {

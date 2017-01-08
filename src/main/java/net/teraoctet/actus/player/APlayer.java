@@ -124,6 +124,7 @@ public class APlayer{
     public double getTimejail() { return timejail; }
     public int getID_guild() { return id_guild; }
     public int getGuildRank() { return guild_rank; }
+    public Optional<Player> getPlayer() { return serverManager.getPlayer(name);}
     public Optional<Home> getHome(String name) { 
         if(homes == null) homes = new HashMap<>(); 
         if(homes.containsKey(name)){

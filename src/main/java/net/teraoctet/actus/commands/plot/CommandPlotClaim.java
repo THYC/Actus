@@ -58,11 +58,8 @@ public class CommandPlotClaim implements CommandExecutor {
                 int level = 0;
 
                 if(plotManager.plotAllow(loc1, loc2)){
-                    if(aplayer.getLevel() != 10){
-                        player.sendMessage(ALREADY_OWNED_PLOT());
-                        return CommandResult.empty();
-                    }
-                    level = 1;
+                    player.sendMessage(ALREADY_OWNED_PLOT());
+                    return CommandResult.empty();
                 }
 
                 int X = (int) Math.round(c[0].getX()-c[1].getX());

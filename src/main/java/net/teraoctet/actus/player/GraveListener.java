@@ -14,6 +14,7 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.AIR;
+import static org.spongepowered.api.block.BlockTypes.DIRT;
 import static org.spongepowered.api.block.BlockTypes.LAVA;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
 import org.spongepowered.api.block.tileentity.Sign;
@@ -34,6 +35,7 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Container;
+import org.spongepowered.api.item.inventory.Inventory;
 import static org.spongepowered.api.item.inventory.InventoryArchetypes.CHEST;
 import static org.spongepowered.api.item.inventory.InventoryArchetypes.DOUBLE_CHEST;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
@@ -41,6 +43,7 @@ import org.spongepowered.api.item.inventory.type.TileEntityInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
+import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -57,6 +60,9 @@ public class GraveListener {
         aplayer.update();
         
         if (player.hasPermission("actus.grave") || aplayer.getLevel() == 10) {
+            if(player.getWorld().getDimension().getType().equals(DimensionTypes.NETHER) || player.getWorld().getDimension().getType().equals(DimensionTypes.THE_END)){
+                return;
+            }
             final Location<World> grave = getLocationGrave(player.getLocation()).add(0, -1, 0);
             BlockState chestBlock = BlockState.builder().blockType(BlockTypes.CHEST).build();
             grave.setBlock(chestBlock, Cause.of(NamedCause.source(plugin)));
@@ -65,14 +71,10 @@ public class GraveListener {
             TileEntity chest2 = grave.add(0, 0, 1).getTileEntity().get();
             chest.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
             chest2.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
-
-            player.getInventory().slots().forEach(slot -> {
-                if (slot.peek().isPresent()) {
-                    TileEntityInventory inventory = (TileEntityInventory) chest;
-                    if (inventory.offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) {
-                        inventory = (TileEntityInventory) grave.getTileEntity().get();
-                        inventory.offer(slot.peek().get());
-                    }
+            final TileEntityInventory inventory = (TileEntityInventory) chest;
+            player.getInventory().slots().forEach((Inventory slot) -> {
+                if (slot.peek().isPresent()) {                    
+                    if (inventory.offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) inventory.offer(slot.peek().get());
                 }
             });
             
@@ -151,9 +153,9 @@ public class GraveListener {
                     }                     
                 } 
                 if(b.totalItems() > player.getInventory().totalItems()){return;}
-                loc.get().getExtent().setBlockType(loc.get().getBlockPosition(), AIR, Cause.of(NamedCause.source(plugin)));  
+                loc.get().getExtent().setBlockType(loc.get().getBlockPosition(), DIRT, Cause.of(NamedCause.source(plugin)));  
                 Optional<Location> locChest = serverManager.locDblChest(loc.get());
-                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), AIR, Cause.of(NamedCause.source(plugin)));}
+                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), DIRT, Cause.of(NamedCause.source(plugin)));}
 
                 ParticleEffect effect = ParticleEffect.builder().type(ParticleTypes.EXPLOSION).build();
                 player.playSound(SoundTypes.ENTITY_BLAZE_SHOOT, player.getLocation().getPosition(), 6);
@@ -174,12 +176,12 @@ public class GraveListener {
         if(b.getOriginal().get(Keys.DISPLAY_NAME).isPresent()){
             Optional<Text> displayName = b.getOriginal().get(Keys.DISPLAY_NAME);
   
-            if(displayName.get().toPlain().contains("[+]")){     
+            if(displayName.get().toPlain().contains("[+]")){   
                 event.getTransactions().get(0)
-                    .setCustom(BlockSnapshot.builder().from(b.getOriginal().getLocation().get()).blockState(BlockState.builder().blockType(BlockTypes.DIRT).build()).build());
+                    .setCustom(BlockSnapshot.builder().from(b.getOriginal().getLocation().get()).blockState(BlockState.builder().blockType(DIRT).build()).build());
                 
                 Optional<Location> locChest = serverManager.locDblChest(b.getOriginal().getLocation().get());
-                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), BlockTypes.DIRT, Cause.of(NamedCause.source(plugin)));}
+                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), DIRT, Cause.of(NamedCause.source(plugin)));}
                 player.playSound(SoundTypes.ENTITY_BLAZE_SHOOT, player.getLocation().getPosition(), 6);
             }
         }

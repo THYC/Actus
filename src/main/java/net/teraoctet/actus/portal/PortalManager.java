@@ -29,10 +29,10 @@ public class PortalManager {
         int Y = location.getBlockY();
         int Z = location.getBlockZ();
         
-        if (portal.getworld().equalsIgnoreCase(world.getExtent().getName()) == false){return false;}
-        if ((X < portal.getX1()) || (X > portal.getX2())){return false;}
-        if ((Z < portal.getZ1()) || (Z > portal.getZ2())){return false;}
-        if ((Y < portal.getY1()) || (Y > portal.getY2())){return false;}
+        if (portal.getworld().equalsIgnoreCase(world.getExtent().getName()) == false){return false;}        
+        else if (((X < portal.getX1()) || (X > portal.getX2())) && ((X > portal.getX1()) || (X < portal.getX2()))){return false;}
+        else if (((Z < portal.getZ1()) || (Z > portal.getZ2())) && ((Z > portal.getZ1()) || (Z < portal.getZ2()))){return false;}
+        else if (((Y < portal.getY1()) || (Y > portal.getY2())) && ((Y > portal.getY1()) || (Y < portal.getY2()))){return false;}
         return true;
     }
   

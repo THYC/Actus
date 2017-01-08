@@ -1,37 +1,36 @@
 package net.teraoctet.actus.commands;
 
 import com.flowpowered.math.vector.Vector3d;
+import java.io.IOException;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
-
+import java.util.Optional;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import java.util.function.Consumer;
-
-import net.teraoctet.actus.bookmessage.ConfigBook;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import static net.teraoctet.actus.world.WorldManager.spawnParticles;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.BodyPart;
 import org.spongepowered.api.data.type.BodyParts;
-
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.ArmorStand;
-import org.spongepowered.api.text.BookView;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.extent.Extent;
 
-import org.spongepowered.api.text.Text;
 
 
 
 public class CommandTest implements CommandExecutor {
-        //@Inject public PluginContainer actus;
-    ConfigBook cb = new ConfigBook();
     
     @Override
     @SuppressWarnings("null")
@@ -39,53 +38,45 @@ public class CommandTest implements CommandExecutor {
  
         Player player = (Player) src;
         
-        //player.sendMessage(MESSAGE("&eListe de vos messages :"));
-        //player.sendMessage(MESSAGE("&e---------------------------"));
-        //player.sendMessage(cb.getMailBook(player));
-        
-        BookView.Builder bv = 
-                BookView.builder()
-                        .author(MESSAGE("STAFF"))
-                        .title(MESSAGE("MAIL"))
-                        .addPage(cb.getMailBook(player));
-        
-        player.sendBookView(bv.build());
-        
-        
-        
+        spawnParticles(player.getLocation(),50.0,true);
+       
+         
         /*ItemStack itemStack = ItemStack.of(ItemTypes.STICK, 1);
         List<Text> lore = Lists.newArrayList(Text.of(TextColors.LIGHT_PURPLE, "This wand emits pure magic."));
         itemStack.offer(Keys.HIDE_ENCHANTMENTS,true);
         itemStack.offer(Keys.ITEM_LORE, lore);
         player.setItemInHand(HandTypes.MAIN_HAND, itemStack);*/
         
-        /*Optional<Location> optlocation = Optional.empty();
-            BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
-            while (playerBlockRay.hasNext()) 
-            { 
-                BlockRayHit<World> currentHitRay = playerBlockRay.next(); 
-
-                optlocation = Optional.of(currentHitRay.getLocation()); 
-                      
-            } 
-            DataQuery FLAG = DataQuery.of("Owner");
-            optlocation.get().toContainer().set(FLAG, player.getName());
-            
-            plugin.getLogger().info(optlocation.get().toContainer().getContainer().toString());
-            
-       /*
         
-        Inventory inv = Inventory.builder().of(InventoryArchetypes.DOUBLE_CHEST)
+        //Optional<Map<Statistic,Long>> stat = player.get(Keys.STATISTICS);
+        
+       // plugin.getLogger().info(player.toContainer().toString());
+            
+            
+            
+           /* plugin.getLogger().info(optlocation.get().toContainer().getContainer().toString());*/
+            
+       
+        
+        /*Inventory inv = Inventory.builder().of(InventoryArchetypes.DOUBLE_CHEST)
         .property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(Text.of("Quests: Page " + (1 + 1))))
         .build(plugin);
         
-        player.openInventory(inv,Cause.source(inv).build());
+        player.openInventory(inv,Cause.source(inv).build());*/
         
-        spawnParticles(player.getLocation(),50,true);*/
+       /* spawnParticles(player.getLocation(),50,true);*/
         
         return CommandResult.success();
     }
     
+    public void spawnEntity(Location<World> location, CommandSource src)
+	{
+		Extent extent = location.getExtent();
+		//Entity lightning = extent.createEntity(EntityTypes.LIGHTNING, location.getPosition());
+                Entity lightning = extent.createEntity(EntityTypes.PLAYER, location.getPosition());
+                
+		extent.spawnEntity(lightning, Cause.of(NamedCause.source(SpawnCause.builder().type(SpawnTypes.CUSTOM).build())));
+	}
 
 
     private Consumer<CommandSource> Cb(Entity entity, boolean sens) {

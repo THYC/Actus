@@ -94,6 +94,11 @@ public class ConfigBook {
         };
     }
     
+    /**
+     * Supprime un fichier et met a jour la liste affiche dans le book
+     * @param file String du nom de fichier
+     * @return 
+     */
     public Consumer<CommandSource> callDelBook(String file) {
 	return (CommandSource src) -> {
             Player player = (Player)src;
@@ -103,6 +108,10 @@ public class ConfigBook {
         };
     }
     
+    /**
+     * CallBack pour ouvrir un book contenant la liste des messages du joueur source
+     * @return 
+     */
     public Consumer<CommandSource> callOpenListBookMessage() {
 	return (CommandSource src) -> {
             Player player = (Player)src;

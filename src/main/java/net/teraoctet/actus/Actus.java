@@ -22,7 +22,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import net.teraoctet.actus.bookmessage.CallBackBook;
 import net.teraoctet.actus.bookmessage.ConfigBook;
+import net.teraoctet.actus.inventory.ConfigInventory;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.player.GraveListener;
 import net.teraoctet.actus.player.PlayerListener;
@@ -70,6 +72,7 @@ public class Actus {
     public static PlayerManager playerManager = new PlayerManager();
     public static WarpManager warpManager = new WarpManager();
     public static TraceManager traceManager = new TraceManager();
+    public static WorldManager worldManager = new WorldManager();
     public Logger getLogger(){return logger;}  
     public static Game game;
     public static PluginContainer plugin;
@@ -80,11 +83,17 @@ public class Actus {
     public static final ArrayList<TPAH> Atpa = new ArrayList<>();
     public static Config config = new Config();
     public static ConfigBook configBook = new ConfigBook();
+    public static ConfigInventory configInv = new ConfigInventory();
+    public static final CallBackBook cb = new CallBackBook();
     
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
-	        
-        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &edevelopped by THYC and Votop ... Init..."));        
+
+        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &edevelopped by THYC and Votop ... Init..."));
+        plugin = Sponge.getPluginManager().getPlugin("actus").get();  
+        
+        //Sponge.getRegistry().register(WorldGeneratorModifier.class, new OceanWorldGeneratorModifier());
+                
         if(!init())plugin.getLogger().error("Erreur init");
                  
         getGame().getEventManager().registerListeners(this, new PlotListener());
@@ -111,6 +120,7 @@ public class Actus {
 	getGame().getCommandManager().register(this, new CommandManager().CommandLevel, "level");
         getGame().getCommandManager().register(this, new CommandManager().CommandWorldCreate, "worldcreate", "createworld", "newworld");
 	getGame().getCommandManager().register(this, new CommandManager().CommandWorldTP, "worldtp", "tpworld");
+        getGame().getCommandManager().register(this, new CommandManager().CommandWorldLoad, "worldload");
         getGame().getCommandManager().register(this, new CommandManager().CommandClearinventory, "clearinventory", "ci", "clear");
         getGame().getCommandManager().register(this, new CommandManager().CommandInvsee, "invsee", "is");
         getGame().getCommandManager().register(this, new CommandManager().CommandPlayerinfo, "playerinfo", "pi", "info");
@@ -147,6 +157,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandAS, "as", "armorstand");
         getGame().getCommandManager().register(this, new CommandManager().CommandMailBox, "mailbox", "mb", "bal");
         getGame().getCommandManager().register(this, new CommandManager().CommandPlotClaim, "claim");
+        getGame().getCommandManager().register(this, new CommandManager().CommandWorld, "world", "aworld", "monde");
     }
         
     @Listener
@@ -166,18 +177,14 @@ public class Actus {
     }
 
     @Listener
-    public void onServerLoadComplete(GameLoadCompleteEvent event)
-    {
+    public void onServerLoadComplete(GameLoadCompleteEvent event){
         MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &echarging is complete"));
     }  
     
     @Listener
-    public void onServerStarted(GameStartedServerEvent event)
-    {
+    public void onServerStarted(GameStartedServerEvent event){
         game = Sponge.getGame();    	
-    	plugin = Sponge.getPluginManager().getPlugin("actus").get();
         WorldManager.init();
-         //WorldManager.load();
     } 
     
     private boolean init() {

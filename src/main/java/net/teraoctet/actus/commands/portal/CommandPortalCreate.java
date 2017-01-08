@@ -49,7 +49,7 @@ public class CommandPortalCreate implements CommandExecutor {
                 }
                Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
                
-               player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation du portail").onClick(TextActions.runCommand("/portal createok " + name )).color(TextColors.AQUA).build()); 
+               player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation du portail").onClick(TextActions.executeCallback(callCreate(name))).color(TextColors.AQUA).build()); 
                return CommandResult.success();
            } else {
                player.sendMessage(NAME_ALREADY_USED());
@@ -94,8 +94,8 @@ public class CommandPortalCreate implements CommandExecutor {
             Data.commit();
             Data.addPortal(portal);
 
-            player.sendMessage(Text.builder("Clique ici pour lire le message par d\351faut du portail").onClick(TextActions.runCommand("/portal msg " + portalName )).color(TextColors.AQUA).build());
-            player.sendMessage(Text.builder("Tape /portal msg <message> &bpour pour modifier le message par d\351faut").onClick(TextActions.suggestCommand("/portal msg " + portalName + " 'remplace ce texte par ton message'")).color(TextColors.AQUA).build());
+            player.sendMessage(Text.builder().append(MESSAGE("Clique ici pour lire le message par d\351faut du portail")).onClick(TextActions.runCommand("/portal msg " + portalName )).color(TextColors.AQUA).build());
+            player.sendMessage(Text.builder().append(MESSAGE("Tape /portal msg <message> &bpour pour modifier le message par d\351faut")).onClick(TextActions.suggestCommand("/portal msg " + portalName + " 'remplace ce texte par ton message'")).color(TextColors.AQUA).build());
             player.sendMessage(ChatTypes.ACTION_BAR,PROTECT_LOADED_PLOT(player,portalName));
         };
     }

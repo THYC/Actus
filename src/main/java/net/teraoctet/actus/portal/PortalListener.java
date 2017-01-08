@@ -4,14 +4,15 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.portalManager;
+import static net.teraoctet.actus.Actus.worldManager;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PROTECT_PORTAL;
 import net.teraoctet.actus.world.AWorld;
-import static net.teraoctet.actus.world.WorldManager.getWorld;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.Transaction;
@@ -60,8 +61,9 @@ public class PortalListener {
                                 
                 aplayer.setLastposition(DeSerialize.location(event.getFromTransform().getLocation()));
                 aplayer.update();
-                AWorld aworld = getWorld(portal.gettoworld()); 
                 
+                AWorld aworld = worldManager.getWorld(portal.gettoworld()); 
+                plugin.getLogger().info(aworld.getName());
                 Optional<World> world = getGame().getServer().getWorld(portal.gettoworld());
                 Location loc = new Location(world.get(), new Vector3d(portal.gettoX(), portal.gettoY(), portal.gettoZ()));
                 player.setLocation(loc);

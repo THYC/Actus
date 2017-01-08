@@ -1,5 +1,7 @@
 package net.teraoctet.actus.commands.portal;
 
+import static net.teraoctet.actus.Actus.cb;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -9,10 +11,10 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList.Builder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.text.action.TextActions;
 
 public class CommandPortal implements CommandExecutor {
 
@@ -22,16 +24,30 @@ public class CommandPortal implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.admin.portal")) { 
             PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
             Builder builder = paginationService.builder();
-
-            builder.title(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6Portal")).toText())
-            .contents(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6/portal create <name> : &7cr\351ation d'un portail au point d\351clar\351")).toText(),
-                Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6/portal remove <name> : &7supprime le portail")).toText(),
-                Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6/portal tpfrom  <name> : &7enregistre le point d'arriv\351 du portail")).toText(),
-                Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6/portal list : &7liste les portails")).toText(),
-                Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6/portal message <name> : &7affiche le message d'arriv\351e du portail")).toText(),
-                Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6/portal message <name> <message> : &7modifie le message d'arriv\351e du portail")).toText())
-            .header(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&eUsage:")).toText())
-            .padding(Text.of("-"))
+            
+            builder.title(Text.builder().append(MESSAGE("&ePortal")).toText())
+            .contents(Text.builder().append(MESSAGE("&9/portal create <name> : &7cr\351ation d'un portail au point d\351clar\351"))
+                    .onClick(TextActions.suggestCommand("/portal create "))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
+                Text.builder().append(MESSAGE("&9/portal remove <name> : &7supprime le portail"))
+                    .onClick(TextActions.suggestCommand("/portal remove "))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
+                Text.builder().append(MESSAGE("&9/portal tpfrom  <name> : &7enregistre le point d'arriv\351 du portail"))
+                    .onClick(TextActions.suggestCommand("/portal tpfrom "))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
+                Text.builder().append(MESSAGE("&9/portal list : &7liste les portails"))
+                    .onClick(TextActions.runCommand("/portal list"))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
+                Text.builder().append(MESSAGE("&9/portal message <name> : &7affiche le message d'arriv\351e du portail"))
+                    .onClick(TextActions.suggestCommand("/portal message"))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
+                Text.builder().append(MESSAGE("&9/portal message <name> <message> : &7modifie le message d'arriv\351e du portail"))
+                    .onClick(TextActions.suggestCommand("/portal message "))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText())
+            .footer(Text.builder().append(MESSAGE("&o&9 Besoin d'aide ?"))
+                            .onClick(TextActions.executeCallback(cb.callHelpBook("help_portal")))    
+                            .onHover(TextActions.showText(MESSAGE("Click pour afficher l'aide"))).toText())
+            .padding(MESSAGE("&9-"))
             .sendTo(src);
 
             return CommandResult.success();

@@ -1,9 +1,17 @@
 package net.teraoctet.actus.plot;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
+import static net.teraoctet.actus.Actus.serverManager;
+import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
@@ -45,8 +53,8 @@ import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.AIR;
 import static org.spongepowered.api.block.BlockTypes.FIRE;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
@@ -184,6 +192,18 @@ public class PlotListener {
                                     vendeur.sendMessage(MESSAGE("&6" + player.getName() + " &7vient d'acheter votre parcelle"));
                                     vendeur.sendMessage(MESSAGE("&6" + cout + " emeraudes &7ont ete ajoute a votre compte"));
                                     vendeur.sendMessage(MESSAGE("&6/bank &7pour consulter votre compte"));  
+                                    Book book = new Book();
+                                    book.setAuthor(MESSAGE(player.getName()));
+                                    book.setTitle(MESSAGE(vendeur.getName() + "_" + player.getName() + "_" +  serverManager.dateShortToString()));
+                                    List<Text> textList = new ArrayList();
+                                    textList.add(Text.builder().append(MESSAGE("Votre parcelle a \351t\351 vendu a " + player.getName() + ",\n" + 
+                                            String.valueOf(cout) + " \351meraudes ont \351t\351 ajout\351 a votre compte")).build());
+                                    book.setPages(textList);;
+                                    try {
+                                        configBook.saveBook(book);
+                                    } catch (IOException | ObjectMappingException ex) {
+                                        Logger.getLogger(PlotListener.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
                                 }
                                 plot.get().delSale();
                                 if(!plot.get().getUuidOwner().contains(player.getIdentifier())){

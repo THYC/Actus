@@ -1,5 +1,8 @@
 package net.teraoctet.actus.commands;
 
+import net.teraoctet.actus.commands.world.CommandWorldTP;
+import net.teraoctet.actus.commands.world.CommandWorldLoad;
+import net.teraoctet.actus.commands.world.CommandWorldCreate;
 import net.teraoctet.actus.commands.chest.CommandChestAdd;
 import net.teraoctet.actus.commands.chest.CommandChest;
 import net.teraoctet.actus.commands.chest.CommandChestInfo;
@@ -47,10 +50,17 @@ import net.teraoctet.actus.commands.plot.CommandPlotClaim;
 import net.teraoctet.actus.commands.plot.CommandPlotListNameAllowed;
 import net.teraoctet.actus.commands.plot.CommandPlotSetLevel;
 import net.teraoctet.actus.commands.plot.CommandPlotTag;
+import net.teraoctet.actus.commands.world.CommandWorld;
+import net.teraoctet.actus.commands.world.CommandWorldList;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 
 public class CommandManager {
         
@@ -316,27 +326,52 @@ public class CommandManager {
                 .build();
                 
         public CommandSpec CommandWorldCreate = CommandSpec.builder()
-                .description(Text.of("/worldCreate <name> <environment> <gamemode> <difficulty>"))
+                .description(Text.of("/world create <name> <environment> <gamemode> <difficulty>"))
                 .permission("actus.admin.world.worldcreate")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))), GenericArguments.flags()
-                        .valueFlag(GenericArguments.string(MESSAGE("dimension")),"d")
-                        .valueFlag(GenericArguments.string(MESSAGE("generator")),"g")
-                        .valueFlag(GenericArguments.string(MESSAGE("modifier")),"m")
-                        .valueFlag(GenericArguments.string(MESSAGE("seed")),"s")
-                        .valueFlag(GenericArguments.string(MESSAGE("gamemode")),"gm")
-                        .valueFlag(GenericArguments.string(MESSAGE("difficulty")),"di")
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))), 
+                        GenericArguments.flags()
+                        .valueFlag(GenericArguments.catalogedElement(Text.of("dimensionType"), DimensionType.class), "d")
+    			.valueFlag(GenericArguments.catalogedElement(Text.of("generatorType"), GeneratorType.class), "g")
+    			.valueFlag(GenericArguments.catalogedElement(Text.of("modifier"), WorldGeneratorModifier.class), "m")
+                        .valueFlag(GenericArguments.catalogedElement(Text.of("gamemode"), GameMode.class),"e")
+                        .valueFlag(GenericArguments.catalogedElement(Text.of("difficulty"), Difficulty.class),"y")
+                        .valueFlag(GenericArguments.string(Text.of("seed")),"s")
                         .buildWith(GenericArguments.none()))
                 .executor(new CommandWorldCreate())
                 .build();
         
         public CommandSpec CommandWorldTP = CommandSpec.builder()
-                .description(Text.of("Commande worldtp"))
+                .description(Text.of("/world tp"))
                 .permission("actus.world.worldtp")
                 .arguments(GenericArguments.seq(
                     GenericArguments.onlyOne(GenericArguments.string(Text.of("worldName"))),
                     GenericArguments.optional(GenericArguments.player(Text.of("target")))))
                 .executor(new CommandWorldTP())
+                .build();
+        
+        public CommandSpec CommandWorldLoad = CommandSpec.builder()
+                .description(Text.of("/world load"))
+                .permission("actus.world.worldtp")      
+                .arguments(GenericArguments.string(Text.of("folderName")))
+                .executor(new CommandWorldLoad())
+                .build();
+        
+        public CommandSpec CommandWorldList = CommandSpec.builder()
+                .description(Text.of("/world list"))
+                .permission("actus.world.worldlist")      
+                //.arguments(GenericArguments.world(Text.of("world")), GenericArguments.optional(GenericArguments.bool(Text.of("value"))))
+                .executor(new CommandWorldList())
+                .build();
+                
+        public CommandSpec CommandWorld = CommandSpec.builder()
+                .description(Text.of("Affiche des informations sur votre guild"))
+                .permission("actus.guild")
+                .child(CommandWorldCreate, "create")
+                .child(CommandWorldList, "list")
+                .child(CommandWorldTP, "tp")
+                .child(CommandWorldLoad, "load")
+                .executor(new CommandWorld())
                 .build();
         
         public CommandSpec CommandClearinventory = CommandSpec.builder()
@@ -585,10 +620,13 @@ public class CommandManager {
                 .description(Text.of("/signcmd <cmd>"))
                 .permission("actus.admin.sign.cmd")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("cmd"))))
+                    GenericArguments.optional(GenericArguments.string(Text.of("cmd"))), GenericArguments.flags()
+                        .valueFlag(GenericArguments.string(Text.of("arg1")),"a")
+                        .valueFlag(GenericArguments.string(Text.of("arg2")),"b")
+                        .buildWith(GenericArguments.none()))
                 .executor(new CommandSignCmd())
                 .build();
-        
+                
         public CommandSpec CommandSignBank = CommandSpec.builder()
                 .description(Text.of("/signbank <type>"))
                 .permission("actus.admin.sign.bank")

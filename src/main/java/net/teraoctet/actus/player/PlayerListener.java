@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.configBook;
+import static net.teraoctet.actus.Actus.configInv;
 
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.inputShop;
@@ -13,7 +14,9 @@ import static net.teraoctet.actus.Actus.mapCountDown;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.worldManager;
 import net.teraoctet.actus.bookmessage.Book;
+import net.teraoctet.actus.inventory.AInventory;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayerName;
@@ -63,15 +66,19 @@ import static net.teraoctet.actus.utils.MessageManager.EVENT_LOGIN_MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.LAST_CONNECT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.utils.Permissions;
-import static net.teraoctet.actus.world.WorldManager.getWorld;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
 import org.spongepowered.api.command.CommandManager;
+import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.Transaction;
+import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
+import org.spongepowered.api.effect.potion.PotionEffect;
+import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
 import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
 
@@ -155,6 +162,8 @@ public class PlayerListener {
         }
         else if(event.getCause().first(CommandBlockSource.class).isPresent()) {
             builder.append("command block");
+        }else{
+            builder = null;
         }
 
         builder.append(": /").append(event.getCommand()).append(" ").append(event.getArguments());
@@ -209,7 +218,7 @@ public class PlayerListener {
         String smessage = event.getMessage().toPlain();
         smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
         Text message = MESSAGE(Permissions.getPrefix(player) + "&a[" + player.getName() + "] &7" + smessage + Permissions.getSuffix(player));
-        Text prefixWorld = MESSAGE(getWorld(player.getWorld().getName()).getPrefix()) ;
+        Text prefixWorld = MESSAGE(worldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
         Text newMessage = Text.builder().append(prefixWorld).append(message).build();
         event.setMessage(newMessage);
     }
@@ -372,8 +381,12 @@ public class PlayerListener {
                         if (txt1.equals(MESSAGE("&l&1[CMD]"))){
                             String tag = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
                             CommandManager cmdService = Sponge.getGame().getCommandManager();
-                            String command = tag;
+                            String[] args = tag.split(" ");                          
                             if (player.hasPermission("actus.use.commandsign")){
+                                String command = args[0];
+                                if(args.length > 1)command = command + " " + args[1];
+                                if(args.length > 2)command = command + " " + args[2];
+                                if(args.length > 3)command = command + " " + args[3]; 
                                 cmdService.process(player, command);
                             }
                         }
@@ -385,7 +398,8 @@ public class PlayerListener {
                                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                                 if(is.isPresent()){
                                     if(dest.equalsIgnoreCase(player.getName())){
-                                        
+                                        configBook.OpenListBookMessage(player);
+                                        return;
                                     }
                                     if(is.get().getItem().equals(WRITTEN_BOOK) || is.get().getItem().equals(WRITABLE_BOOK)){
                                         Book book = new Book();
@@ -397,6 +411,10 @@ public class PlayerListener {
                                         book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + serverManager.dateShortToString()));
                                         String tmp;
                                         List<Text> pages = new ArrayList();
+                                        if(!is.get().get(Keys.BOOK_PAGES).isPresent()){
+                                            player.sendMessage(MESSAGE("&dEnvoi impossible, ton livre ne contient aucun message !"));
+                                            return;
+                                        }
                                         for(Text text : is.get().get(Keys.BOOK_PAGES).get()){
                                             tmp = text.toString();
                                             tmp = tmp.replace("\\\\", "\\");
@@ -414,6 +432,10 @@ public class PlayerListener {
                                         player.sendMessage(MESSAGE("&dTa lettre a bien ete poste !"));
                                     }else{
                                         player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et le tenir dans ta main"));
+                                    }
+                                }else{
+                                    if(dest.equalsIgnoreCase(player.getName())){
+                                        configBook.OpenListBookMessage(player);
                                     }
                                 }
                             }else{
@@ -480,5 +502,20 @@ public class PlayerListener {
             }
             
         }
+    }
+    
+    @Listener
+    public void onRespawnPlayer(RespawnPlayerEvent event, @First Player player) {
+        
+        AInventory invFrom = new AInventory(player, event.getFromTransform().getExtent().getName());
+        AInventory invTO = new AInventory(player, event.getToTransform().getExtent().getName());
+        configInv.save(invFrom);
+        invTO = configInv.load(player, event.getToTransform().getExtent().getName()).get();
+        invTO.set();
+        
+        player.getOrCreate(PotionEffectData.class).ifPresent(potionEffectData -> {
+            PotionEffectData data = potionEffectData.addElement(PotionEffect.of(PotionEffectTypes.INVISIBILITY, 1, 2));
+            DataTransactionResult result = player.offer(data);
+        });
     }
 }

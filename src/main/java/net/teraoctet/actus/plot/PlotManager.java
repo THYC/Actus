@@ -12,7 +12,7 @@ import static net.teraoctet.actus.utils.Data.plots;
 import static net.teraoctet.actus.utils.Data.setts;
 import org.spongepowered.api.block.BlockType;
 import static org.spongepowered.api.block.BlockTypes.AIR;
-import static org.spongepowered.api.block.BlockTypes.TORCH;
+import static org.spongepowered.api.block.BlockTypes.STANDING_BANNER;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
@@ -285,7 +285,7 @@ public class PlotManager {
     }
         
     public void spawnTag (Location loc){
-        loc.setBlockType(TORCH, Cause.of(NamedCause.source(plugin)));
+        loc.setBlockType(STANDING_BANNER, Cause.of(NamedCause.source(plugin)));
     }  
     
     public void remTag (Plot plot){
@@ -297,15 +297,22 @@ public class PlotManager {
     }
     
     private void cutTag(Location loc){
-        loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin)));  
+        if(loc.getBlockType().equals(STANDING_BANNER)){
+            loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+        }else if(loc.add(0, -1, 0).getBlockType().equals(STANDING_BANNER)){
+            loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+        }else if(loc.add(0, -2, 0).getBlockType().equals(STANDING_BANNER)){
+            loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+        }
     }
     
     public Boolean hasTag(Location loc, Plot plot){
         BlockType block = loc.getBlockType();
         if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
             if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
-                if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
-                    if(block.equals(TORCH))return true;     
+                if(block.equals(STANDING_BANNER)){
+                    loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+                    return true;
                 }
             }
         }
@@ -318,17 +325,62 @@ public class PlotManager {
         if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
             if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
                 if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
-                    if(block.equals(TORCH))return true;     
+                    if(block.equals(STANDING_BANNER))return true;     
+                }
+            }
+        }
+        
+        loc = new Location(plot.getWorld().get(),plot.getX2(),plot.getYSpawn(plot.getX2(), plot.getZ2())-1,plot.getZ2());
+        block = loc.getBlockType();
+        if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
+            if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
+                if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
+                    if(block.equals(STANDING_BANNER))return true;     
+                }
+            }
+        }
+        
+        loc = new Location(plot.getWorld().get(),plot.getX1(),plot.getYSpawn(plot.getX1(), plot.getZ2())-1,plot.getZ2());
+        block = loc.getBlockType();
+        if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
+            if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
+                if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
+                    if(block.equals(STANDING_BANNER))return true;     
+                }
+            }
+        }
+        
+        loc = new Location(plot.getWorld().get(),plot.getX2(),plot.getYSpawn(plot.getX2(), plot.getZ1())-1,plot.getZ1());
+        block = loc.getBlockType();
+        if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
+            if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
+                if(loc.getBlockY() == plot.getYSpawn(loc.getBlockX(), loc.getBlockZ())-1){
+                    if(block.equals(STANDING_BANNER))return true;     
                 }
             }
         }
         return false;
     }
     
+    /**
+     * Retourne le nombre de parcelle/plot enregistré sur une guild
+     * @param id_guild
+     * @return int nombre de parcelle/plot
+     */
     public int getCountPlotGuild(int id_guild){
         int nb = 0;
         nb = plots.stream().filter((plot) -> (plot.getIdGuild() == id_guild)).map((_item) -> 1).reduce(nb, Integer::sum);
         return nb;
+    }
+    
+    /**
+     * Retourne "OUI si value = 1 sinon retourne NON
+     * @param id 
+     * @return Valeur String OUI ou NON
+     */
+    public String ValueOf(int id) {
+        if(id == 0) return "NON";
+        return "OUI ";
     }
 }
 

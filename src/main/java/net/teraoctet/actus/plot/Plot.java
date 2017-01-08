@@ -1,5 +1,6 @@
 package net.teraoctet.actus.plot;
 
+import com.google.common.base.Objects;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -459,5 +460,5 @@ public class Plot {
         }
         return 0;
     }
-    
+        
 }

@@ -1,5 +1,6 @@
-package net.teraoctet.actus.commands;
+package net.teraoctet.actus.commands.world;
 
+import static net.teraoctet.actus.Actus.worldManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.utils.DeSerialize;
@@ -9,7 +10,6 @@ import static net.teraoctet.actus.utils.MessageManager.TELEPORTED_TO_WORLD;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import static net.teraoctet.actus.utils.MessageManager.NOT_FOUND;
 import net.teraoctet.actus.world.AWorld;
-import static net.teraoctet.actus.world.WorldManager.getWorld;
 
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
@@ -40,7 +40,7 @@ public class CommandWorldTP implements CommandExecutor {
             //quand la commande est correctement renseignée par la source
             else {
                 String worldName = ctx.<String> getOne("worldName").get();
-                AWorld aworld = getWorld(worldName);
+                AWorld aworld = worldManager.getWorld(worldName);
             
                 //monde introuvable
                 if(!getGame().getServer().getWorld(worldName).isPresent()) { 

@@ -51,7 +51,7 @@ public class CommandPlotTag implements CommandExecutor {
             plotManager.spawnTag(new Location(world,plot.get().getX2(),plot.get().getYSpawn(plot.get().getX2(), plot.get().getZ1()),plot.get().getZ1()));
             plotManager.spawnTag(new Location(world,plot.get().getX2(),plot.get().getYSpawn(plot.get().getX2(), plot.get().getZ2()),plot.get().getZ2()));           
             
-            player.sendMessage(MESSAGE("&eTa parcelle a \351t\351 born\351 par des blocs de glowstone sur chaque coin"));  
+            player.sendMessage(MESSAGE("&eTa parcelle a \351t\351 born\351 par des bannieres sur chaque coin"));  
             return CommandResult.success();
         } 
         

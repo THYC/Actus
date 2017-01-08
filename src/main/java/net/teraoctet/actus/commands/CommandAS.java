@@ -95,10 +95,8 @@ public class CommandAS implements CommandExecutor {
                 PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
                     PaginationList.Builder builder = paginationService.builder();
 
-                    builder.title(formatText("&6" + titre ))
-                            .contents(    
-                                /*Text.builder().append(MESSAGE("&bModification position des membres :")).toText(),*/
-                                    
+                    builder.title(formatText("&e" + titre ))
+                            .contents(                                        
                                 Text.builder().append(CHEST_ROTATION()).toText().concat(
                                 Text.builder().append(MESSAGE("&a[ X ] ")).onClick(TextActions.executeCallback(callBodyRotation(as, BodyParts.CHEST, Axis.X, false))).toText().concat(
                                 Text.builder().append(MESSAGE("&b[ Y ] ")).onClick(TextActions.executeCallback(callBodyRotation(as, BodyParts.CHEST, Axis.Y, false))).toText().concat(
@@ -130,22 +128,28 @@ public class CommandAS implements CommandExecutor {
                                 Text.builder().append(MESSAGE("&c[ Z ] ")).onClick(TextActions.executeCallback(callBodyRotation(as, BodyParts.RIGHT_LEG, Axis.Z, false))).toText()))).toText(),
                                                                 
                                 Text.builder().append(POSITION_X_AS()).toText().concat(
-                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.X,true))).toText().concat(
-                                Text.builder().append(MESSAGE("&a[ - ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.X,false))).toText())),
+                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.X,true,0.02))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ - ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.X,false,0.02))).toText())).concat(
+                                Text.builder().append(MESSAGE("&e[ ++ ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.X,true,0.2))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ -- ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.X,false,0.2))).toText())),
                                 
                                 Text.builder().append(POSITION_Y_AS()).toText().concat(
-                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Y,true))).toText().concat(
-                                Text.builder().append(MESSAGE("&a[ - ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Y,false))).toText())),
+                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Y,true,0.02))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ - ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Y,false,0.02))).toText())).concat(
+                                Text.builder().append(MESSAGE("&e[ ++ ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Y,true,0.2))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ -- ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Y,false,0.2))).toText())),
                                 
                                 Text.builder().append(POSITION_Z_AS()).toText().concat(
-                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Z,true))).toText().concat(
-                                Text.builder().append(MESSAGE("&a[ - ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Z,false))).toText())),
+                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Z,true,0.02))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ - ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Z,false,0.02))).toText())).concat(
+                                Text.builder().append(MESSAGE("&e[ ++ ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Z,true,0.2))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ -- ] ")).onClick(TextActions.executeCallback(callPosition(as,Axis.Z,false,0.2))).toText())),
                                 
                                 Text.builder().append(ROTATION_AS()).toText().concat(
-                                Text.builder().append(MESSAGE("&e[ +2 ] ")).onClick(TextActions.executeCallback(callRotation(as, 2))).toText().concat(
-                                Text.builder().append(MESSAGE("&a[ +10 ] ")).onClick(TextActions.executeCallback(callRotation(as, 10))).toText())),
+                                Text.builder().append(MESSAGE("&e[ + ] ")).onClick(TextActions.executeCallback(callRotation(as, 2))).toText().concat(
+                                Text.builder().append(MESSAGE("&a[ ++ ] ")).onClick(TextActions.executeCallback(callRotation(as, 10))).toText())),
                                 
-                                Text.builder().append(MESSAGE("&7----------------------")).toText(),
+                                Text.builder().append(MESSAGE("&9----------------------")).toText(),
                                 
                                 Text.builder().append(AS_HAS_BASE_PLATE())
                                     .onClick(TextActions.executeCallback(callProperty(as, Keys.ARMOR_STAND_HAS_BASE_PLATE))).toText(),
@@ -168,8 +172,7 @@ public class CommandAS implements CommandExecutor {
                                 Text.builder().append(AS_INVISIBLE())
                                     .onClick(TextActions.executeCallback(callProperty(as, Keys.INVISIBLE))).toText())  
 
-                            /*.header(formatText("&7 ( Clique sur les liens pour modifier l'ArmorStand )"))*/
-                            .padding(Text.of("-"))
+                            .padding(MESSAGE("&9-"))
                             .sendTo(src);
             
             }else{
@@ -188,12 +191,12 @@ public class CommandAS implements CommandExecutor {
         return CommandResult.empty();
     }
     
-    private Consumer<CommandSource> callPosition(Entity entity, Axis axe, Boolean up) {
+    private Consumer<CommandSource> callPosition(Entity entity, Axis axe, Boolean up, double value) {
 	return (CommandSource src) -> { 
             ArmorStand armorStand = (ArmorStand)entity;
             armorStand.offer(Keys.HAS_GRAVITY, false);
-            Double val = - 0.01;
-            if(up == true)val = 0.01;
+            double val = - value;
+            if(up == true)val = value;
             switch(axe){
                 case X: armorStand.setLocation(armorStand.getLocation().setPosition(armorStand.getLocation().getPosition().add(val, 0, 0)));break;
                 case Y: armorStand.setLocation(armorStand.getLocation().setPosition(armorStand.getLocation().getPosition().add(0, val, 0)));break;
