@@ -32,7 +32,6 @@ import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 
 public class CommandPlotSale implements CommandExecutor {
        
@@ -93,7 +92,7 @@ public class CommandPlotSale implements CommandExecutor {
 
             if (!optlocation.isPresent()){
                 optlocation = Optional.of(player.getLocation());
-                optlocation.get().setBlockType(STANDING_SIGN,Cause.of(NamedCause.source(plugin)));  
+                optlocation.get().setBlockType(STANDING_SIGN);  
             }
 
             Optional<TileEntity> signBlock = optlocation.get().getTileEntity();

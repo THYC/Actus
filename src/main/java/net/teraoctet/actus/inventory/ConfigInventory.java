@@ -20,7 +20,7 @@ public class ConfigInventory {
     public Optional<AInventory> load(Player player, String id_inv){
         try {
             File file = new File("config/actus/inventory/" + player.getIdentifier() + ".conf");
-            if(!file.exists())return Optional.empty();
+            //if(!file.exists())return Optional.empty();
             ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
             ConfigurationNode node = manager.createEmptyNode(ConfigurationOptions.defaults());
             node = manager.load();

@@ -36,12 +36,8 @@ import org.spongepowered.api.entity.vehicle.minecart.TNTMinecart;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.BlockSpawnCause;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
-import org.spongepowered.api.event.filter.cause.Named;
-import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import static org.spongepowered.api.item.ItemTypes.DIAMOND_AXE;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -85,7 +81,7 @@ public class WorldListener {
     @Listener
     public void onExplosion(final ExplosionEvent.Post event){ 
         Explosion explosion = event.getExplosion();
-        Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
+        Location loc = new Location(event.getExplosion().getWorld(),explosion.getLocation().getBlockPosition());
         Optional<Plot> plot = plotManager.getPlot(loc);
         if (!plot.isPresent()){
             if ((event.getCause().first(Creeper.class).isPresent() && Config.CREEPER_DISABLE() == false) ||
@@ -100,14 +96,14 @@ public class WorldListener {
         }
     }
             
-    @Listener
+    /*@Listener
     public final void onBlockDrop(final DropItemEvent.Destruct dropItemEvent, @Named(NamedCause.SOURCE) final BlockSpawnCause cause) {
         final BlockSnapshot snapshot = cause.getBlockSnapshot();
         if(locDrop.contains(snapshot.getPosition())){
             locDrop.remove(snapshot.getPosition());
             dropItemEvent.setCancelled(true);
         }
-    }
+    }*/
                    
     @Listener
     public void dropSapling(SpawnEntityEvent event) {
@@ -168,7 +164,7 @@ public class WorldListener {
                 
                 transactions.forEach((Transaction<BlockSnapshot> blockSnapshotTransaction) -> {
                     ChangeBlockEvent.Break event = SpongeEventFactory.createChangeBlockEventBreak(breakEvent.getCause(),
-                            player.getWorld(), Lists.newArrayList(blockSnapshotTransaction));
+                            Lists.newArrayList(blockSnapshotTransaction));
                     firedEvents.add(event);
                     
                     if (!getGame().getEventManager().post(event)) {
@@ -176,7 +172,7 @@ public class WorldListener {
                             BlockState bs = blockSnapshotTransaction.getOriginal().getState();
                             Entity entity = player.getWorld().createEntity(EntityTypes.ITEM, blockSnapshotTransaction.getOriginal().getPosition());
                             entity.offer(Keys.REPRESENTED_ITEM, bs.getType().getItem().get().getTemplate().copy());
-                            player.getWorld().spawnEntity(entity, breakEvent.getCause());
+                            player.getWorld().spawnEntity(entity);
                         }
                         blockSnapshotTransaction.getFinal().restore(true, BlockChangeFlag.ALL);
                     }

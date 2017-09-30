@@ -1,11 +1,8 @@
 package net.teraoctet.actus.breed;
 
-import static net.teraoctet.actus.Actus.plugin;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -18,7 +15,7 @@ public class Vampire {
     public void spawnBat(Location<World> location, Player player, EntityType type, int amount){
         for (int i = 1; i <= amount; i++){
             Entity entity = location.getExtent().createEntity(type, location.getPosition());
-            location.getExtent().spawnEntity(entity, Cause.of(NamedCause.source(plugin)));
+            location.getExtent().spawnEntity(entity);
         }
     }
 }

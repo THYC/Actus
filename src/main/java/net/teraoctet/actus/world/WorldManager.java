@@ -25,6 +25,7 @@ import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.world.ChunkPreGenerate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.WorldBorder;
 
@@ -53,8 +54,8 @@ public class WorldManager {
             world.getWorldBorder().setDiameter(worlds.getNode("worlds", world.getName(), "border").getDouble());
             world.getWorldBorder().setDamageAmount(worlds.getNode("worlds", world.getName(), "border-damage").getDouble());
             WorldBorder border = world.getWorldBorder();
-            WorldBorder.ChunkPreGenerate generator = border.newChunkPreGenerate(world).owner(plugin);
-            generator.start();
+            //ChunkPreGenerate generator = border.newChunkPreGenerate(world).owner(plugin);
+            //generator.start();
         }
     }
         

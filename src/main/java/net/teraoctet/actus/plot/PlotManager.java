@@ -4,7 +4,6 @@ import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Data.jails;
@@ -13,10 +12,7 @@ import static net.teraoctet.actus.utils.Data.setts;
 import org.spongepowered.api.block.BlockType;
 import static org.spongepowered.api.block.BlockTypes.AIR;
 import static org.spongepowered.api.block.BlockTypes.STANDING_BANNER;
-
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
@@ -285,7 +281,7 @@ public class PlotManager {
     }
         
     public void spawnTag (Location loc){
-        loc.setBlockType(STANDING_BANNER, Cause.of(NamedCause.source(plugin)));
+        loc.setBlockType(STANDING_BANNER);
     }  
     
     public void remTag (Plot plot){
@@ -298,11 +294,11 @@ public class PlotManager {
     
     private void cutTag(Location loc){
         if(loc.getBlockType().equals(STANDING_BANNER)){
-            loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+            loc.setBlockType(AIR); 
         }else if(loc.add(0, -1, 0).getBlockType().equals(STANDING_BANNER)){
-            loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+            loc.setBlockType(AIR); 
         }else if(loc.add(0, -2, 0).getBlockType().equals(STANDING_BANNER)){
-            loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+            loc.setBlockType(AIR); 
         }
     }
     
@@ -311,7 +307,7 @@ public class PlotManager {
         if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
             if(loc.getBlockZ() == plot.getZ1() || loc.getBlockZ() == plot.getZ2()){
                 if(block.equals(STANDING_BANNER)){
-                    loc.setBlockType(AIR, Cause.of(NamedCause.source(plugin))); 
+                    loc.setBlockType(AIR); 
                     return true;
                 }
             }

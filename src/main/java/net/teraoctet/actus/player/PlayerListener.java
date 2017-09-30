@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.configInv;
 
@@ -173,10 +174,13 @@ public class PlayerListener {
     @Listener
     public void promptDouble(MessageEvent event, @First Player player) {
         if(inputDouble.containsKey(player)){
+            if(inputDouble.get(player) > 0d)return;
             String smessage = event.getOriginalMessage().toPlain();
             smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
-            try{
-                Double d = Double.valueOf(smessage);
+            Scanner scanner = new Scanner(smessage);
+            
+            if(scanner.hasNextDouble()){
+                double d = scanner.nextDouble();
                 if(d==0){
                     inputDouble.remove(player);
                     player.sendMessage(MESSAGE("&bL'action a \351t\351 annul\351"));
@@ -186,10 +190,9 @@ public class PlayerListener {
                 inputDouble.replace(player, d);
                 event.setMessage(CLICK_TO_CONFIRM()
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
-            }catch(Exception ex){
-                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :"));
-                player.sendMessage(MESSAGE("&bTapes 0 pour annuler"));
-                event.clearMessage();
+            }else{
+                event.setMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
+                .concat(MESSAGE("&bTapes 0 pour annuler la transaction")));
             }
         }
         if(inputShop.containsKey(player)){
@@ -205,7 +208,7 @@ public class PlayerListener {
                 }
                 Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
                 event.clearMessage();
-            }catch(Exception ex){
+            }catch(NumberFormatException ex){
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :"));
                 player.sendMessage(MESSAGE("&bTapes 0 pour annuler"));
                 event.clearMessage();
@@ -510,8 +513,11 @@ public class PlayerListener {
         AInventory invFrom = new AInventory(player, event.getFromTransform().getExtent().getName());
         AInventory invTO = new AInventory(player, event.getToTransform().getExtent().getName());
         configInv.save(invFrom);
-        invTO = configInv.load(player, event.getToTransform().getExtent().getName()).get();
-        invTO.set();
+        
+        if(configInv.load(player, event.getToTransform().getExtent().getName()).isPresent()){
+            invTO = configInv.load(player, event.getToTransform().getExtent().getName()).get();
+            invTO.set();
+        }
         
         player.getOrCreate(PotionEffectData.class).ifPresent(potionEffectData -> {
             PotionEffectData data = potionEffectData.addElement(PotionEffect.of(PotionEffectTypes.INVISIBILITY, 1, 2));

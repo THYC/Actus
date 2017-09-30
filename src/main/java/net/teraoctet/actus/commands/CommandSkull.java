@@ -22,7 +22,6 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 
 public class CommandSkull implements CommandExecutor {
     
@@ -43,7 +42,7 @@ public class CommandSkull implements CommandExecutor {
                     Entity entity = player.getLocation().getExtent().createEntity(EntityTypes.ITEM, player.getLocation().getPosition());
                     Item item = (Item) entity;
                     item.offer(Keys.REPRESENTED_ITEM, skull.createSnapshot());
-                    player.getLocation().getExtent().spawnEntity(item, Cause.of(NamedCause.source(plugin)));
+                    player.getLocation().getExtent().spawnEntity(item);
                     return CommandResult.success();
                 }else{
                     player.sendMessages(MESSAGE("&bAucun Skull ne correspond a ce nom !"));
@@ -57,7 +56,7 @@ public class CommandSkull implements CommandExecutor {
                     Entity entity = player.getLocation().getExtent().createEntity(EntityTypes.ITEM, player.getLocation().getPosition());
                     Item item = (Item) entity;
                     item.offer(Keys.REPRESENTED_ITEM, skull.createSnapshot());
-                    player.getLocation().getExtent().spawnEntity(item, Cause.of(NamedCause.source(plugin)));
+                    player.getLocation().getExtent().spawnEntity(item);
                 }
             }  
         } 

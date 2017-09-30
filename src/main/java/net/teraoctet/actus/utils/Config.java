@@ -9,7 +9,6 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class Config {
     public static File file = new File("config/actus/actus.conf");
-    @SuppressWarnings("StaticNonFinalUsedInInitialization")
     public static ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
     public static ConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
     
@@ -41,7 +40,7 @@ public class Config {
                 manager.save(config);
             }
             config = manager.load();
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {}
     }
     
     public static String SERVER_TITLE() { return config.getNode("server", "title").getString(); }

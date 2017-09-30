@@ -1,7 +1,10 @@
 plugins {
-    id 'org.spongepowered.plugin' version '0.6'
-    
+    //id 'org.spongepowered.plugin' version '0.8.1'
+    id "com.qixalite.spongestart" version "1.4.6"
+    id "java"
 }
+
+sourceCompatibility = 1.8
 
 group = 'net.teraoctet.actus'
 version = '0.1.0'
@@ -10,11 +13,22 @@ description = 'Server management plugin'
 repositories {
     mavenCentral()
     maven {
-        name 'Sponge maven repo'
-        url 'http://repo.spongepowered.org/maven'
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
     }
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:6.0.0-20161223.142907-29'
+    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+}
+
+
+spongestart{
+   eula true
+   
+   //optional configs
+   spongeVanillaBuild 'LATEST'
+   spongeForgeBuild 'LATEST'
+   forgeServerFolder 'run/forge'
+   vanillaServerFolder 'run/vanilla'
 }

@@ -1,4 +1,4 @@
-package net.teraoctet.actus.player;
+package net.teraoctet.actus.grave;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,16 +13,16 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class GraveManager {
     
-    public static File file = new File("config/actus/grave.conf");
-    public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-    public static ConfigurationNode grave = manager.createEmptyNode(ConfigurationOptions.defaults());
+    public static final File FILE = new File("config/actus/grave.conf");
+    public static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
+    public static ConfigurationNode grave = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
     
     public static void init() {
         try {
-            if (!file.exists()) {
-                file.createNewFile();
+            if (!FILE.exists()) {
+                FILE.createNewFile();
             }
-            grave = manager.load();
+            grave = MANAGER.load();
         } catch (IOException e) {}	
     }
             
@@ -33,7 +33,7 @@ public class GraveManager {
     public void saveGrave(String location){
         try {
             grave.getNode("grave",location);
-            manager.save(grave);
+            MANAGER.save(grave);
         } catch (IOException ex) {
             Logger.getLogger(GraveManager.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -46,8 +46,8 @@ public class GraveManager {
      */
     public void delGrave(String location) throws IOException{
 	grave.removeChild("grave." + location);
-        manager.save(grave);
-        grave = manager.load();
+        MANAGER.save(grave);
+        grave = MANAGER.load();
     }
         
     /**

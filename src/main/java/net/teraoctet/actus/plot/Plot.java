@@ -1,6 +1,5 @@
 package net.teraoctet.actus.plot;
 
-import com.google.common.base.Objects;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.Data.datasource;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -25,8 +23,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import static org.spongepowered.api.Sponge.getGame;
 import static org.spongepowered.api.block.BlockTypes.AIR;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 
 public class Plot {
@@ -177,7 +173,7 @@ public class Plot {
                 Optional<Location<World>> loc = DeSerialize.getLocation(rs.getString("location"));
                 if (loc.get().getBlockType().equals(BlockTypes.STANDING_SIGN) || loc.get().getBlockType().equals(BlockTypes.WALL_SIGN)){
                     if(Config.DEL_SIGN_AFTER_SALE()){
-                        loc.get().setBlockType(AIR,Cause.of(NamedCause.source(plugin)));
+                        loc.get().setBlockType(AIR);
                     } else {
                         Optional<TileEntity> signBlock = loc.get().getTileEntity();
                         TileEntity tileSign = signBlock.get();

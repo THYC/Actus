@@ -3,7 +3,6 @@ package net.teraoctet.actus.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
@@ -25,8 +24,6 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 
 public class CommandSignHelp implements CommandExecutor {
        
@@ -59,7 +56,7 @@ public class CommandSignHelp implements CommandExecutor {
 
             if (!optlocation.isPresent()){
                 optlocation = Optional.of(player.getLocation());
-                optlocation.get().setBlockType(STANDING_SIGN,Cause.of(NamedCause.source(plugin)));  
+                optlocation.get().setBlockType(STANDING_SIGN);  
             }
 
             Optional<TileEntity> signBlock = optlocation.get().getTileEntity();

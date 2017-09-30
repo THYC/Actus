@@ -23,7 +23,7 @@ import org.spongepowered.api.text.action.TextActions;
 
 public class ConfigBook {
         
-    private TypeToken<Book> TOKEN_CONFIG = TypeToken.of(Book.class);
+    private final TypeToken<Book> TOKEN_CONFIG = TypeToken.of(Book.class);
     
     public Optional<Book> load(String fileName) throws FileNotFoundException, ObjectMappingException, IOException {
         File file = new File("config/actus/book/" + fileName + ".conf");

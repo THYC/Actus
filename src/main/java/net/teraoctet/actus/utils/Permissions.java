@@ -12,12 +12,12 @@ public class Permissions {
     }	
     
     public static String getPrefix(Player player) {
-        Subject subject = player.getContainingCollection().get(player.getIdentifier());
+        Subject subject = player.getContainingCollection().getDefaults();
         return subject.getOption("prefix").orElse("");
     }
 	       
     public static String getSuffix(Player player) {
-        Subject subject = player.getContainingCollection().get(player.getUniqueId().toString());
+        Subject subject = player.getContainingCollection().getDefaults();
         return subject.getOption("suffix").orElse("");
     }
 

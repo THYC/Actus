@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.utils.Data;
@@ -45,8 +44,6 @@ import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import static org.spongepowered.api.item.ItemTypes.COMPASS;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_INFO;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
@@ -176,7 +173,7 @@ public class PlotListener {
                             int cout = Integer.valueOf(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain());
                             if(!plotManager.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
                                 player.sendMessage(MESSAGE("&eCette parcelle n'existe plus"));
-                                b.getLocation().get().removeBlock(Cause.of(NamedCause.source(player)));
+                                b.getLocation().get().removeBlock();
                                 event.setCancelled(true);
                                 return;
                             }
@@ -249,14 +246,14 @@ public class PlotListener {
 
         if(!fplot.isPresent()) {
             if(plot.isPresent()){
-                if(DISPLAY_PLOT_MSG_FOR_OWNER() || !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
+                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
                 player.sendMessage(MESSAGE(plot.get().getMessage(),player));
             }
         }
         
         if(fplot.isPresent() && plot.isPresent()) {
             if(!plot.get().equals(fplot.get())){
-                if(DISPLAY_PLOT_MSG_FOR_OWNER() || !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
+                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
                 player.sendMessage(MESSAGE(plot.get().getMessage(),player));
             }
         }
@@ -390,7 +387,7 @@ public class PlotListener {
                                 return;
                             }
                         }
-                        source.getLocation().get().setBlockType(AIR,Cause.of(NamedCause.source(plugin))); 
+                        source.getLocation().get().setBlockType(AIR); 
                         event.setCancelled(true);
                     }
                 }

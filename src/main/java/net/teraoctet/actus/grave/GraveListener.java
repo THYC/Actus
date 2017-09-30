@@ -1,10 +1,10 @@
-package net.teraoctet.actus.player;
+package net.teraoctet.actus.grave;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
+import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.Actus.serverManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.GRAVE;
@@ -28,8 +28,6 @@ import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
@@ -65,8 +63,8 @@ public class GraveListener {
             }
             final Location<World> grave = getLocationGrave(player.getLocation()).add(0, -1, 0);
             BlockState chestBlock = BlockState.builder().blockType(BlockTypes.CHEST).build();
-            grave.setBlock(chestBlock, Cause.of(NamedCause.source(plugin)));
-            grave.add(0, 0, 1).setBlock(chestBlock, Cause.of(NamedCause.source(plugin)));
+            grave.setBlock(chestBlock);
+            grave.add(0, 0, 1).setBlock(chestBlock);
             TileEntity chest = grave.getTileEntity().get();
             TileEntity chest2 = grave.add(0, 0, 1).getTileEntity().get();
             chest.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
@@ -79,7 +77,7 @@ public class GraveListener {
             });
             
             Location signgrave = controlBlock(grave);
-            signgrave.setBlockType(STANDING_SIGN,Cause.of(NamedCause.source(plugin)));  
+            signgrave.setBlockType(STANDING_SIGN);  
             Optional<TileEntity> signBlock = signgrave.getTileEntity();
             TileEntity tileSign = signBlock.get();
             Sign sign=(Sign)tileSign;
@@ -153,9 +151,9 @@ public class GraveListener {
                     }                     
                 } 
                 if(b.totalItems() > player.getInventory().totalItems()){return;}
-                loc.get().getExtent().setBlockType(loc.get().getBlockPosition(), DIRT, Cause.of(NamedCause.source(plugin)));  
+                loc.get().getExtent().setBlockType(loc.get().getBlockPosition(), DIRT);  
                 Optional<Location> locChest = serverManager.locDblChest(loc.get());
-                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), DIRT, Cause.of(NamedCause.source(plugin)));}
+                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), DIRT);}
 
                 ParticleEffect effect = ParticleEffect.builder().type(ParticleTypes.EXPLOSION).build();
                 player.playSound(SoundTypes.ENTITY_BLAZE_SHOOT, player.getLocation().getPosition(), 6);
@@ -181,7 +179,7 @@ public class GraveListener {
                     .setCustom(BlockSnapshot.builder().from(b.getOriginal().getLocation().get()).blockState(BlockState.builder().blockType(DIRT).build()).build());
                 
                 Optional<Location> locChest = serverManager.locDblChest(b.getOriginal().getLocation().get());
-                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), DIRT, Cause.of(NamedCause.source(plugin)));}
+                if(locChest.isPresent()){ locChest.get().getExtent().setBlockType(locChest.get().getBlockPosition(), DIRT);}
                 player.playSound(SoundTypes.ENTITY_BLAZE_SHOOT, player.getLocation().getPosition(), 6);
             }
         }

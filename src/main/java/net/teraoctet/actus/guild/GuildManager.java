@@ -13,9 +13,6 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 
 public class GuildManager {
     
@@ -190,6 +187,6 @@ public class GuildManager {
      */
     public void spawnBat(Player player){
         Entity bat = player.getLocation().getExtent().createEntity(EntityTypes.BAT, player.getLocation().getPosition());
-        player.getLocation().add(0, 2, 0).getExtent().spawnEntity(bat, Cause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()).build());
+        player.getLocation().add(0, 2, 0).getExtent().spawnEntity(bat);
     }
 }

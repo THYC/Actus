@@ -19,6 +19,7 @@ import net.teraoctet.actus.utils.TPAH;
 
 import com.google.inject.Inject;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,7 @@ import net.teraoctet.actus.bookmessage.CallBackBook;
 import net.teraoctet.actus.bookmessage.ConfigBook;
 import net.teraoctet.actus.inventory.ConfigInventory;
 import net.teraoctet.actus.player.APlayer;
-import net.teraoctet.actus.player.GraveListener;
+import net.teraoctet.actus.grave.GraveListener;
 import net.teraoctet.actus.player.PlayerListener;
 import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
+import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -85,6 +87,10 @@ public class Actus {
     public static ConfigBook configBook = new ConfigBook();
     public static ConfigInventory configInv = new ConfigInventory();
     public static final CallBackBook cb = new CallBackBook();
+    
+    @Inject
+    @DefaultConfig(sharedRoot = false)
+    private Path defaultConfig;
     
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
@@ -190,6 +196,8 @@ public class Actus {
     private boolean init() {
         try {
             File folder = new File("config/actus/book");
+            if(!folder.exists()) folder.mkdir();
+            folder = new File("config/actus/inventory");
             if(!folder.exists()) folder.mkdir();
             Config.setup();
             Data.setup();

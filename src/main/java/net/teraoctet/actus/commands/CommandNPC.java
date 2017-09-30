@@ -1,6 +1,5 @@
 package net.teraoctet.actus.commands;
 
-import java.util.UUID;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -14,9 +13,6 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.text.Text;
 
 public class CommandNPC implements CommandExecutor {
@@ -34,8 +30,7 @@ public class CommandNPC implements CommandExecutor {
             ent.offer(Keys.IS_SITTING,true);
 
             ent.offer(Keys.SKIN_UNIQUE_ID, player.getUniqueId());
-            //ent.offer(Keys.SKIN_UNIQUE_ID, UUID.fromString(aplayer.getUUID()));
-            player.getLocation().getExtent().spawnEntity(ent, Cause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()).build());
+            player.getLocation().getExtent().spawnEntity(ent);
             return CommandResult.success();
         } 
         
