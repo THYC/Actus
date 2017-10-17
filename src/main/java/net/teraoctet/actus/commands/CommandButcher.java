@@ -20,7 +20,7 @@ public class CommandButcher implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src.hasPermission("actus.butcher")) {
+        if(src.hasPermission("actus.admin.butcher")) {
             Optional<World> world = Optional.empty();
             int entities = 0;
         

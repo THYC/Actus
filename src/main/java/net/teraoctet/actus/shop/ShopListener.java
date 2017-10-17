@@ -1,4 +1,4 @@
-package net.teraoctet.actus.economy;
+package net.teraoctet.actus.shop;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -7,7 +7,7 @@ import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import static net.teraoctet.actus.Actus.plugin;
-import net.teraoctet.actus.commands.economy.CallBackEconomy;
+import net.teraoctet.actus.commands.shop.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
@@ -40,10 +40,10 @@ import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.item.ItemTypes;
 
-public class EconomyListener {
+public class ShopListener {
     
     private static final CallBackEconomy  cb  = new CallBackEconomy();  
-    public EconomyListener() {}
+    public ShopListener() {}
 
     @Listener
     public void onInteractShopRight(InteractEntityEvent.Secondary event, @First Player player){    

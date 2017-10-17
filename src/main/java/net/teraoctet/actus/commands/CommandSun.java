@@ -18,7 +18,7 @@ public class CommandSun implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.weather.sun")) {
+        if(src instanceof Player && src.hasPermission("actus.fun.weather.sun")) {
             Player player = (Player) src; 
             World world = player.getWorld();
             world.setWeather(Weathers.CLEAR);

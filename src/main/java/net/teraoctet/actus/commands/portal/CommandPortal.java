@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.portal;
 
-import static net.teraoctet.actus.Actus.cb;
+import static net.teraoctet.actus.Actus.CB_BOOK;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
@@ -45,7 +45,7 @@ public class CommandPortal implements CommandExecutor {
                     .onClick(TextActions.suggestCommand("/portal message "))    
                     .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText())
             .footer(Text.builder().append(MESSAGE("&o&9 Besoin d'aide ?"))
-                            .onClick(TextActions.executeCallback(cb.callHelpBook("help_portal")))    
+                            .onClick(TextActions.executeCallback(CB_BOOK.callHelpBook("help_portal")))    
                             .onHover(TextActions.showText(MESSAGE("Click pour afficher l'aide"))).toText())
             .padding(MESSAGE("&9-"))
             .sendTo(src);

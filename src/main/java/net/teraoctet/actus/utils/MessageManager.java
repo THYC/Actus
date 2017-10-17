@@ -137,18 +137,24 @@ public class MessageManager {
     private static Text AS_MARKER;
     private static Text AS_HAS_ARMS;
     private static Text AS_INVISIBLE;
-    
-    public static File file = new File("config/actus/message.conf");
-    public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-    public static ConfigurationNode message = manager.createEmptyNode(ConfigurationOptions.defaults());
+    private static Text GRAVE_BREAK;
+    private static Text GRAVE_RIP1;
+    private static Text GRAVE_RIP2;
+    private static Text GRAVE_RIP3;
+    private static Text GRAVE_RIP4;
+    private static Text GRAVE_POSITION;
         
-    public static void init() throws ObjectMappingException {
+    public static final File FILE = new File("config/actus/message.conf");
+    public static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
+    public static ConfigurationNode message = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
+        
+    public static void init() {
         try {
-            if (!file.exists()) {
-                file.createNewFile();
+            if (!FILE.exists()) {
+                FILE.createNewFile();
              }    
                 List<String> msg = new ArrayList<>();
-                message = manager.load();
+                message = MANAGER.load();
            
                 //-------------------------
                 // Message général serveur
@@ -247,28 +253,28 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&eVous avez d\351sactiv\351 le fly de &6%var1%");
                     message.getNode("SERVER","FLY_RETIRED").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("SERVER","BUTCHER").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&b%var1% &7a Entit\351es ont \351t\351 supprim\351es");
                     message.getNode("SERVER","BUTCHER").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("SERVER","GRAVE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&eTombe de %name%");
                     message.getNode("SERVER","GRAVE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("SERVER","LAST_CONNECT").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7Derniere connection : %var1%");
                     message.getNode("SERVER","LAST_CONNECT").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                                 
                 //-------------------------
@@ -279,70 +285,70 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&cUne erreur est survenue !");
                     message.getNode("EXCEPTION","ERROR").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","WRONG_NAME").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cCe nom est incorrect !");
                     message.getNode("EXCEPTION","WRONG_NAME").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","NAME_ALREADY_USED").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cCe nom est d\351j\340 utilis\351 !");       
                     message.getNode("EXCEPTION","NAME_ALREADY_USED").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","CANNOT_EJECT_OWNER").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cVous ne pouvez pas renvoyer le propri\351taire !");
                     message.getNode("EXCEPTION","CANNOT_EJECT_OWNER").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","NOT_FOUND").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&4%var1% &cest introuvable");
                     message.getNode("EXCEPTION","NOT_FOUND").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","NOT_CONNECTED").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&4%var1% &cn'est pas connect\351 !");
                     message.getNode("EXCEPTION","NOT_CONNECTED").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","NO_PERMISSIONS").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cVous n'avez pas la permission pour utiliser cette commande !");
                     message.getNode("EXCEPTION","NO_PERMISSIONS").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","NO_CONSOLE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cCette commande ne peut pas s'ex\351cuter sur la console");
                     message.getNode("EXCEPTION","NO_CONSOLE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","DATA_NOT_FOUND").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&4%var1% &cn'est pas enregistr\351 dans la base de donn\351e");
                     message.getNode("EXCEPTION","DATA_NOT_FOUND").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("EXCEPTION","WRONG_CHARACTERS_NUMBER").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cLe nombre de caract\350res doit \352tre entre %var1% et %var2%");
                     message.getNode("EXCEPTION","WRONG_CHARACTERS_NUMBER").setValue(msg);
-                    manager.save(message);  
+                    MANAGER.save(message);  
                 }
                 
                 //-------------------------
@@ -353,14 +359,14 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&7%var1% a \351t\351 tu\351 par %var2%");
                     message.getNode("DEAD_MSG","KILLED_BY").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("DEAD_MSG","SUICIDE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7%var1% s'est suicid\351");
                     message.getNode("DEAD_MSG","SUICIDE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 //-------------------------
@@ -371,35 +377,35 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&e%name% &6a programm\351 le beau temps sur &e%world%");
                     message.getNode("WEATHER-TIME","SUN_MESSAGE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("WEATHER-TIME","RAIN_MESSAGE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&e%name% &6a programm\351 la pluie sur &e%world%");
                     message.getNode("WEATHER-TIME","RAIN_MESSAGE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("WEATHER-TIME","STORM_MESSAGE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&e%name% &6a programm\351 l'orage sur &e%world%");
                     message.getNode("WEATHER-TIME","STORM_MESSAGE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("WEATHER-TIME","DAY_MESSAGE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&e%name% &6a mis le jour sur &e%world%");
                     message.getNode("WEATHER-TIME","DAY_MESSAGE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("WEATHER-TIME","NIGHT_MESSAGE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&e%name% &6a mis la nuit sur &e%world%");
                     message.getNode("WEATHER-TIME","NIGHT_MESSAGE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 //-------------------------
@@ -410,48 +416,54 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&cVous n'\352tes dans aucune guild !");
                     message.getNode("GUILD","NO_GUILD").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("GUILD","ALREADY_GUILD_MEMBER").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cVous \352tes d\351j\340 dans une guild !");
                     message.getNode("GUILD","ALREADY_GUILD_MEMBER").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("GUILD","WRONG_RANK").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&cVotre rang dans la guild ne vous permet pas d'utiliser \347a !");
                     message.getNode("GUILD","WRONG_RANK").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
-                        
-                msg = new ArrayList<>();
-                msg.add("&c%var1% ne fait pas parti de votre guild !");
-                message.getNode("GUILD","NOT_IN_SAME_GUILD").setValue(msg);
-                manager.save(message);
                 
-                msg = new ArrayList<>();
-                msg.add("&cVous \352tes chef de votre guild, vous ne pouvez pas la quitter !");
-                msg.add("&cVeuillez c\351der le grade à un autre membre avec : /guild setgrade 1 <player>");
-                message.getNode("GUILD","OWNER_CANNOT_LEAVE").setValue(msg);
-                manager.save(message);
+                if(message.getNode("GUILD","NOT_IN_SAME_GUILD").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&c%var1% ne fait pas parti de votre guild !");
+                    message.getNode("GUILD","NOT_IN_SAME_GUILD").setValue(msg);
+                    MANAGER.save(message);
+                }
                 
-                msg = new ArrayList<>();
-                msg.add("&9%var1% est le nouveau leader de la guild \"%var2%&9\" !");
-                message.getNode("GUILD","GUILD_NEW_CHEF").setValue(msg);
-                manager.save(message);
+                if(message.getNode("GUILD","OWNER_CANNOT_LEAVE").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&cVous \352tes chef de votre guild, vous ne pouvez pas la quitter !");
+                    msg.add("&cVeuillez c\351der le grade à un autre membre avec : /guild setgrade 1 <player>");
+                    message.getNode("GUILD","OWNER_CANNOT_LEAVE").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GUILD","GUILD_NEW_CHEF").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&9%var1% est le nouveau leader de la guild \"%var2%&9\" !");
+                    message.getNode("GUILD","GUILD_NEW_CHEF").setValue(msg);
+                    MANAGER.save(message);
+                }
                         
                 msg = new ArrayList<>();
                 msg.add("&2Vous avez c\351d\351 votre grade de chef \340 %var1% !");
                 message.getNode("GUILD","GUILD_CHEF_GRADE_GIVEN").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&2Vous \352tes le nouveau leader de votre guild !");
                 message.getNode("GUILD","GUILD_YOU_ARE_NEW_CHEF").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&n&eQu'est-ce que \347a apporte d'\350tre dans une guild ?");
@@ -462,56 +474,56 @@ public class MessageManager {
                 msg = new ArrayList<>();
                 msg.add("&eVous venez de cr\351er la guild \"&r%var1%&e\"");
                 message.getNode("GUILD","GUILD_CREATED_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&eVous venez de supprimer la guild \"&r%var1%&e\"");
                 message.getNode("GUILD","GUILD_DELETED_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eLa guild \"&6%var1%&e\" a \351t\351 renomm\351e en \"&6%var2%&e\"");
                 message.getNode("GUILD","GUILD_RENAMED_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eVous venez de quitter la guild \"&r%var1%&e\"");
                 message.getNode("GUILD","LEAVING_GUILD_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                         
                 msg = new ArrayList<>();
                 msg.add("&eVous avez renvoy\351 &6%var1% &ede votre guild");
                 message.getNode("GUILD","GUILD_MEMBER_REMOVED_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                      
                 msg = new ArrayList<>();
                 msg.add("&eVous avez \351t\351 renvoy\351 de votre guild par &6%var1%");
                 message.getNode("GUILD","GUILD_RETURNED_BY").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&1La guild \"&r%var1%&1\" a \351t\351 dissoute !");
                 message.getNode("GUILD","GUILD_DELETED_NOTIFICATION").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Affiche un menu pour g\351rer la guild");
                 msg.add("&n&eAccessible par :&r Chef, Sous-chef, Officier");
                 message.getNode("GUILD","ONHOVER_GUILD_MOREACTIONS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Shift+Click pour quitter la guild");
                 msg.add("\n&7/guild leave");
                 message.getNode("GUILD","ONHOVER_GUILD_LEAVE").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Inviter un joueur \340 rejoindre la guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef, Officier");
                 msg.add("\n&7/guild addplayer <player>");
                 message.getNode("GUILD","ONHOVER_GUILD_INVIT").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Changer le grade d'un membre");
@@ -519,48 +531,48 @@ public class MessageManager {
                 msg.add("\n&7/guild setplayergrade <player> <grade>");
                 msg.add("&o&n&7Grade :&r&o&7 2 -> Sous-chef | 3 -> Officer | 4 -> Membre | 5 -> Recrue");
                 message.getNode("GUILD","ONHOVER_GUILD_SETGRADE").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Renvoyer un joueur de la guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild removeplayer <player>");
                 message.getNode("GUILD","ONHOVER_GUILD_REMOVEMEMBER").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Retirer des \351meraudes de la banque de guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild withdraw <montant>");
                 message.getNode("GUILD","ONHOVER_GUILD_WITHDRAWAL").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Renommer la guild");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild rename <nom>");
                 message.getNode("GUILD","ONHOVER_GUILD_RENAME").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Supprimer la guild");
                 msg.add("&e&nUtilisable par :&r Chef");
                 msg.add("\n&7/guild delete <nom>");
                 message.getNode("GUILD","ONHOVER_GUILD_DELETE").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6D\351poser des \351meraudes dans la banque de la guild");
                 msg.add("\n&7/guild depot <montant>");
                 message.getNode("GUILD","ONHOVER_GUILD_DEPOSIT").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&l&6Faction : &r%var1%");
                 msg.add("&e&nChef : &r%var2%");
                 msg.add("\n&7&n&oShift+Click :&r &8&o/guild delete <name>");
                 message.getNode("GUILD","ONHOVER_GUILD_LIST_LVL10").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 //-------------------------
                 // Message Plot / parcelle
@@ -570,78 +582,78 @@ public class MessageManager {
                 msg.add("\n&6Le co\373t pour prot\351ger cette parcelle est de &e%var1% \351meraudes");
                 msg.add("&6Vous poss\351dez actuellement &e%var2% \351meraude(s) en banque\n");
                 message.getNode("PLOT","BUYING_COST_PLOT").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("\n&6La parcelle : &e%var1% &6 est maintenant prot\351g\351e : ");
                 msg.add("&6Vous pouvez modifier les param\350tres avec la commande &e/plot flag\n");
                 message.getNode("PLOT","PROTECT_PLOT_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("\n&6La parcelle : &e%var1% &6 est maintenant prot\351g\351e de la bedrock jusqu'au ciel");
                 msg.add("&6Vous pouvez modifier les param\350tres avec la commande &e/plot flag\n");
                 message.getNode("PLOT","BEDROCK2SKY_PROTECT_PLOT_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&6Parcelle &e%var1% &6: protection activ\351e");
                 message.getNode("PLOT","PROTECT_LOADED_PLOT").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("\n&cVous n'avez pas d\351fini les angles de votre parcelle");
                 msg.add("&cLes angles se d\351finissent en utilisant une pelle en bois :");
                 msg.add("&cAngle1 = clic gauche / Angle2 = clic droit\n");
                 message.getNode("PLOT","UNDEFINED_PLOT_ANGLES").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                                 
                 msg = new ArrayList<>();
                 msg.add("&cVous ne pouvez pas cr\351er cette parcelle, il y a d\351j\340 une parcelle prot\351g\351e dans cette s\351lection !");         
                 message.getNode("PLOT","ALREADY_OWNED_PLOT").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cVous ne pouvez pas \351tendre cette parcelle dans cette direction, une parcelle existe d\351ja  !");         
                 message.getNode("PLOT","EXPAND_NOT_ALLOWED").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cAucune parcelle \340 cette position !");
                 message.getNode("PLOT","NO_PLOT").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cLe fly est interdit sur cette parcelle");
                 message.getNode("PLOT","PLOT_NO_FLY").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&5L'acc\350s \340 cette parcelle est interdit");
                 message.getNode("PLOT","PLOT_NO_ENTER").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("\n&6Vous \352tes sur une parcelle proteg\351e : &e%plot%");
                 msg.add("&6Propri\351taire : &e%owner%");
                 msg.add("&6Habitant(s) : &e%allow%");
                 message.getNode("PLOT","PLOT_INFO").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("\n&bListe des parcelles vous appartenant :");
                 message.getNode("PLOT","PLOT_LIST").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("\n&bListe des parcelles appartenant \340 &3%var1% :");
                 message.getNode("PLOT","TARGET_PLOT_LIST").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&5Cette parcelle est prot\351g\351e par un sort magique !");
                 message.getNode("PLOT","PLOT_PROTECTED").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 //-------------------------
                 // Message ECONOMY
@@ -658,18 +670,18 @@ public class MessageManager {
                 msg = new ArrayList<>();
                 msg.add("&cVous ne poss\351dez pas assez d'assez d'\351meraudes sur votre compte, tapez /bank pour voir votre solde");
                 message.getNode("ECONOMY","MISSING_BALANCE").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cVotre guild ne poss\351de pas autant d'\351meraudes dans ses coffres !");
                 message.getNode("ECONOMY","GUILD_MISSING_BALANCE").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 if(message.getNode("ECONOMY","CLICK_TO_CONFIRM").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&eMaintenant cliques de nouveau sur le panneau pour confirmer/n");
                     message.getNode("ECONOMY","CLICK_TO_CONFIRM").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 //-------------------------
@@ -679,48 +691,48 @@ public class MessageManager {
                 msg = new ArrayList<>();
                 msg.add("T\351l\351portation aux coordonn\351es");
                 message.getNode("TELEPORTATION","TP_AT_COORDS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&6Woshhhh ..!");
                 message.getNode("TELEPORTATION","TP_BACK").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cHome d\351j\340 d\351fini, veuillez le supprimer avant de pouvoir le red\351finir");
                 message.getNode("TELEPORTATION","HOME_ALREADY_EXIST").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eLe home &6%var1% &ea \351t\351 cr\351\351 avec succ\350s");
                 message.getNode("TELEPORTATION","HOME_SET_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eLe home &6%var1% &ea \351t\351 supprim\351 avec succ\350s");
                 message.getNode("TELEPORTATION","HOME_DEL_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eVous poss\351dez actuellement &6%var1% &esur &6%var2% &ehome possible");
                 message.getNode("TELEPORTATION","NB_HOME").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eVous \352tes seulement autoris\351 \340 poss\351der %var1% home");
                 message.getNode("TELEPORTATION","NB_ALLOWED_HOME").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&cHome introuvable !");
                 msg.add("&cVeuillez utiliser la commande /sethome pour le d\351finir");
                 message.getNode("TELEPORTATION","HOME_NOT_FOUND").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eT\351l\351portation sur votre home : &6%var1%");
                 message.getNode("TELEPORTATION","HOME_TP_SUCCESS").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 //-------------------------
                 // Message Commande PlayerInfo
@@ -731,7 +743,7 @@ public class MessageManager {
                 msg.add("&7&n&oClick :&r &8&o/kick <player> <raison>");
                 msg.add("&7&n&oShift+Click :&r &8&o/ban <player> <raison>");
                 message.getNode("CMD_PLAYERINFO","ONHOVER_PI_NAME").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 //-------------------------
                 // Message WORLD
@@ -740,32 +752,32 @@ public class MessageManager {
                 msg = new ArrayList<>();
                 msg.add("&cCe monde existe d\351j\340");
                 message.getNode("WORLD","WORLD_ALREADY_EXIST").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&c%var1% a \351t\351 cr\351\351 avec succ\350s");
                 message.getNode("WORLD","WORLD_CREATED").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&4%ERREUR : &cLe monde n'a pas pu \352tre cr\351\351");
                 message.getNode("WORLD","WORLD_CREATION_ERROR").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&4%ERREUR : &cLes propri\351t\351s du monde ne peuvent pas \352tre cr\351\351s");
                 message.getNode("WORLD","WORLD_PROPERTIES_ERROR").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&eT\351l\351portation sur : &6%world%");
                 message.getNode("WORLD","TELEPORTED_TO_WORLD").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 msg = new ArrayList<>();
                 msg.add("&6%name% &ea \351t\351 t\351l\351port\351 sur : &6%world%");
                 message.getNode("WORLD","OTHER_TELEPORTED_TO_WORLD").setValue(msg);
-                manager.save(message);
+                MANAGER.save(message);
                 
                 //-------------------------
                 // Message PORTAL
@@ -775,7 +787,7 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&cPortail prot\351g\351");
                     message.getNode("PORTAL","PROTECT_PORTAL").setValue(msg);
-                    manager.save(message); 
+                    MANAGER.save(message); 
                 }
                 
                 //-------------------------
@@ -786,14 +798,14 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&bVEND:");
                     message.getNode("SHOP","SHOP_SALE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("SHOP","SHOP_BUY").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&bACHAT:");
                     message.getNode("SHOP","SHOP_BUY").setValue(msg);
-                    manager.save(message); 
+                    MANAGER.save(message); 
                 }
                 
                 //-------------------------
@@ -804,7 +816,7 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&eoups ! ce coffre est verouill\351 !");
                     message.getNode("CHEST","CHEST_LOCK").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 //-------------------------
@@ -815,122 +827,168 @@ public class MessageManager {
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation du corps : ");
                     message.getNode("ARMORSTAND","CHEST_ROTATION").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","HEAD_ROTATION").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation de la t\352te : ");
                     message.getNode("ARMORSTAND","HEAD_ROTATION").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","LEFT_ARM_ROTATION").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation du bras gauche : ");
                     message.getNode("ARMORSTAND","LEFT_ARM_ROTATION").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","RIGHT_ARM_ROTATION").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation du bras droit : ");
                     message.getNode("ARMORSTAND","RIGHT_ARM_ROTATION").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","LEFT_LEG_ROTATION").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation de la jambe gauche : ");
                     message.getNode("ARMORSTAND","LEFT_LEG_ROTATION").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","RIGHT_LEG_ROTATION").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation de la jambe droite : ");
                     message.getNode("ARMORSTAND","RIGHT_LEG_ROTATION").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","POSITION_X_AS").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Position sur l'axe X : ");
                     message.getNode("ARMORSTAND","POSITION_X_AS").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","POSITION_Y_AS").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Position sur l'axe Y : ");
                     message.getNode("ARMORSTAND","POSITION_Y_AS").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","POSITION_Z_AS").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Position sur l'axe Z : ");
                     message.getNode("ARMORSTAND","POSITION_Z_AS").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","ROTATION_AS").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 - Rotation : ");
                     message.getNode("ARMORSTAND","ROTATION_AS").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","AS_HAS_BASE_PLATE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + (Des)Activation de la plaque de base ");
                     message.getNode("ARMORSTAND","AS_HAS_BASE_PLATE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","AS_HAS_GRAVITY").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + (Des)Activation de la gravit\351 ");
                     message.getNode("ARMORSTAND","AS_HAS_GRAVITY").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","AS_HAS_ARMS").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + (Des)Activation des bras ");
                     message.getNode("ARMORSTAND","AS_HAS_ARMS").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","AS_IS_SMALL").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + Taille petit ou grand ");
                     message.getNode("ARMORSTAND","AS_IS_SMALL").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                                 
                 if(message.getNode("ARMORSTAND","AS_NAME_VISIBLE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + (Des)Affiche le nom ");
                     message.getNode("ARMORSTAND","AS_NAME_VISIBLE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","AS_MARKER").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + (Des)Affiche le marker ");
                     message.getNode("ARMORSTAND","AS_MARKER").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
                 if(message.getNode("ARMORSTAND","AS_INVISIBLE").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7 + (In)Visible ");
                     message.getNode("ARMORSTAND","AS_INVISIBLE").setValue(msg);
-                    manager.save(message);
+                    MANAGER.save(message);
                 }
                 
-            message = manager.load();
+                //-------------------------
+                // Message GRAVE
+                //-------------------------
+                
+                if(message.getNode("GRAVE","GRAVE_BREAK").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&bUne pauvre ame repose dans ce cercueil, tu ne peux le detruire..");
+                    message.getNode("GRAVE","GRAVE_BREAK").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GRAVE","GRAVE_RIP1").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&5+++++++++++++");
+                    message.getNode("GRAVE","GRAVE_RIP1").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GRAVE","GRAVE_RIP2").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&o&5 Repose En Paix");
+                    message.getNode("GRAVE","GRAVE_RIP2").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GRAVE","GRAVE_RIP3").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&5&l%name%");
+                    message.getNode("GRAVE","GRAVE_RIP3").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GRAVE","GRAVE_RIP4").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&5+++++++++++++");
+                    message.getNode("GRAVE","GRAVE_RIP4").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GRAVE","GRAVE_POSITION").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&eTon Stuff est situ\351 dans ta tombe a la postion : ");
+                    message.getNode("GRAVE","GRAVE_POSITION").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+            message = MANAGER.load();
 
         } catch (IOException e) {}
 		
@@ -1334,13 +1392,29 @@ public class MessageManager {
     
     public static Text AS_INVISIBLE(){return format(AS_INVISIBLE, "ARMORSTAND","AS_INVISIBLE");}
     
+    //-------------------------
+    // Message GRAVE
+    //-------------------------
+    
+    public static Text GRAVE_BREAK(Player player){return format(GRAVE_BREAK, "GRAVE","GRAVE_BREAK",player);}
+    
+    public static Text GRAVE_RIP1(Player player){return format(GRAVE_RIP1, "GRAVE","GRAVE_RIP1",player);}
+    
+    public static Text GRAVE_RIP2(Player player){return format(GRAVE_RIP2, "GRAVE","GRAVE_RIP2",player);}
+    
+    public static Text GRAVE_RIP3(Player player){return format(GRAVE_RIP3, "GRAVE","GRAVE_RIP3",player);}
+    
+    public static Text GRAVE_RIP4(Player player){return format(GRAVE_RIP4, "GRAVE","GRAVE_RIP4",player);}
+    
+    public static Text GRAVE_POSITION(){return format(GRAVE_POSITION, "GRAVE","GRAVE_POSITION");}
+    
     public static Text USAGE(String usage){
         Text USAGE = (Text.of(TextColors.DARK_RED, "Usage: ", TextColors.RED, usage)); 
         return USAGE;
     }
     
     public static Text MESSAGE(List<String> list, Player player, String var){
-        Text MessageText = Text.of();
+        Text MessageText;
         String msg = "";
         for(String s : list) {
             if(s.equals(list.get(list.size()-1))){
@@ -1358,7 +1432,7 @@ public class MessageManager {
     }
     
     public static Text MESSAGE(String msg, Player player, String var){
-        Text MessageText = Text.of();
+        Text MessageText;
         msg = msg.replaceAll("%name%", player.getName());
         msg = msg.replaceAll("%world%", player.getWorld().getName());
         msg = msg.replaceAll("%var1%", var);
@@ -1368,7 +1442,7 @@ public class MessageManager {
     }
     
     public static Text MESSAGE(String msg, Player player){
-        Text MessageText = Text.of();
+        Text MessageText;
         msg = msg.replaceAll("%name%", player.getName());
         msg = msg.replaceAll("%world%", player.getWorld().getName());
         
@@ -1377,7 +1451,7 @@ public class MessageManager {
     }
     
     public static Text MESSAGE(String msg){
-        Text MessageText = Text.of();       
+        Text MessageText;       
         MessageText = Text.builder().append(TextSerializers.formattingCode('&').deserialize(msg)).toText();
         return MessageText;
     }

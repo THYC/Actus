@@ -13,7 +13,7 @@ public class CommandInvsee implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-        if(src instanceof Player && src.hasPermission("actus.invsee")) {
+        if(src instanceof Player && src.hasPermission("actus.modo.invsee")) {
             Player target = ctx.<Player> getOne("target").get();
             Player player = (Player) src; 
             player.openInventory(target.getInventory());

@@ -29,7 +29,7 @@ public class CommandTPR implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.tpr")) {
+        if(src instanceof Player && src.hasPermission("actus.player.tpr")) {
             Player player = (Player) src;
             World world = player.getWorld();
             player.sendMessage(MESSAGE("&eRecherche d'un point de chute securis\351 ..."));

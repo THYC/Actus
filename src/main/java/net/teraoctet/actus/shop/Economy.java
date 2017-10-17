@@ -1,4 +1,4 @@
-package net.teraoctet.actus.economy;
+package net.teraoctet.actus.shop;
 
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;

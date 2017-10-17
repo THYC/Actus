@@ -20,8 +20,8 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.Extent;
 
 public class PlotManager {   
-    private Location border1;
-    private Location border2;
+    private Location<World> border1;
+    private Location<World> border2;
     private Player player;
     
     public PlotManager() {}
@@ -279,7 +279,11 @@ public class PlotManager {
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
                 foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot)));
     }
-        
+    
+    /**
+     * Spawn un banner a l'angle transmis
+     * @param loc 
+     */
     public void spawnTag (Location loc){
         loc.setBlockType(STANDING_BANNER);
     }  
@@ -292,6 +296,10 @@ public class PlotManager {
         cutTag(new Location(world,plot.getX2(),plot.getYSpawn(plot.getX2(), plot.getZ2())-1,plot.getZ2()));
     }
     
+    /**
+     * Supprime le banner situé sur l'angle transmis
+     * @param loc 
+     */
     private void cutTag(Location loc){
         if(loc.getBlockType().equals(STANDING_BANNER)){
             loc.setBlockType(AIR); 

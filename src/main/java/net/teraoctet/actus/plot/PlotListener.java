@@ -11,10 +11,13 @@ import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.bookmessage.Book;
+import net.teraoctet.actus.commands.plot.CallBackPlot;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Config.DISPLAY_PLOT_MSG_FOR_OWNER;
+import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
@@ -49,23 +52,28 @@ import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.block.BlockState;
 import static org.spongepowered.api.block.BlockTypes.AIR;
+import static org.spongepowered.api.block.BlockTypes.BEDROCK;
+import static org.spongepowered.api.block.BlockTypes.CHEST;
 import static org.spongepowered.api.block.BlockTypes.FIRE;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
+import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.data.property.block.MatterProperty.Matter;
 import static org.spongepowered.api.item.ItemTypes.ARROW;
 import org.spongepowered.api.event.block.NotifyNeighborBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.util.Direction;
 
 public class PlotListener {
         
     public PlotListener() {}
-
+    
+    private static final CallBackPlot  CB  = new CallBackPlot();
+    
     @Listener
     @SuppressWarnings("null")
     public void onInteractBlock(InteractBlockEvent  event, @First Player player){
@@ -195,7 +203,7 @@ public class PlotListener {
                                     List<Text> textList = new ArrayList();
                                     textList.add(Text.builder().append(MESSAGE("Votre parcelle a \351t\351 vendu a " + player.getName() + ",\n" + 
                                             String.valueOf(cout) + " \351meraudes ont \351t\351 ajout\351 a votre compte")).build());
-                                    book.setPages(textList);;
+                                    book.setPages(textList);
                                     try {
                                         configBook.saveBook(book);
                                     } catch (IOException | ObjectMappingException ex) {
@@ -223,6 +231,15 @@ public class PlotListener {
         
         // Interact sur autre block
         if (plot.isPresent()){
+            if(b.getState().getType().equals(CHEST)){
+                Optional<TileEntity> chest = b.getLocation().get().getTileEntity();
+                if(chest.get().getValue(Keys.DISPLAY_NAME).isPresent()){
+                    if(chest.get().getValue(Keys.DISPLAY_NAME).get().get().toPlain().contains("[+]")){
+                        return;
+
+                    }
+                }
+            }
             if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && plot.get().getNoInteract() == 1 && aplayer.getLevel() != 10) {
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
@@ -347,6 +364,21 @@ public class PlotListener {
                 event.setCancelled(true);
             }
         }
+
+        if(block.getFinal().getState().getType().equals(BEDROCK)){
+ 
+            PlotManager plotPlayer = PlotManager.getSett(player);
+            plotPlayer.setBorder(1,loc.add(-20, 0, -20));
+            plotPlayer.setBorder(2,loc.add(20, 0, 20));
+ 
+            int level = 0;
+
+            if(plotManager.plotAllow(plotPlayer.getBorder1().get(), plotPlayer.getBorder2().get())){
+                player.sendMessage(ALREADY_OWNED_PLOT());
+                return;
+            }
+            CB.callCreate(player.getName() + serverManager.dateShortToString(),false,0,level).accept(player);
+        }
     }
     
     @Listener
@@ -387,6 +419,7 @@ public class PlotListener {
                                 return;
                             }
                         }
+                        event.getNeighbors().clear();
                         source.getLocation().get().setBlockType(AIR); 
                         event.setCancelled(true);
                     }

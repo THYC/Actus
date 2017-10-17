@@ -18,7 +18,7 @@ public class CommandStorm implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx){
 
-        if(src instanceof Player && src.hasPermission("actus.weather.storm")) { 
+        if(src instanceof Player && src.hasPermission("actus.fun.weather.storm")) { 
             Player player = (Player) src;
             World world = player.getLocation().getExtent();
             world.setWeather(Weathers.THUNDER_STORM);

@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands.economy;
+package net.teraoctet.actus.commands.shop;
 
 import java.io.IOException;
 import static java.lang.Math.round;
@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.itemShopManager;
-import net.teraoctet.actus.economy.ItemShop;
+import net.teraoctet.actus.shop.ItemShop;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;

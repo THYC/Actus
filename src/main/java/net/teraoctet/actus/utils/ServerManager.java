@@ -9,6 +9,7 @@ import java.util.TimeZone;
 import static net.teraoctet.actus.Actus.mapCountDown;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.Config.DAYS_BEFORE_MOVE_GRAVE;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockTypes;
@@ -176,6 +177,19 @@ public class ServerManager {
         //cal.add(Calendar.YEAR, 1900);
         
 	return cal.getTimeInMillis();
+    }
+    
+    /**
+     * retourne la date incrementé de DAYS_BEFORE_MOVE_GRAVE
+     * @param datelong
+     * @return 
+     */
+    public long addDate(Long datelong){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(datelong);
+        cal.add(Calendar.DATE, DAYS_BEFORE_MOVE_GRAVE());
+ 
+        return cal.getTime().getTime();
     }
     
     /**

@@ -67,6 +67,7 @@ import static net.teraoctet.actus.utils.MessageManager.EVENT_LOGIN_MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.LAST_CONNECT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.utils.Permissions;
+import net.teraoctet.actus.world.WorldManager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
@@ -163,16 +164,17 @@ public class PlayerListener {
         }
         else if(event.getCause().first(CommandBlockSource.class).isPresent()) {
             builder.append("command block");
-        }else{
-            builder = null;
+        //}else{
+            //builder = null;
         }
 
-        builder.append(": /").append(event.getCommand()).append(" ").append(event.getArguments());
+
+        Optional.of(builder.append(": /").append(event.getCommand()).append(" ").append(event.getArguments()));
         getGame().getServer().getConsole().sendMessage(Text.of(builder.toString()));
     }
     
     @Listener
-    public void promptDouble(MessageEvent event, @First Player player) {
+    public void promptDouble(MessageChannelEvent.Chat event, @First Player player) {
         if(inputDouble.containsKey(player)){
             if(inputDouble.get(player) > 0d)return;
             String smessage = event.getOriginalMessage().toPlain();
@@ -188,18 +190,21 @@ public class PlayerListener {
                     return;
                 }
                 inputDouble.replace(player, d);
-                event.setMessage(CLICK_TO_CONFIRM()
+                player.sendMessage(CLICK_TO_CONFIRM()
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
             }else{
-                event.setMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
+                
+                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
                 .concat(MESSAGE("&bTapes 0 pour annuler la transaction")));
             }
         }
         if(inputShop.containsKey(player)){
             String smessage = event.getOriginalMessage().toPlain();
             smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
-            try{
-                Double d = Double.valueOf(smessage);
+            Scanner scanner = new Scanner(smessage);
+            
+            if(scanner.hasNextDouble()){
+                double d = scanner.nextDouble();
                 if(d==0){
                     inputShop.remove(player);
                     player.sendMessage(MESSAGE("&bL'action a \351t\351 annul\351"));
@@ -208,10 +213,12 @@ public class PlayerListener {
                 }
                 Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
                 event.clearMessage();
-            }catch(NumberFormatException ex){
-                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :"));
-                player.sendMessage(MESSAGE("&bTapes 0 pour annuler"));
-                event.clearMessage();
+            }else{
+                //event.setMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
+                //.concat(MESSAGE("&bTapes 0 pour annuler")));
+                
+                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
+                .concat(MESSAGE("&bTapes 0 pour annuler")));
             }
         }
     }
@@ -221,7 +228,7 @@ public class PlayerListener {
         String smessage = event.getMessage().toPlain();
         smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
         Text message = MESSAGE(Permissions.getPrefix(player) + "&a[" + player.getName() + "] &7" + smessage + Permissions.getSuffix(player));
-        Text prefixWorld = MESSAGE(worldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
+        Text prefixWorld = MESSAGE(WorldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
         Text newMessage = Text.builder().append(prefixWorld).append(message).build();
         event.setMessage(newMessage);
     }
@@ -511,7 +518,7 @@ public class PlayerListener {
     public void onRespawnPlayer(RespawnPlayerEvent event, @First Player player) {
         
         AInventory invFrom = new AInventory(player, event.getFromTransform().getExtent().getName());
-        AInventory invTO = new AInventory(player, event.getToTransform().getExtent().getName());
+        AInventory invTO;//= new AInventory(player, event.getToTransform().getExtent().getName());
         configInv.save(invFrom);
         
         if(configInv.load(player, event.getToTransform().getExtent().getName()).isPresent()){

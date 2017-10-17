@@ -18,7 +18,7 @@ public class CommandSetspawn implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.admin.setspawn")) {
             Player player = (Player) src;
             player.getWorld().getProperties().setSpawnPosition(player.getLocation().getBlockPosition());
-            player.sendMessage(MESSAGE("command.world.setspawn.success"));           
+            player.sendMessage(MESSAGE("command.admin.world.setspawn.success"));           
             return CommandResult.success();
         } 
         

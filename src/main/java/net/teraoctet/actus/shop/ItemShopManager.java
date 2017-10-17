@@ -1,4 +1,4 @@
-package net.teraoctet.actus.economy;
+package net.teraoctet.actus.shop;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,16 +26,16 @@ import org.spongepowered.api.text.Text;
 
 public class ItemShopManager {
     
-    public static File file = new File("config/actus/itemShop.conf");
-    public static final ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-    public static ConfigurationNode shop = manager.createEmptyNode(ConfigurationOptions.defaults());
+    public static final File FILE = new File("config/actus/itemShop.conf");
+    public static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
+    public static ConfigurationNode shop = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
     
     public static void init() {
         try {
-            if (!file.exists()) {
-                file.createNewFile();
+            if (!FILE.exists()) {
+                FILE.createNewFile();
             }
-            shop = manager.load();
+            shop = MANAGER.load();
         } catch (IOException e) {}	
     }
     
@@ -62,7 +62,7 @@ public class ItemShopManager {
         shop.getNode(uuid.toString(),"transacttype").setValue(itemShop.getTransactType());
         shop.getNode(uuid.toString(),"price").setValue(itemShop.getPrice());
         shop.getNode(uuid.toString(),"qte").setValue(itemShop.getQte());
-        manager.save(shop);
+        MANAGER.save(shop);
         return true;
     }
         
@@ -91,8 +91,8 @@ public class ItemShopManager {
      */
     public void delItemShop(UUID uuid) throws IOException{
 	shop.removeChild(uuid.toString());
-        manager.save(shop);
-        shop = manager.load();
+        MANAGER.save(shop);
+        shop = MANAGER.load();
     }
     
     /**

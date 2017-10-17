@@ -17,7 +17,7 @@ public class CommandDay implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
     
-        if(src instanceof Player && src.hasPermission("actus.time.day")) {
+        if(src instanceof Player && src.hasPermission("actus.fun.time.day")) {
             Player player = (Player) src;
             World world = player.getLocation().getExtent();        
             world.getProperties().setWorldTime(0); 

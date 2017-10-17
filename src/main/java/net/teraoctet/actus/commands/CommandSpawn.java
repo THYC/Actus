@@ -21,7 +21,7 @@ public class CommandSpawn implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.spawn")) {
+        if(src instanceof Player && src.hasPermission("actus.player.spawn")) {
             Player player = (Player) src;
             if(Config.UNIQUE_SPAWN_WORLD() == 0){
                 serverManager.teleport(player,player.getWorld().getName(),

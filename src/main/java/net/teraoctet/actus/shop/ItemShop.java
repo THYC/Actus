@@ -1,4 +1,4 @@
-package net.teraoctet.actus.economy;
+package net.teraoctet.actus.shop;
 
 import static java.lang.Math.round;
 import org.spongepowered.api.item.inventory.ItemStack;

@@ -19,7 +19,7 @@ public class CommandTPThru implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if (src instanceof Player){
+        if (src instanceof Player && src.hasPermission("actus.admin.tpthru")){
             Player player = (Player) src;
             
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(30).build(); 

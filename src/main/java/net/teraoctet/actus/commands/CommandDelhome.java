@@ -21,7 +21,7 @@ public class CommandDelhome implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.delhome")) {
+        if(src instanceof Player && src.hasPermission("actus.player.delhome")) {
             Player player = (Player) src;  
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             String name = "default"; 

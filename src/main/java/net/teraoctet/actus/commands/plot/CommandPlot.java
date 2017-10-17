@@ -18,7 +18,7 @@ public class CommandPlot implements CommandExecutor {
            
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-        if(src instanceof Player && src.hasPermission("actus.plot")) {
+        if(src instanceof Player && src.hasPermission("actus.player.plot")) {
             PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
             Builder builder = paginationService.builder();  
 

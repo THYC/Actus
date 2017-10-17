@@ -17,14 +17,14 @@ public class CommandClearinventory implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         Optional<Player> player = ctx.<Player> getOne("player");
         
-        if (player.isPresent() && src.hasPermission("actus.clearinventory.others")) { 
+        if (player.isPresent() && src.hasPermission("actus.admin.clearinventory.others")) { 
             player.get().getInventory().clear(); 
             player.get().sendMessage(INVENTORY_CLEARED());
             src.sendMessage(CLEARINVENTORY_SUCCESS(player.get().getName()));
             return CommandResult.success();
         } 
         
-        else if (src.hasPermission("actus.clearinventory")){
+        else if (src.hasPermission("actus.player.clearinventory")){
             if(src instanceof Player){
                 Player senderPlayer = (Player)src;
                 senderPlayer.getInventory().clear();

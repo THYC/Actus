@@ -17,12 +17,12 @@ public class CommandVanish implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.vanish")) {
+        if(src instanceof Player && src.hasPermission("actus.modo.vanish")) {
             Optional<Player> target = ctx.<Player> getOne("player");
             Player player = (Player) src;
             
             if(target.isPresent()){
-                if(src.hasPermission("actus.vanish.others")){
+                if(src.hasPermission("actus.admin.vanish.others")){
                     player = target.get();
                 }else{
                     src.sendMessage(NO_PERMISSIONS());

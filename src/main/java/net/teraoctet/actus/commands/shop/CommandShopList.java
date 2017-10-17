@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands.economy;
+package net.teraoctet.actus.commands.shop;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.itemShopManager;
-import net.teraoctet.actus.economy.ItemShop;
+import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;

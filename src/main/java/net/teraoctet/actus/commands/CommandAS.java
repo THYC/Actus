@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import static net.teraoctet.actus.Actus.plotManager;
-import net.teraoctet.actus.economy.ItemShop;
+import net.teraoctet.actus.shop.ItemShop;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
@@ -59,7 +59,7 @@ public class CommandAS implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.as")) {
+        if(src instanceof Player && src.hasPermission("actus.fun.as")) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             Entity as = null;

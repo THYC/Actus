@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands.economy;
+package net.teraoctet.actus.commands.shop;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.itemShopManager;
 import net.teraoctet.actus.commands.CommandTest;
-import net.teraoctet.actus.economy.ItemShop;
+import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;

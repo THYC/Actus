@@ -8,20 +8,20 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class Config {
-    public static File file = new File("config/actus/actus.conf");
-    public static ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-    public static ConfigurationNode config = manager.createEmptyNode(ConfigurationOptions.defaults());
+    public static final File FILE = new File("config/actus/actus.conf");
+    public static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
+    public static ConfigurationNode config = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
     
     public static void setup() {
         try {
-            if (!file.exists()) {
-                file.createNewFile();
-                config.getNode("mysql", "use").setValue(false);
-                config.getNode("mysql", "host").setValue("localhost");
-                config.getNode("mysql", "port").setValue(3306);
-                config.getNode("mysql", "username").setValue("root");
-                config.getNode("mysql", "password").setValue("password");
-                config.getNode("mysql", "database").setValue("minecraft");
+            if (!FILE.exists()) {
+                FILE.createNewFile();
+                config.getNode("mysql", "USE").setValue(false);
+                config.getNode("mysql", "HOST").setValue("localhost");
+                config.getNode("mysql", "PORT").setValue(3306);
+                config.getNode("mysql", "USERNAME").setValue("root");
+                config.getNode("mysql", "PASSWORD").setValue("password");
+                config.getNode("mysql", "DATABASE").setValue("minecraft");
                 config.getNode("limits", "MAX_TEMPBAN_TIME_IN_SECONDS").setValue(3600);
                 config.getNode("limits", "MAX_MUTE_TIME_IN_SECONDS").setValue(600);
                 config.getNode("limits", "DEFAULT_TEMP_JAIL_IN_SECONDS").setValue(3600);
@@ -30,28 +30,34 @@ public class Config {
                 config.getNode("guild", "MAX_NUMBER_OF_MEMBER").setValue(20);
                 config.getNode("guild", "NAME_MAX_SIZE").setValue(25);
                 config.getNode("guild", "NAME_MIN_SIZE").setValue(5);
+                config.getNode("server", "TITLE").setValue("Bienvenu sur CubiCraft");
+                config.getNode("server", "SUBTITLE").setValue("Serveur [FR] CRAFT.TER@OCTET");
+                config.getNode("server", "URLWEB").setValue("http://craft.teraoctet.net");
                 config.getNode("server", "COOLDOWN_TO_TP").setValue(10);
                 config.getNode("server", "UNIQUE_SPAWN_WORLD").setValue(0);
                 config.getNode("server", "SPAWN_WORLD").setValue("World");
                 config.getNode("server", "DIAMETER_MAX_TPR").setValue(2000);
                 config.getNode("server", "TNT_DISABLE").setValue(false);
                 config.getNode("server", "CREEPER_DISABLE").setValue(false);
+                config.getNode("server", "LEVEL_ADMIN").setValue(10);
+                config.getNode("server", "LEVEL_DEFAULT").setValue(0);
+                config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").setValue(10);
                 config.getNode("version").setValue(1);
-                manager.save(config);
+                MANAGER.save(config);
             }
-            config = manager.load();
+            config = MANAGER.load();
         } catch (IOException e) {}
     }
     
-    public static String SERVER_TITLE() { return config.getNode("server", "title").getString(); }
-    public static String SERVER_SUBTITLE() { return config.getNode("server", "subtitle").getString(); }
-    public static String SERVER_URLWEB() { return config.getNode("server", "urlweb").getString(); }
-    public static boolean MYSQL_USE() { return config.getNode("mysql", "use").getBoolean(); }
-    public static String MYSQL_HOST() { return config.getNode("mysql", "host").getString(); }
-    public static int MYSQL_PORT() { return config.getNode("mysql", "port").getInt(); }
-    public static String MYSQL_USERNAME() { return config.getNode("mysql", "username").getString(); }
-    public static String MYSQL_PASSWORD() { return config.getNode("mysql", "password").getString(); }
-    public static String MYSQL_DATABASE() { return config.getNode("mysql", "database").getString(); }
+    public static String SERVER_TITLE() { return config.getNode("server", "TITLE").getString(); }
+    public static String SERVER_SUBTITLE() { return config.getNode("server", "SUBTITLE").getString(); }
+    public static String SERVER_URLWEB() { return config.getNode("server", "URLWEB").getString(); }
+    public static boolean MYSQL_USE() { return config.getNode("mysql", "USE").getBoolean(); }
+    public static String MYSQL_HOST() { return config.getNode("mysql", "HOST").getString(); }
+    public static int MYSQL_PORT() { return config.getNode("mysql", "PORT").getInt(); }
+    public static String MYSQL_USERNAME() { return config.getNode("mysql", "USERNAME").getString(); }
+    public static String MYSQL_PASSWORD() { return config.getNode("mysql", "PASSWORD").getString(); }
+    public static String MYSQL_DATABASE() { return config.getNode("mysql", "DATABASE").getString(); }
     public static int LIMITS_MAX_TEMPBAN_TIME_IN_SECONDS() { return config.getNode("limits", "MAX_TEMPBAN_TIME_IN_SECONDS").getInt(); }
     public static int LIMITS_MAX_MUTE_TIME_IN_SECONDS() { return config.getNode("limits", "MAX_MUTE_TIME_IN_SECONDS").getInt(); }
     public static int DEFAULT_TEMP_JAIL_IN_SECONDS() { return config.getNode("limits", "DEFAULT_TEMP_JAIL_IN_SECONDS").getInt(); }
@@ -66,4 +72,7 @@ public class Config {
     public static String SPAWN_WORLD() { return config.getNode("server", "SPAWN_WORLD").getString(); }
     public static boolean TNT_DISABLE() { return config.getNode("server", "TNT_DISABLE").getBoolean(); }
     public static boolean CREEPER_DISABLE() { return config.getNode("server", "CREEPER_DISABLE").getBoolean(); }
+    public static int LEVEL_ADMIN() { return config.getNode("server", "LEVEL_ADMIN").getInt(); }
+    public static int LEVEL_DEFAULT() { return config.getNode("server", "LEVEL_DEFAULT").getInt(); }
+    public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(); }
 }

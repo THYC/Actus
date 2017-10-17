@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands;
 
-import static net.teraoctet.actus.Actus.Atpa;
+import static net.teraoctet.actus.Actus.ATPA;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NOT_FOUND;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -20,7 +20,7 @@ public class CommandTPhere implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.tpa")) {
+        if(src instanceof Player && src.hasPermission("actus.player.tpa")) {
             Player player = (Player) src; 
             if(ctx.getOne("target").isPresent()) {
                 Player target = ctx.<Player> getOne("player").get();
@@ -30,8 +30,8 @@ public class CommandTPhere implements CommandExecutor {
                 }
             
                 TPAH tpa = new TPAH(target, player,"tphere");
-                Atpa.add(tpa);
-                final int index = Atpa.indexOf(tpa);
+                ATPA.add(tpa);
+                final int index = ATPA.indexOf(tpa);
 
                 player.sendMessage(MESSAGE("&eVeuillez patienter, demande envoy\351 ..."));
                 target.sendMessage(MESSAGE("&eAcceptez vous que %player% vous t\351l\351porte sur lui ?",target));

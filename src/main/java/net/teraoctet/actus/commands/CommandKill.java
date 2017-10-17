@@ -19,13 +19,13 @@ public class CommandKill implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         Optional<Player> tplayer = ctx.<Player> getOne("player");
         
-        if (tplayer.isPresent() && src.hasPermission("actus.kills.others")) {
+        if (tplayer.isPresent() && src.hasPermission("actus.modo.kills.others")) {
             tplayer.get().offer(Keys.HEALTH, 0d);
             getGame().getServer().getBroadcastChannel().send(KILLED_BY(tplayer.get().getName(), src.getName())); 
             return CommandResult.success();
         } 
         
-        else if (src.hasPermission("actus.kills")){
+        else if (src.hasPermission("actus.player.kills")){
             if(src instanceof Player) {
                 Player player = (Player) src;
                 player.offer(Keys.HEALTH, 0d);

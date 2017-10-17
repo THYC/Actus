@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import static net.teraoctet.actus.Actus.configInv;
 
 import static net.teraoctet.actus.Actus.plotManager;
@@ -25,7 +26,9 @@ import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityTypes;
+import static org.spongepowered.api.entity.EntityTypes.ITEM;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Creeper;
@@ -38,6 +41,7 @@ import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import static org.spongepowered.api.item.ItemTypes.DIAMOND_AXE;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -56,7 +60,7 @@ public class WorldListener {
 	List<Entity> entities = event.getEntities();	
         for (Entity entity : entities)
         {
-            AWorld world = worldManager.getWorld(entity.getWorld().getName());
+            AWorld world = WorldManager.getWorld(entity.getWorld().getName());
             if(world == null) return;
             if(!world.getAnimal() && entity instanceof Animal || entity.getType().equals(EntityTypes.BAT)) { event.setCancelled(true);return;}
             if(!world.getMonster() && entity instanceof Monster) {event.setCancelled(true);return;}
@@ -96,14 +100,23 @@ public class WorldListener {
         }
     }
             
-    /*@Listener
-    public final void onBlockDrop(final DropItemEvent.Destruct dropItemEvent, @Named(NamedCause.SOURCE) final BlockSpawnCause cause) {
-        final BlockSnapshot snapshot = cause.getBlockSnapshot();
-        if(locDrop.contains(snapshot.getPosition())){
-            locDrop.remove(snapshot.getPosition());
-            dropItemEvent.setCancelled(true);
+    @Listener
+    public final void onBlockDrop(final DropItemEvent.Destruct.Destruct dropItemEvent) {
+        //Entity snapshot = dropItemEvent.getEntities().get(0);
+        if(!dropItemEvent.getEntities().isEmpty()){
+            if(dropItemEvent.getEntities().get(0).getType().equals(EntityTypes.ITEM)){
+                if(locDrop.contains(dropItemEvent.getEntities().get(0).getLocation().getBlockPosition())){
+                    locDrop.remove(dropItemEvent.getEntities().get(0).getLocation().getBlockPosition());
+                    dropItemEvent.setCancelled(true);
+                }
+            }
         }
-    }*/
+        //final EntitySnapshot snapshot = dropItemEvent.getEntitySnapshots().get(0);
+        //if(locDrop.contains(snapshot.getPosition())){
+            //locDrop.remove(snapshot.getPosition());
+           // dropItemEvent.setCancelled(true);
+        //}
+    }
                    
     @Listener
     public void dropSapling(SpawnEntityEvent event) {

@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands;
 
-import static net.teraoctet.actus.Actus.Atpa;
+import static net.teraoctet.actus.Actus.ATPA;
 import static net.teraoctet.actus.Actus.serverManager;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -18,14 +18,14 @@ public class CommandTPaccept implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.tpa")) {
+        if(src instanceof Player && src.hasPermission("actus.player.tpa")) {
             Player player = (Player) src; 
             Player toPlayer = null;
             Player fromPlayer = null;
             int i = 0;
             int index = 0;
             
-            for(TPAH tpa:Atpa){
+            for(TPAH tpa:ATPA){
                 if(tpa.getToPlayer() == player && "tpa".equals(tpa.getType())){
                     fromPlayer = tpa.getFromPlayer();
                     toPlayer = player;
@@ -44,7 +44,7 @@ public class CommandTPaccept implements CommandExecutor {
                 return CommandResult.success();
             }
             serverManager.teleport(fromPlayer, toPlayer);
-            Atpa.remove(index);
+            ATPA.remove(index);
             return CommandResult.success();
         } 
         

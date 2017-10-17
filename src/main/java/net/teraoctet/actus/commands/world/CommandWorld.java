@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.world;
 
-import static net.teraoctet.actus.Actus.cb;
+import static net.teraoctet.actus.Actus.CB_BOOK;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 
@@ -38,7 +38,7 @@ public class CommandWorld implements CommandExecutor {
                         .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText())
             .header(Text.builder().append(MESSAGE("&o&eUsage:")).toText())
             .footer(Text.builder().append(MESSAGE("&o&9 Besoin d'aide ?"))
-                            .onClick(TextActions.executeCallback(cb.callHelpBook("help_world")))    
+                            .onClick(TextActions.executeCallback(CB_BOOK.callHelpBook("help_world")))    
                             .onHover(TextActions.showText(MESSAGE("Click pour afficher l'aide"))).toText())
             .padding(MESSAGE("&9-"))
             .sendTo(src);

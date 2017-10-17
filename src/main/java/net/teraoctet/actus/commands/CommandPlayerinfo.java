@@ -28,7 +28,7 @@ public class CommandPlayerinfo implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         //partie de la commande qui cible un <player>, exécuté que si la source a la permission et qu'elle a rempli l'argument <player>
-        if(src instanceof Player && ctx.getOne("tplayer").isPresent() && src.hasPermission("actus.playerinfo.others")) {
+        if(src instanceof Player && ctx.getOne("tplayer").isPresent() && src.hasPermission("actus.modo.playerinfo.others")) {
             String targetName = ctx.<String> getOne("tplayer").get();
             String targetUUID = getUUID(targetName);
             

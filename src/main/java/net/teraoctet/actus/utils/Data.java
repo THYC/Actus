@@ -166,7 +166,8 @@ public class Data {
                                 + "noCommand INT, "
                                 + "uuidOwner TEXT, "
                                 + "uuidAllowed TEX, "
-                                + "id_guild INT)");
+                                + "id_guild INT, "
+                                + "spawnGrave INT)");
                 }
                 
                 if(!tables.contains("plsale")) {
@@ -332,8 +333,9 @@ public class Data {
                         rs.getInt("noTNT"),
                         rs.getInt("noCommand"),
                         rs.getString("uuidOwner"), 
-                        rs.getString("uuidAllowed"),     
-                        rs.getInt("id_guild"));
+                        rs.getString("uuidAllowed"),
+                        rs.getInt("id_guild"),   
+                        rs.getInt("spawnGrave"));
                     if(plot.getJail()==1){jails.add(plot);}
                     else{plots.add(plot);}   
                 }

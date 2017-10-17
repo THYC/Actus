@@ -21,7 +21,7 @@ public class CommandFly implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         Optional<Player> tplayer = ctx.<Player> getOne("player");
         
-        if (tplayer.isPresent() && src.hasPermission("actus.fly.others")) {           
+        if (tplayer.isPresent() && src.hasPermission("actus.admin.fly.others")) {           
             Optional<FlyingData> optFlying = tplayer.get().get(FlyingData.class);
             boolean isFlying = optFlying.isPresent() && optFlying.get().flying().get();
             if(isFlying == true) 
@@ -38,7 +38,7 @@ public class CommandFly implements CommandExecutor {
             return CommandResult.success();
         } 
         
-        else if (src.hasPermission("actus.fly")) {
+        else if (src.hasPermission("actus.fun.fly")) {
             if(src instanceof Player) {
                 Player player = (Player) src;
                 Optional<FlyingData> optFlying = player.get(FlyingData.class);

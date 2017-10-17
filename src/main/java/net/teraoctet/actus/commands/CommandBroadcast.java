@@ -14,7 +14,7 @@ public class CommandBroadcast implements CommandExecutor {
         
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-        if(ctx.hasAny("message") && src.hasPermission("actus.broadcast")){
+        if(ctx.hasAny("message") && src.hasPermission("actus.admin.broadcast")){
             String prefix = "&4[ADMIN]&c";
             String message = ctx.<String> getOne("message").get();
             

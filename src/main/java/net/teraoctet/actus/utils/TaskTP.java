@@ -1,7 +1,7 @@
 package net.teraoctet.actus.utils;
 
 import java.util.concurrent.TimeUnit;
-import static net.teraoctet.actus.Actus.Atpa;
+import static net.teraoctet.actus.Actus.ATPA;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.Sponge;
@@ -22,7 +22,7 @@ public class TaskTP {
     
     public void run(){
         this.taskTP = Sponge.getScheduler().createTaskBuilder().execute(() -> {
-            Atpa.remove(index);
+            ATPA.remove(index);
             player.sendMessage(MESSAGE("&eTemps d'attente dépass\351 ..."));
             this.result = true;
              

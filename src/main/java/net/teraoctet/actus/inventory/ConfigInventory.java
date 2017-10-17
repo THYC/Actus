@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -17,12 +16,17 @@ public class ConfigInventory {
     
     private final TypeToken<AInventory> TOKEN_CONFIG = TypeToken.of(AInventory.class);
     
+    /**
+     * Retourne l'inventaire du joueur correspondant au monde/world
+     * @param player
+     * @param id_inv nom du monde/world
+     * @return 
+     */
     public Optional<AInventory> load(Player player, String id_inv){
         try {
             File file = new File("config/actus/inventory/" + player.getIdentifier() + ".conf");
-            //if(!file.exists())return Optional.empty();
             ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-            ConfigurationNode node = manager.createEmptyNode(ConfigurationOptions.defaults());
+            ConfigurationNode node;// = manager.createEmptyNode(ConfigurationOptions.defaults());
             node = manager.load();
             AInventory inv;
             if(!node.getNode("inv",id_inv).isVirtual()){
@@ -37,11 +41,15 @@ public class ConfigInventory {
         return Optional.empty();
     }
     
+    /**
+     * Sauvegarde l'inventaire
+     * @param inv 
+     */
     public void save(AInventory inv){
         try {
             File file = new File("config/actus/inventory/" + inv.uuid + ".conf");
             ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-            ConfigurationNode node = manager.createEmptyNode(ConfigurationOptions.defaults());
+            ConfigurationNode node;// = manager.createEmptyNode(ConfigurationOptions.defaults());
             node = manager.load();
             node.getNode("inv",inv.id_inv).setValue(TOKEN_CONFIG, inv);
             try {

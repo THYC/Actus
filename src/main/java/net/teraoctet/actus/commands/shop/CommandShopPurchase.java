@@ -1,10 +1,10 @@
-package net.teraoctet.actus.commands.economy;
+package net.teraoctet.actus.commands.shop;
 
 import java.util.Optional;
 import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.itemShopManager;
-import net.teraoctet.actus.economy.ItemShop;
+import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;

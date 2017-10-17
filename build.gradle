@@ -1,3 +1,9 @@
+//buildscript {
+    //dependencies {
+        //classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    //}
+//}
+
 plugins {
     //id 'org.spongepowered.plugin' version '0.8.1'
     id "com.qixalite.spongestart" version "1.4.6"
@@ -19,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.0.0-20171001.190019-42'
 }
 
 

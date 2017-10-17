@@ -23,7 +23,7 @@ public class CommandEnchant implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src.hasPermission("actus.enchant")){
+        if(src.hasPermission("actus.admin.enchant")){
             Optional<Player> optPlayer = Optional.empty();
             Optional<Player> target = ctx.<Player> getOne("target");
             Optional<String> enchantmentName = ctx.<String> getOne("enchantment");
@@ -37,7 +37,7 @@ public class CommandEnchant implements CommandExecutor {
                 }
             }else if(src instanceof Player){
                 if(target.isPresent()){
-                    if(src.hasPermission("actus.enchant.others")){
+                    if(src.hasPermission("actus.admin.enchant.others")){
                         optPlayer = Optional.of(target.get());
                     }else{
                         src.sendMessage(NO_PERMISSIONS());

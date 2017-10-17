@@ -25,7 +25,7 @@ public class CommandSetHome implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.sethome")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.sethome")) { 
             Player player = (Player) src;
             Optional<String> homeName = ctx.<String> getOne("home");
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());

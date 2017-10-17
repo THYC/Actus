@@ -17,7 +17,7 @@ public class CommandNight implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.time.night")) {
+        if(src instanceof Player && src.hasPermission("actus.fun.time.night")) {
             Player player = (Player) src; 
             World world = player.getLocation().getExtent();
             world.getProperties().setWorldTime(14000); 

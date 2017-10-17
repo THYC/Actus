@@ -4,5 +4,5 @@ public class SkinProfile {
     public int idMineSkin;
     public String name;
     public SkinData data;
-    public long timestamp;
+    public float timestamp;
 }

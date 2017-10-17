@@ -23,7 +23,7 @@ public class CommandBack implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
                 
-        if (src instanceof Player && src.hasPermission("actus.back")){           
+        if (src instanceof Player && src.hasPermission("actus.modo.back")){           
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             Optional<Location<World>> location = getLocation(aplayer.getLastposition());

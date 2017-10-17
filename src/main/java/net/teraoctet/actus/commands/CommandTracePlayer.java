@@ -14,7 +14,7 @@ public class CommandTracePlayer implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.")) {
+        if(src instanceof Player && src.hasPermission("actus.admin.trace")) {
             //remplir "src.hasPermission("actus.")" avec le nom de la permission de la commande
             //      -------------------------------------------
             //si la console peut utiliser la commande :

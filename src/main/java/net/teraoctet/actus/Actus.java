@@ -10,8 +10,8 @@ import net.teraoctet.actus.utils.MessageManager;
 import net.teraoctet.actus.world.WorldListener;
 import net.teraoctet.actus.world.WorldManager;
 import net.teraoctet.actus.commands.CommandManager;
-import net.teraoctet.actus.economy.ItemShopManager;
-import net.teraoctet.actus.economy.EconomyListener;
+import net.teraoctet.actus.shop.ItemShopManager;
+import net.teraoctet.actus.shop.ShopListener;
 import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.utils.CooldownToTP;
 import net.teraoctet.actus.utils.ServerManager;
@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.Map;
 import net.teraoctet.actus.bookmessage.CallBackBook;
 import net.teraoctet.actus.bookmessage.ConfigBook;
+import net.teraoctet.actus.commands.grave.CallBackGrave;
+import net.teraoctet.actus.commands.plot.CallBackPlot;
+import net.teraoctet.actus.grave.ConfigGrave;
+import net.teraoctet.actus.grave.ConfigGraveyard;
 import net.teraoctet.actus.inventory.ConfigInventory;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.grave.GraveListener;
@@ -82,11 +86,15 @@ public class Actus {
     public static Map<Player,String>inputShop = new HashMap<>();
     public static Map<Player,Double>inputDouble = new HashMap<>();
     public static Map<Player,String>action = new HashMap<>();
-    public static final ArrayList<TPAH> Atpa = new ArrayList<>();
+    public static final ArrayList<TPAH> ATPA = new ArrayList<>();
     public static Config config = new Config();
     public static ConfigBook configBook = new ConfigBook();
     public static ConfigInventory configInv = new ConfigInventory();
-    public static final CallBackBook cb = new CallBackBook();
+    public static ConfigGrave configGrave = new ConfigGrave();
+    public static ConfigGraveyard configGraveyard = new ConfigGraveyard();
+    public static final CallBackBook CB_BOOK = new CallBackBook();
+    public static final CallBackPlot CB_PLOT = new CallBackPlot();
+    public static final CallBackGrave CB_GRAVE = new CallBackGrave();
     
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -106,7 +114,7 @@ public class Actus {
         getGame().getEventManager().registerListeners(this, new PortalListener());
         getGame().getEventManager().registerListeners(this, new PlayerListener());
         getGame().getEventManager().registerListeners(this, new WorldListener());
-        getGame().getEventManager().registerListeners(this, new EconomyListener());
+        getGame().getEventManager().registerListeners(this, new ShopListener());
         getGame().getEventManager().registerListeners(this, new TraceListener());
         getGame().getEventManager().registerListeners(this, new GraveListener());
         
@@ -123,7 +131,7 @@ public class Actus {
 	getGame().getCommandManager().register(this, new CommandManager().CommandHome, "home", "maison");
         getGame().getCommandManager().register(this, new CommandManager().CommandDelhome, "delhome", "removehome");
 	getGame().getCommandManager().register(this, new CommandManager().CommandBack, "back", "gsback", "reviens", "retour");
-	getGame().getCommandManager().register(this, new CommandManager().CommandLevel, "level");
+	getGame().getCommandManager().register(this, new CommandManager().CommandLevel, "level", "lev");
         getGame().getCommandManager().register(this, new CommandManager().CommandWorldCreate, "worldcreate", "createworld", "newworld");
 	getGame().getCommandManager().register(this, new CommandManager().CommandWorldTP, "worldtp", "tpworld");
         getGame().getCommandManager().register(this, new CommandManager().CommandWorldLoad, "worldload");
@@ -138,9 +146,9 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandSkull, "skull", "head", "tete");
         getGame().getCommandManager().register(this, new CommandManager().CommandMagicCompass, "mc", "magic", "compass", "boussole");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignWrite, "write", "ecrire", "signwrite", "sw", "print");
-        getGame().getCommandManager().register(this, new CommandManager().CommandSignHelp, "signhelp", "sh");
-        getGame().getCommandManager().register(this, new CommandManager().CommandSignPost, "signpost", "post", "poste");
-        getGame().getCommandManager().register(this, new CommandManager().CommandSignBank, "signbank", "sb");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSignHelp, "signhelp", "sh", "shelp");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSignPost, "signpost", "post", "poste", "spost");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSignBank, "signbank", "sb", "sbank");
         getGame().getCommandManager().register(this, new CommandManager().CommandSetName, "setname", "sn", "dn");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopCreate, "shopcreate", "shopc");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopPurchase, "shoppurchase", "shopp");
@@ -161,9 +169,11 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandTPThru, "tpthru", "tpt", "thru");
         getGame().getCommandManager().register(this, new CommandManager().CommandData, "data");
         getGame().getCommandManager().register(this, new CommandManager().CommandAS, "as", "armorstand");
-        getGame().getCommandManager().register(this, new CommandManager().CommandMailBox, "mailbox", "mb", "bal");
+        getGame().getCommandManager().register(this, new CommandManager().CommandMailBox, "mailbox", "mb", "bal", "mail");
         getGame().getCommandManager().register(this, new CommandManager().CommandPlotClaim, "claim");
         getGame().getCommandManager().register(this, new CommandManager().CommandWorld, "world", "aworld", "monde");
+        getGame().getCommandManager().register(this, new CommandManager().CommandGrave, "grave", "tombe");
+        getGame().getCommandManager().register(this, new CommandManager().CommandGraveyard, "graveyard", "crypte", "caveau", "cav", "cim");
     }
         
     @Listener
@@ -185,29 +195,28 @@ public class Actus {
     @Listener
     public void onServerLoadComplete(GameLoadCompleteEvent event){
         MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &echarging is complete"));
+        
     }  
     
     @Listener
     public void onServerStarted(GameStartedServerEvent event){
         game = Sponge.getGame();    	
         WorldManager.init();
+        configGrave.moveGraveyard();
     } 
     
     private boolean init() {
-        try {
-            File folder = new File("config/actus/book");
-            if(!folder.exists()) folder.mkdir();
-            folder = new File("config/actus/inventory");
-            if(!folder.exists()) folder.mkdir();
-            Config.setup();
-            Data.setup();
-            Data.load();
-            MessageManager.init();
-            ItemShopManager.init();
-        
-            return true;
-        } catch (ObjectMappingException ex) {
-            return false;
-        }
+        File folder = new File("config/actus/book");
+        if(!folder.exists()) folder.mkdir();
+        folder = new File("config/actus/inventory");
+        if(!folder.exists()) folder.mkdir();
+        Config.setup();
+        Data.setup();
+        Data.load();
+        MessageManager.init();
+        ItemShopManager.init();
+        ConfigGrave.init();
+        ConfigGraveyard.init();
+        return true;
     }
 }

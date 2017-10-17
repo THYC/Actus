@@ -1,7 +1,6 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.skin.MHF;
 import net.teraoctet.actus.skin.MineSkin;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -21,14 +20,13 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
-import org.spongepowered.api.event.cause.Cause;
 
 public class CommandSkull implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if(src instanceof Player && src.hasPermission("actus.skull")) { 
+        if(src instanceof Player && src.hasPermission("actus.fun.skull")) { 
             Player player = (Player) src;           
             Optional<String> head = ctx.<String> getOne("head");
                             

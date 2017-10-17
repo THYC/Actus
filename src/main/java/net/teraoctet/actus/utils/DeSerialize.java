@@ -13,8 +13,13 @@ public class DeSerialize {
         return world + ":" + x + ":" + y + ":" + z;
     }
     
-    public static String location(Location location) {
-        return location.getExtent().getUniqueId().toString() + ":" + String.valueOf(location.getBlockX()) + ":" + String.valueOf(location.getBlockY()) + ":" + String.valueOf(location.getBlockZ());
+    /**
+     * Retourne la location au format String worldName:x:y:z
+     * @param location
+     * @return 
+     */
+    public static String location(Location<World> location) {
+        return location.getExtent().getName() + ":" + String.valueOf(location.getBlockX()) + ":" + String.valueOf(location.getBlockY()) + ":" + String.valueOf(location.getBlockZ());
     }
     
     /**

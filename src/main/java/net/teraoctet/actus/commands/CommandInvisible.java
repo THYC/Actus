@@ -17,12 +17,12 @@ public class CommandInvisible implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.invisible")) {
+        if(src instanceof Player && src.hasPermission("actus.modo.invisible")) {
             Optional<Player> target = ctx.<Player> getOne("player");
             Player player = (Player) src;
             
             if(target.isPresent()){
-                if(src.hasPermission("actus.invisible.others")){
+                if(src.hasPermission("actus.admin.invisible.others")){
                     player = target.get();
                 }else{
                     src.sendMessage(NO_PERMISSIONS());

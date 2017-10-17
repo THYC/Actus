@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands.economy;
+package net.teraoctet.actus.commands.shop;
 
 import java.util.Optional;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;

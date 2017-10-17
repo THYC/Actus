@@ -10,15 +10,20 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import java.util.function.Consumer;
 import static net.teraoctet.actus.world.WorldManager.spawnParticles;
+import org.spongepowered.api.block.tileentity.carrier.Beacon;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.BodyPart;
 import org.spongepowered.api.data.type.BodyParts;
+import org.spongepowered.api.effect.particle.ParticleEffect;
+import org.spongepowered.api.effect.particle.ParticleTypes;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.ArmorStand;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.merchant.TradeOffer;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.Extent;
@@ -33,10 +38,11 @@ public class CommandTest implements CommandExecutor {
     public CommandResult execute(CommandSource src, CommandContext ctx) {    
  
         Player player = (Player) src;
-        
-        spawnParticles(player.getLocation(),50.0,true);
+      spawnEntity(player.getLocation(),src);
+                
+        //spawnParticles(player.getLocation(),50.0,true);
        
-         
+        
         /*ItemStack itemStack = ItemStack.of(ItemTypes.STICK, 1);
         List<Text> lore = Lists.newArrayList(Text.of(TextColors.LIGHT_PURPLE, "This wand emits pure magic."));
         itemStack.offer(Keys.HIDE_ENCHANTMENTS,true);
@@ -61,7 +67,16 @@ public class CommandTest implements CommandExecutor {
         player.openInventory(inv,Cause.source(inv).build());*/
         
        /* spawnParticles(player.getLocation(),50,true);*/
+       
+        /*TradeOffer offer = TradeOffer.builder()
+            .firstBuyingItem(ItemStack.of(ItemTypes.DIRT, 5))
+            .sellingItem(ItemStack.of(ItemTypes.GRASS, 3))
+            .uses(0)
+            .maxUses(4)
+            .canGrantExperience(false)
+            .build();*/
         
+       
         return CommandResult.success();
     }
     
@@ -69,7 +84,7 @@ public class CommandTest implements CommandExecutor {
 	{
 		Extent extent = location.getExtent();
 		//Entity lightning = extent.createEntity(EntityTypes.LIGHTNING, location.getPosition());
-                Entity lightning = extent.createEntity(EntityTypes.PLAYER, location.getPosition());
+                Entity lightning = extent.createEntity(EntityTypes.AREA_EFFECT_CLOUD, location.getPosition());
                 
 		extent.spawnEntity(lightning);
 	}
