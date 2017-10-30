@@ -1,6 +1,8 @@
 package net.teraoctet.actus.utils;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -42,6 +44,8 @@ public class Config {
                 config.getNode("server", "LEVEL_ADMIN").setValue(10);
                 config.getNode("server", "LEVEL_DEFAULT").setValue(0);
                 config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").setValue(10);
+                config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue("y");
+                config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue("n");
                 config.getNode("version").setValue(1);
                 MANAGER.save(config);
             }
@@ -75,4 +79,26 @@ public class Config {
     public static int LEVEL_ADMIN() { return config.getNode("server", "LEVEL_ADMIN").getInt(); }
     public static int LEVEL_DEFAULT() { return config.getNode("server", "LEVEL_DEFAULT").getInt(); }
     public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(); }
+    public static boolean ENABLE_SKULL_GRAVE() { return config.getNode("grave", "ENABLE_SKULL_GRAVE").getBoolean(); }
+    public static boolean ENABLE_SIGN_GRAVE() { return config.getNode("grave", "ENABLE_SIGN_GRAVE").getBoolean(); }
+    
+    public void setEnableSkullGrave(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("grave","ENABLE_SKULL_GRAVE").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void setEnableSignGrave(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("grave","ENABLE_SIGN_GRAVE").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

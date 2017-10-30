@@ -3,13 +3,13 @@ package net.teraoctet.actus.world;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import static net.teraoctet.actus.Actus.configInv;
 
 import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.worldManager;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.inventory.AInventory;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -25,10 +25,9 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.EntitySnapshot;
 import org.spongepowered.api.entity.EntityTypes;
-import static org.spongepowered.api.entity.EntityTypes.ITEM;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Creeper;
@@ -39,8 +38,11 @@ import org.spongepowered.api.entity.vehicle.minecart.TNTMinecart;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import static org.spongepowered.api.item.ItemTypes.DIAMOND_AXE;
@@ -101,7 +103,7 @@ public class WorldListener {
     }
             
     @Listener
-    public final void onBlockDrop(final DropItemEvent.Destruct.Destruct dropItemEvent) {
+    public final void onBlockDrop(final DropItemEvent.Destruct dropItemEvent) {
         //Entity snapshot = dropItemEvent.getEntities().get(0);
         if(!dropItemEvent.getEntities().isEmpty()){
             if(dropItemEvent.getEntities().get(0).getType().equals(EntityTypes.ITEM)){
@@ -111,11 +113,11 @@ public class WorldListener {
                 }
             }
         }
-        //final EntitySnapshot snapshot = dropItemEvent.getEntitySnapshots().get(0);
-        //if(locDrop.contains(snapshot.getPosition())){
-            //locDrop.remove(snapshot.getPosition());
-           // dropItemEvent.setCancelled(true);
-        //}
+        /*final EntitySnapshot snapshot = dropItemEvent.getEntitySnapshots().get(0);
+        if(locDrop.contains(snapshot.getPosition())){
+            locDrop.remove(snapshot.getPosition());
+            dropItemEvent.setCancelled(true);
+        }*/
     }
                    
     @Listener
@@ -154,7 +156,7 @@ public class WorldListener {
     }
                            
     @Listener
-    public void treeBreak(ChangeBlockEvent.Break breakEvent) throws Exception {
+    public void treeBreak(ChangeBlockEvent.Break breakEvent, @First Player cause) throws Exception {
         if (!firedEvents.contains(breakEvent) && breakEvent.getCause().first(Player.class).isPresent() && 
                 !breakEvent.isCancelled() && breakEvent.getTransactions().size() == 1 &&
                 TreeDetector.isWood(breakEvent.getTransactions().get(0).getOriginal())) {
@@ -175,7 +177,7 @@ public class WorldListener {
                     }
                 });
                 
-                transactions.forEach((Transaction<BlockSnapshot> blockSnapshotTransaction) -> {
+                /*transactions.forEach((Transaction<BlockSnapshot> blockSnapshotTransaction) -> {
                     ChangeBlockEvent.Break event = SpongeEventFactory.createChangeBlockEventBreak(breakEvent.getCause(),
                             Lists.newArrayList(blockSnapshotTransaction));
                     firedEvents.add(event);
@@ -189,6 +191,28 @@ public class WorldListener {
                         }
                         blockSnapshotTransaction.getFinal().restore(true, BlockChangeFlag.ALL);
                     }
+                });*/
+                
+                transactions.forEach(blockSnapshotTransaction -> {
+                    ChangeBlockEvent.Break event = SpongeEventFactory.createChangeBlockEventBreak(Cause.builder().append(cause).build(EventContext.empty()), Collections.singletonList(blockSnapshotTransaction));
+                    firedEvents.add(event);
+                    if (!getGame().getEventManager().post(event)) {
+                        if (cause.getGameModeData().get(Keys.GAME_MODE).get() != GameModes.CREATIVE) {
+                            BlockState state = blockSnapshotTransaction.getOriginal().getState();
+                            ItemStack itemStack = ItemStack.builder().itemType(state.getType().getDefaultState().getType().getItem().get()).add(Keys.TREE_TYPE, state.get(Keys.TREE_TYPE).get()).build();
+                            Entity entity = cause.getWorld().createEntity(EntityTypes.ITEM, blockSnapshotTransaction.getOriginal().getPosition()); // 'cause' is the player
+                            entity.offer(Keys.REPRESENTED_ITEM, itemStack.createSnapshot());
+                            cause.getWorld().spawnEntity(entity);
+                            
+                            cause.getWorld().playSound(SoundTypes.ENTITY_ITEM_BREAK, cause.getLocation().getPosition(), 1);
+                                    
+                            
+                        }
+                        blockSnapshotTransaction.getFinal().restore(true, BlockChangeFlag.ALL);
+                    } else {
+                        plugin.getLogger().debug("Event got canceled");
+                    }
+
                 });
                 firedEvents.clear();
             }

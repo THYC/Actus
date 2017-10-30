@@ -245,7 +245,7 @@ public class CommandPlotExpand implements CommandExecutor {
     }
     
     private boolean IsAllowed(Location<World> loc, APlayer aplayer){
-        if(plotManager.plotAllow(loc, loc)){
+        if(plotManager.plotNotAllow(loc, loc)){
             if(aplayer.getLevel() != 10){
                 return false;
             }

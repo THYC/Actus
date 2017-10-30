@@ -1,6 +1,7 @@
 package net.teraoctet.actus.commands.plot;
 
 import static net.teraoctet.actus.Actus.CB_PLOT;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -52,14 +53,13 @@ public class CommandPlotCreate implements CommandExecutor {
                     return CommandResult.empty();
                 }
                 Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
-                int level = 0;
-                
-                if(plotManager.plotAllow(plotManager.getBorder1().get(), plotManager.getBorder2().get())){
-                    if(aplayer.getLevel() != 10){
+                int level = 1;
+                if(plotManager.plotNotAllow(plotManager.getBorder1().get(), plotManager.getBorder2().get())){
+                    if(aplayer.getLevel() != 10 && plotManager.hasOwnerPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
-                    level = 1;
+                    level = plotManager.getMaxLevelPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get());
                 }
 
                 int X = (int) Math.round(c[0].getX()-c[1].getX());

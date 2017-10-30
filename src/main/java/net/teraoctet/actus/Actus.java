@@ -37,6 +37,7 @@ import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.trace.TraceListener;
 import net.teraoctet.actus.trace.TraceManager;
+import net.teraoctet.actus.troc.trocListener;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.warp.WarpManager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -47,6 +48,7 @@ import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -117,6 +119,7 @@ public class Actus {
         getGame().getEventManager().registerListeners(this, new ShopListener());
         getGame().getEventManager().registerListeners(this, new TraceListener());
         getGame().getEventManager().registerListeners(this, new GraveListener());
+        getGame().getEventManager().registerListeners(this, new trocListener());
         
         getGame().getCommandManager().register(this, new CommandManager().CommandActus, "actus");
 	getGame().getCommandManager().register(this, new CommandManager().CommandKill, "kill", "tue");
@@ -174,6 +177,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandWorld, "world", "aworld", "monde");
         getGame().getCommandManager().register(this, new CommandManager().CommandGrave, "grave", "tombe");
         getGame().getCommandManager().register(this, new CommandManager().CommandGraveyard, "graveyard", "crypte", "caveau", "cav", "cim");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTrocSet, "trocset", "troc set");
     }
         
     @Listener
@@ -204,6 +208,11 @@ public class Actus {
         WorldManager.init();
         configGrave.moveGraveyard();
     } 
+    
+    @Listener
+    public void reload(GameReloadEvent event) {
+        init();
+    }
     
     private boolean init() {
         File folder = new File("config/actus/book");

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
 import static net.teraoctet.actus.Actus.mapCountDown;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Config.DAYS_BEFORE_MOVE_GRAVE;
@@ -188,7 +189,6 @@ public class ServerManager {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(datelong);
         cal.add(Calendar.DATE, DAYS_BEFORE_MOVE_GRAVE());
- 
         return cal.getTime().getTime();
     }
     

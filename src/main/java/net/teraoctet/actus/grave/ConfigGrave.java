@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configGraveyard;
@@ -21,6 +22,7 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
@@ -86,10 +88,16 @@ public class ConfigGrave {
         graveNode = MANAGER.load();
         Optional<Grave> grave = getGrave(location);
         if(grave.isPresent()){
+            grave.get().getSignLocation().get().removeBlock();
             BlockState bs1 = grave.get().getBlock1();
             BlockState bs2 = grave.get().getBlock2();
             grave.get().getLocationBlock1().get().setBlock(bs1);
             grave.get().getLocationBlock2().get().setBlock(bs2);
+            if(grave.get().getUniqueIdAS().isPresent()){
+                Optional<Entity> ent = grave.get().getGraveLoc().getExtent().getEntity(UUID.fromString(grave.get().getUniqueIdAS().get()));
+                if(ent.isPresent())ent.get().remove();
+            }
+            
         }
         graveNode.removeChild(location);
         MANAGER.save(graveNode);
@@ -222,15 +230,15 @@ public class ConfigGrave {
      */
     public void moveGraveyard(){
         Grave grave;
-        for(String loc : getListGrave()){
-            plugin.getLogger().info("---------");
-            plugin.getLogger().info(String.valueOf(serverManager.addDate(load(loc).get().getGraveTime())));
-            plugin.getLogger().info(String.valueOf(serverManager.dateToLong()));
-            
+        int nb = 0;
+        for(String loc : getListGrave()){            
             if(serverManager.addDate(load(loc).get().getGraveTime()) < serverManager.dateToLong()){
                 grave = load(loc).get();
                 moveGrave(grave);
-            }   
+                plugin.getLogger().info("Grave : " + grave.getName());
+                nb = nb+1;
+            }  
         }
+        plugin.getLogger().info("Grave : " + nb + " tombe(s) ont ete deplace dans des cryptes");
     }
 }

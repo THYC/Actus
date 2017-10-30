@@ -307,7 +307,7 @@ public class Data {
             try {
                 Connection c = datasource.getConnection();
                 Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM plot ORDER BY level asc");
+                ResultSet rs = s.executeQuery("SELECT * FROM plot ORDER BY level desc");
                 while(rs.next()) {
                     Plot plot = new Plot(
                         rs.getString("plotName"),
@@ -405,11 +405,9 @@ public class Data {
                         rs.getString("message"));
                     addWarp(warp.getName(), warp);
                 }
-                s.close();
-                c.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+                    s.close();
+                    c.close();
+		} catch (SQLException e) {}
 	}
 	
 	public static void execute(String execute) {	

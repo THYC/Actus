@@ -69,12 +69,15 @@ public class CommandAS implements CommandExecutor {
                 Optional<Entity> entShop = player.getWorld().getEntity(UUID.fromString(id.get()));                   
                 if(entShop.isPresent()) as = entShop.get();
             }else{
-                as = player.getWorld().getIntersectingEntities(player, 10).stream()
+                as = player.getWorld().getIntersectingEntities(player, 15).stream()
                     .filter(e -> e.getEntity().getType().equals(ARMOR_STAND)).findFirst()  
                     .map(EntityUniverse.EntityHit::getEntity).orElse(null);
             }
             
-            if(as == null)return CommandResult.empty();
+            if(as == null){
+                player.sendMessage(MESSAGE("&bAucun ArmorStand dans la vision"));
+                return CommandResult.empty();
+            }
 
             Optional<Plot> plot = plotManager.getPlot(as.getLocation());
             if (plot.isPresent()){ 

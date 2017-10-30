@@ -13,6 +13,7 @@ import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.utils.Data;
+import static net.teraoctet.actus.utils.Data.plots;
 import static net.teraoctet.actus.utils.MessageManager.BEDROCK2SKY_PROTECT_PLOT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PROTECT_LOADED_PLOT;
@@ -135,7 +136,7 @@ public class CallBackPlot {
             plot.insert();
             Data.commit();
             Data.addPlot(plot);
-
+            
             player.sendMessage(ChatTypes.ACTION_BAR,PROTECT_LOADED_PLOT(player,plotName));
             player.sendMessage(Text.builder("Clique ici, pour voir les flags de ta parcelle !").onClick(TextActions.runCommand("/p flaglist " + plotName)).color(TextColors.AQUA).build());  
         };

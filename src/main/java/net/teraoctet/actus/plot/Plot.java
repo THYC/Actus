@@ -53,6 +53,11 @@ public class Plot {
     private String uuidAllowed;
     private int id_guild;
     private int spawnGrave;
+    private boolean noPVPplayer;
+    private boolean noPVPmonster;
+    private boolean noProjectile;
+    private boolean noLiquidFlow;
+    private boolean autoForest;
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
     int jail, int noEnter, int noFly, int noBuild, int noBreak, int noTeleport, int noInteract, int noFire, 
@@ -85,6 +90,11 @@ public class Plot {
         this.noCommand = noCommand;
         this.id_guild = id_guild;
         this.spawnGrave = 1;
+        this.noPVPplayer = false;
+        this.noPVPmonster = false;
+        this.noProjectile = false;
+        this.noLiquidFlow = false;
+        this.autoForest = false;
     }
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
@@ -117,6 +127,11 @@ public class Plot {
         this.noCommand = noCommand;
         this.id_guild = 0;
         this.spawnGrave = 1;
+        this.noPVPplayer = false;
+        this.noPVPmonster = false;
+        this.noProjectile = false;
+        this.noLiquidFlow = false;
+        this.autoForest = false;
     }
     
     public Plot(String world, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -145,6 +160,11 @@ public class Plot {
         this.noTNT = 0;
         this.noCommand = 1;
         this.spawnGrave = 1;
+        this.noPVPplayer = false;
+        this.noPVPmonster = false;
+        this.noProjectile = false;
+        this.noLiquidFlow = false;
+        this.autoForest = false;
     }
     
     public void insert() {

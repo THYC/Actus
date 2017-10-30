@@ -48,9 +48,9 @@ public class CommandPlotClaim implements CommandExecutor {
                 Location<World> loc2 = new Location(player.getWorld(),(chunk.getX()*16)+15,0,(chunk.getZ()*16)+15);
             
                 Location[] c = {loc1, loc2};
-                int level = 0;
+                int level = 1;
 
-                if(plotManager.plotAllow(loc1, loc2)){
+                if(plotManager.plotNotAllow(loc1, loc2)){
                     player.sendMessage(ALREADY_OWNED_PLOT());
                     return CommandResult.empty();
                 }

@@ -13,6 +13,8 @@ import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.Actus.serverManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
+import static net.teraoctet.actus.utils.Config.ENABLE_SIGN_GRAVE;
+import static net.teraoctet.actus.utils.Config.ENABLE_SKULL_GRAVE;
 import static net.teraoctet.actus.utils.MessageManager.GRAVE;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.GRAVE_BREAK;
@@ -32,9 +34,12 @@ import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
+import org.spongepowered.api.data.type.SkullTypes;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.effect.sound.SoundTypes;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.ArmorStand;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -42,10 +47,12 @@ import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import static org.spongepowered.api.item.inventory.InventoryArchetypes.CHEST;
 import static org.spongepowered.api.item.inventory.InventoryArchetypes.DOUBLE_CHEST;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.item.inventory.type.TileEntityInventory;
 import org.spongepowered.api.text.Text;
@@ -72,25 +79,29 @@ public class GraveListener {
                 return;
             }
             
-            final Location<World> locgrave;
+            final Location<World> locgrave1;
+            final Location<World> locgrave2;
                     
             Optional<Plot> plot = plotManager.getPlot(player.getLocation());
             if(plot.isPresent()){
                 if(plot.get().getSpawnGrave() == 0) {
                     return;
                 }else{
-                    locgrave = player.getLocation();
+                    locgrave1 = player.getLocation();
                 }
             }else{
-                locgrave = getLocationGrave(player.getLocation().add(0, -2, 0));
+                locgrave1 = getLocationGrave(player.getLocation().add(0, -2, 0));
             }
-                                    
+                                 
             //creation de la tombe
+            locgrave2 = locgrave1.add(0, 0, 1);
+            BlockState bs1 = locgrave1.getBlock();
+            BlockState bs2 = locgrave2.add(0, 0, 1).getBlock();
             BlockState chestBlock = BlockState.builder().blockType(BlockTypes.CHEST).build();
-            locgrave.setBlock(chestBlock);
-            locgrave.add(0, 0, 1).setBlock(chestBlock);
-            TileEntity chest = locgrave.getTileEntity().get();
-            TileEntity chest2 = locgrave.add(0, 0, 1).getTileEntity().get();
+            locgrave1.setBlock(chestBlock);
+            locgrave2.setBlock(chestBlock);
+            TileEntity chest = locgrave1.getTileEntity().get();
+            TileEntity chest2 = locgrave2.getTileEntity().get();
             chest.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
             chest2.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
             final TileEntityInventory inventory = (TileEntityInventory) chest;
@@ -99,33 +110,61 @@ public class GraveListener {
                     if (inventory.offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) inventory.offer(slot.peek().get());
                 }
             });
-                        
-            Location signgrave = controlBlock(locgrave);
-            signgrave.setBlockType(STANDING_SIGN);  
-            Optional<TileEntity> signBlock = signgrave.getTileEntity();
-            TileEntity tileSign = signBlock.get();
-            Sign sign=(Sign)tileSign;
-            Optional<SignData> opSign = sign.getOrCreate(SignData.class);
-
-            SignData signData = opSign.get();
-            List<Text> rip = new ArrayList<>();
-            rip.add(GRAVE_RIP1(player));
-            rip.add(GRAVE_RIP2(player));
-            rip.add(GRAVE_RIP3(player));
-            rip.add(GRAVE_RIP4(player));
-            signData.set(Keys.SIGN_LINES,rip );
-            sign.offer(signData);
             
+            //panneau sign de position de la tombe
+            Location signgrave = controlBlock(locgrave1);
+            if(ENABLE_SIGN_GRAVE()){
+                signgrave.setBlockType(STANDING_SIGN);  
+                Optional<TileEntity> signBlock = signgrave.getTileEntity();
+                TileEntity tileSign = signBlock.get();
+                Sign sign=(Sign)tileSign;
+                Optional<SignData> opSign = sign.getOrCreate(SignData.class);
+
+                SignData signData = opSign.get();
+                List<Text> rip = new ArrayList<>();
+                rip.add(GRAVE_RIP1(player));
+                rip.add(GRAVE_RIP2(player));
+                rip.add(GRAVE_RIP3(player));
+                rip.add(GRAVE_RIP4(player));
+                signData.set(Keys.SIGN_LINES,rip );
+                sign.offer(signData);
+            }
+            
+            //skull du joueur de position de la tombe
+            Optional<ArmorStand> as = Optional.empty();
+            String uuidAS = "";
+            if(ENABLE_SKULL_GRAVE()){
+                ItemStack skull = ItemStack.of(ItemTypes.SKULL, 1);
+                skull.offer(Keys.SKULL_TYPE, SkullTypes.PLAYER);
+                skull.offer(Keys.REPRESENTED_PLAYER, player.getProfile());
+                
+                as = Optional.of((ArmorStand) player.getWorld().createEntity(EntityTypes.ARMOR_STAND, signgrave.getPosition()));
+                as.get().setHelmet(skull);
+                as.get().offer(Keys.ARMOR_STAND_IS_SMALL, true);
+                as.get().offer(Keys.CUSTOM_NAME_VISIBLE, true);
+                as.get().offer(Keys.DISPLAY_NAME, MESSAGE("&9++ " + player.getName() + " ++" ));
+                as.get().offer(Keys.ARMOR_STAND_HAS_BASE_PLATE, false);
+                as.get().offer(Keys.HAS_GRAVITY, false);
+                if(ENABLE_SIGN_GRAVE()){
+                    as.get().offer(Keys.INVISIBLE, true);
+                    as.get().offer(Keys.CUSTOM_NAME_VISIBLE, false);
+                }
+                as.get().setLocation(as.get().getLocation().setPosition(as.get().getLocation().getPosition().add(0, -0.3, 0)));
+                player.getWorld().spawnEntity(as.get());
+                uuidAS = as.get().getUniqueId().toString();
+            }
+                          
+            //suppression du stuff joueur
             player.getInventory().clear();
             player.sendMessage(GRAVE_POSITION().concat(MESSAGE(
-                    locgrave.getBlockX() + " " 
-                    + locgrave.getBlockY() + " " 
-                    + locgrave.getBlockZ())));
+                    locgrave1.getBlockX() + " " 
+                    + locgrave1.getBlockY() + " " 
+                    + locgrave1.getBlockZ())));
             
             //sauvegarde des parametre de la tombe/grave
             Grave grave = new Grave(player.getIdentifier(), player.getName(), 
-                    player.getLocation(), locgrave, signgrave, serverManager.dateToLong(), 
-                    locgrave.getBlock(), locgrave.add(0, 0, 1).getBlock(), event.getMessage());
+                    player.getLocation(), locgrave1, signgrave, serverManager.dateToLong(), 
+                    bs1, bs2, event.getMessage(), uuidAS);
             try {
                 configGrave.save(grave);
             } catch (IOException | ObjectMappingException ex) {

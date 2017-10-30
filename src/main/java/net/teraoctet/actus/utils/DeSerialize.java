@@ -30,8 +30,7 @@ public class DeSerialize {
     public static Optional<Location<World>> getLocation(String stringLocation) {
         String loc[] = stringLocation.split(":");
         if(loc.length < 4) return Optional.empty();
-        UUID uuid = UUID.fromString(loc[0]);
-        Optional<World> world = getGame().getServer().getWorld(uuid);
+        Optional<World> world = getGame().getServer().getWorld(loc[0]);
         Location<World> location = new Location<>(world.get(), Double.valueOf(loc[1]), Double.valueOf(loc[2]), Double.valueOf(loc[3]));
         return Optional.of(location);
     }
@@ -43,8 +42,7 @@ public class DeSerialize {
      */
     public static Optional<World> getWorld(String stringLocation) {
         String loc[] = stringLocation.split(":");
-        UUID uuid = UUID.fromString(loc[0]);
-        Optional<World> world = getGame().getServer().getWorld(uuid);
+        Optional<World> world = getGame().getServer().getWorld(loc[0]);
         return world;
     }
     

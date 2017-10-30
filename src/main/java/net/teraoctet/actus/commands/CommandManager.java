@@ -261,17 +261,17 @@ public class CommandManager {
         public CommandSpec CommandPlot = CommandSpec.builder()
                 .description(Text.of("/plot")) 
                 .permission("actus.player.plot") 
-                .child(CommandPlotCreate, "create")
+                .child(CommandPlotCreate, "create", "add", "+", "new")
                 .child(CommandPlotListNameAllowed, "player", "habitant", "allow", "joueur")
-                .child(CommandPlotExpand, "expand")
-                .child(CommandPlotList, "list")
-                .child(CommandPlotFlag, "flag")
+                .child(CommandPlotExpand, "expand", "etend", "agrandi", "++")
+                .child(CommandPlotList, "list", "l")
+                .child(CommandPlotFlag, "flag", "f")
                 .child(CommandPlotFlaglist, "flaglist")
-                .child(CommandPlotRemove, "remove")
-                .child(CommandPlotSale, "sale")
-                .child(CommandPlotAddplayer, "addplayer", "add")
-                .child(CommandPlotRemoveplayer, "removeplayer", "remp")
-                .child(CommandPlotOwnerset, "ownerset")
+                .child(CommandPlotRemove, "remove", "del", "-")
+                .child(CommandPlotSale, "sale", "vend")
+                .child(CommandPlotAddplayer, "addplayer", "addp", "+p")
+                .child(CommandPlotRemoveplayer, "removeplayer", "remp", "-p")
+                .child(CommandPlotOwnerset, "ownerset", "adm")
                 .child(CommandPlotMsg, "msg")
                 .child(CommandPlotTP, "tp")
                 .child(CommandPlotLevel, "level")
@@ -364,16 +364,16 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandWorldList = CommandSpec.builder()
-                .description(Text.of("/world list"))
+                .description(Text.of("/world list : Liste les mondes actifs"))
                 .permission("actus.player.world.worldlist")      
                 //.arguments(GenericArguments.world(Text.of("world")), GenericArguments.optional(GenericArguments.bool(Text.of("value"))))
                 .executor(new CommandWorldList())
                 .build();
                 
         public CommandSpec CommandWorld = CommandSpec.builder()
-                .description(Text.of("Affiche des informations sur votre guild"))
-                .permission("actus.player.guild")
-                .child(CommandWorldCreate, "create")
+                .description(Text.of("/world : Gestion des mondes/World"))
+                .permission("actus.admin.word")
+                .child(CommandWorldCreate, "create", "+")
                 .child(CommandWorldList, "list")
                 .child(CommandWorldTP, "tp")
                 .child(CommandWorldLoad, "load")
@@ -381,7 +381,7 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandClearinventory = CommandSpec.builder()
-                .description(Text.of("/clearinventory [player]"))
+                .description(Text.of("/clearinventory [player] : supprimme le contenu de l'inventaire"))
                 .permission("actus.player.clearinventory")
                 .arguments(GenericArguments.optional(GenericArguments.player(Text.of("player"))))
                 .executor(new CommandClearinventory())
@@ -499,7 +499,7 @@ public class CommandManager {
         public CommandSpec CommandFaction = CommandSpec.builder()
                 .description(Text.of("Affiche des informations sur votre guild"))
                 .permission("actus.player.guild")
-                .child(CommandFactionCreate, "create", "new", "add", "creer")
+                .child(CommandFactionCreate, "create", "new", "add", "creer", "+")
                 .child(CommandFactionDelete, "delete")
                 .child(CommandFactionRename, "rename")
                 .child(CommandFactionLeave, "leave", "quit", "quitter")
@@ -873,8 +873,11 @@ public class CommandManager {
                 .child(CommandGraveList, "list")
                 .child(CommandGraveTp, "tp")
                 .child(CommandGraveInfo, "info")
-                .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("arg")))))
+                .arguments(
+                    GenericArguments.flags()
+                        .valueFlag(GenericArguments.bool(Text.of("sign")),"s")
+                        .valueFlag(GenericArguments.bool(Text.of("skull")),"k")
+                        .buildWith(GenericArguments.none()))
                 .executor(new CommandGrave())
                 .build();
         
@@ -893,5 +896,10 @@ public class CommandManager {
                 .arguments(GenericArguments.seq(
                     GenericArguments.optional(GenericArguments.string(Text.of("arg")))))
                 .executor(new CommandGraveyard())
+                .build();
+        
+        public CommandSpec CommandTrocSet = CommandSpec.builder()
+                .description(Text.of("/trocset")) 
+                .executor(new CommandTrocSet())
                 .build();
 }

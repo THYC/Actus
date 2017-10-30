@@ -3,6 +3,7 @@ package net.teraoctet.actus.plot;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -50,7 +51,17 @@ public class PlotManager {
         if (flagJail == true){
             for(Plot jail : jails){if(foundPlot(loc,jail)){return Optional.of(jail);}}
         }else{
-            for(Plot plot : plots){if(foundPlot(loc,plot)){return Optional.of(plot);}}
+            Optional<Plot> plotmaxlevel = Optional.empty();
+            for (Plot plot : plots) {
+                if(foundPlot(loc,plot)){
+                    if(plotmaxlevel.isPresent()){
+                        if(plot.getLevel() > plotmaxlevel.get().getLevel())plotmaxlevel=Optional.of(plot);
+                    }else{
+                        plotmaxlevel=Optional.of(plot);
+                    }
+                }
+            }
+            return plotmaxlevel;
         }
         return Optional.empty();
     }
@@ -59,7 +70,17 @@ public class PlotManager {
         if (flagJail == true){
             for(Plot jail : jails){if(foundPlot(world, vector,jail)){return Optional.of(jail);}}
         }else{
-            for(Plot plot : plots){if(foundPlot(world, vector,plot)){return Optional.of(plot);}}
+            Optional<Plot> plotmaxlevel = Optional.empty();
+            for (Plot plot : plots) {
+                if(foundPlot(world, vector,plot)){
+                    if(plotmaxlevel.isPresent()){
+                        if(plot.getLevel() > plotmaxlevel.get().getLevel())plotmaxlevel=Optional.of(plot);
+                    }else{
+                        plotmaxlevel=Optional.of(plot);
+                    }
+                }
+            }
+            return plotmaxlevel;
         }
         return Optional.empty();
     }
@@ -113,7 +134,7 @@ public class PlotManager {
     /**
      * Parcelle (Plot) enregistré au point de l'objet Location
      * @param loc Objet Location
-     * @return La parcelle ou Null si rien trouvé
+     * @return La parcelle ou vide si rien trouvé
      */
     public Optional<Plot> getPlot(Location loc){return plotContainsVector(loc, false);}
     
@@ -227,8 +248,7 @@ public class PlotManager {
      */
     public Text getListPlot(String playerUUID){
         String listplot = "&6Total : " + plots.size();
-        for (Iterator<Plot> it = plots.iterator(); it.hasNext();) {
-            Plot plot = it.next();
+        for (Plot plot : plots) {
             if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
                 listplot = listplot + "\n" + plot.getName();
             }
@@ -264,20 +284,92 @@ public class PlotManager {
     
     /**
      * Retourne la validité des coodonnées pour la création d'une parcelle
+     * retourne True si une parcelle est présente sur la zone séléctionné. 
      * @param l1 Location du point 1
      * @param l2 Location du point 2
      * @return Boolean
      */
-    public boolean plotAllow(Location l1, Location l2){                
+    public boolean plotNotAllow(Location l1, Location l2){                
         Location <World> w = l1;
         World world = w.getExtent();
         Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
                 
-        return plots.stream().filter((plot) -> (plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))).anyMatch((plot) -> ( 
-                foundPlot(plot.getLocX1Y1Z1(),newPlot) || foundPlot(plot.getLocX2Y2Z2(),newPlot) ||
+        for(Plot plot : plots){
+            if(plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return true;
+            if(foundPlot(plot.getLocX1Y1Z1(),newPlot) || foundPlot(plot.getLocX2Y2Z2(),newPlot) ||
                 foundPlot(plot.getLocX1Y1Z2(),newPlot) || foundPlot(plot.getLocX2Y2Z1(),newPlot) ||
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
-                foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot)));
+                foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot))return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Retourne une liste des parcelles présentes sur la zone
+     * @param l1 Location angle 1
+     * @param l2 Location angle 2
+     * @return 
+     */
+    public List<Plot> getListPlotParent(Location l1, Location l2){                
+        Location <World> w = l1;
+        List<Plot> plotList = new ArrayList();
+        World world = w.getExtent();
+        Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
+                
+        if(getPlot(newPlot.getLocX1Y1Z1()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX1Y1Z1()).get());
+        }
+        if(getPlot(newPlot.getLocX1Y1Z2()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX1Y1Z2()).get());
+        }
+        if(getPlot(newPlot.getLocX1Y2Z2()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX1Y2Z2()).get());
+        }
+        if(getPlot(newPlot.getLocX2Y2Z1()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX2Y2Z1()).get());
+        }
+        if(getPlot(newPlot.getLocX2Y2Z2()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX2Y2Z2()).get());
+        }
+        if(getPlot(newPlot.getLocX2Y1Z2()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX2Y1Z2()).get());
+        }
+        if(getPlot(newPlot.getLocX2Y1Z1()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX2Y1Z1()).get());
+        }
+        if(getPlot(newPlot.getLocX1Y2Z1()).isPresent()){
+            plotList.add(getPlot(newPlot.getLocX1Y2Z1()).get());
+        }
+        return plotList;
+    }
+    
+    /**
+     * retourne True si toutes le player est Owner de toutes les parcelles parentes
+     * @param player
+     * @param l1
+     * @param l2
+     * @return 
+     */
+    public boolean hasOwnerPlotParent(Player player, Location l1, Location l2){
+        if (!getListPlotParent(l1,l2).stream().noneMatch((plot) -> (!plot.getUuidOwner().equalsIgnoreCase(player.getIdentifier())))) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Retourne le level le plus haut des parcelles parent + 1
+     * @param player
+     * @param l1
+     * @param l2
+     * @return 
+     */
+    public Integer  getMaxLevelPlotParent(Player player, Location l1, Location l2){
+        int level = 0;
+        for (Plot plot : getListPlotParent(l1,l2)) {
+            if(plot.getLevel() >= level) level = plot.getLevel() + 1;
+        }
+        return level;
     }
     
     /**

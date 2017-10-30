@@ -6,7 +6,6 @@ import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.itemShopManager;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.commands.shop.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -36,8 +35,6 @@ import org.spongepowered.api.data.type.HandTypes;
 import static org.spongepowered.api.entity.EntityTypes.ARMOR_STAND;
 import static org.spongepowered.api.entity.EntityTypes.ITEM_FRAME;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.item.ItemTypes;
 
 public class ShopListener {
@@ -87,7 +84,7 @@ public class ShopListener {
                             enchantment = enchantment + e.getEnchantment().getId() + " / ";
                         }
                         enchantment = enchantment.replace("minecraft:", "");
-                        Text text = Text.EMPTY;
+                        Text text;
                         
                         //on affiche le menu de transaction de l'item
                         
@@ -278,49 +275,4 @@ public class ShopListener {
             }
         }
     }
-    
-    /*@Listener
-    //@Exclude(ClickInventoryEvent.Shift.class)
-    public void onClick(ClickInventoryEvent event, @First Player player) {
-        List<SlotTransaction> slots = event.getTransactions();
-        slots.stream().forEach((slot) -> {
-            player.sendMessage(MESSAGE("CLICK : " + slot.getSlot().getName().getId().toString()));
-            player.sendMessage(MESSAGE("CLICK : " + event.getTargetInventory().getName()));
-        });
-    }*/
-    
-    /*@Listener
-    @Exclude(ClickInventoryEvent.Shift.class)
-    public void onClick(ClickInventoryEvent event, @First Player player) {
-        List<SlotTransaction> slots = event.getTransactions();
-        slots.stream().forEach((slot) -> {
-            player.sendMessage(MESSAGE(slot.getSlot().toString()));
-        });
-    }*/
-    
-    @Listener
-    public void test6(ClickInventoryEvent.Transfer event){
-        plugin.getLogger().info("Eco listener TRANSFER : " + event.getTransactions().get(0).getSlot().getName().getId());
-    }
-    
-    @Listener
-    public void tes76(UseItemStackEvent event){
-        plugin.getLogger().info("Eco listener UseItemStackEvent : " + event.getItemStackInUse().getType().getName());
-        plugin.getLogger().info("Eco listener UseItemStackEvent : " + event.getOriginalRemainingDuration());
-    }
-    
-    /*@Listener(order = Order.POST)
-    public void onAffectSlotEvent(AffectSlotEvent event, @Root Player player) {
-        		
-	for(SlotTransaction transaction : event.getTransactions()) {
-            Slot slot = transaction.getSlot();
-            Optional<ItemStack> optionalItem = slot.peek();
-			
-            if(optionalItem.isPresent()) {
-		player.sendMessage(MESSAGE("AFFECT : " + optionalItem.get().getItem().getId()));
-                //player.sendMessage(MESSAGE(event.getTransactions().));
-		//transaction.setValid(false);
-            }
-	}
-    }*/
 }

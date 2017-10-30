@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.commands.plot.CallBackPlot;
@@ -59,14 +60,22 @@ import static org.spongepowered.api.block.BlockTypes.BEDROCK;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
 import static org.spongepowered.api.block.BlockTypes.FIRE;
 import static org.spongepowered.api.block.BlockTypes.STANDING_SIGN;
-import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.data.property.block.MatterProperty.Matter;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.animal.Animal;
+import org.spongepowered.api.entity.living.monster.Monster;
+import org.spongepowered.api.entity.projectile.arrow.Arrow;
 import static org.spongepowered.api.item.ItemTypes.ARROW;
 import org.spongepowered.api.event.block.NotifyNeighborBlockEvent;
+import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
+import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.filter.cause.Root;
-import org.spongepowered.api.item.inventory.Container;
+import static org.spongepowered.api.item.ItemTypes.WOODEN_AXE;
 import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.BlockChangeFlag;
+import org.spongepowered.api.world.LocatableBlock;
 
 public class PlotListener {
         
@@ -75,7 +84,7 @@ public class PlotListener {
     private static final CallBackPlot  CB  = new CallBackPlot();
     
     @Listener
-    @SuppressWarnings("null")
+    //@SuppressWarnings("null")
     public void onInteractBlock(InteractBlockEvent  event, @First Player player){
         
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
@@ -88,7 +97,7 @@ public class PlotListener {
         // Event click gauche -- saisie angle 1 plot
         if (event instanceof InteractBlockEvent.Primary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem() == WOODEN_SHOVEL){
+                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL) || itemInHand.get().getItem().equals(WOODEN_AXE)){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
@@ -123,7 +132,7 @@ public class PlotListener {
         // Event click droit -- saisie angle 2 plot
 	if (event instanceof InteractBlockEvent.Secondary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem() == WOODEN_SHOVEL){
+                if(itemInHand.get().getItem() == WOODEN_SHOVEL  || itemInHand.get().getItem() == WOODEN_AXE){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
@@ -373,7 +382,7 @@ public class PlotListener {
  
             int level = 0;
 
-            if(plotManager.plotAllow(plotPlayer.getBorder1().get(), plotPlayer.getBorder2().get())){
+            if(plotManager.plotNotAllow(plotPlayer.getBorder1().get(), plotPlayer.getBorder2().get())){
                 player.sendMessage(ALREADY_OWNED_PLOT());
                 return;
             }
@@ -401,7 +410,7 @@ public class PlotListener {
         }
     }
     
-    @Listener	
+    /*@Listener	
     public void onFireSpread(NotifyNeighborBlockEvent  event, @First BlockSnapshot source){
         BlockState bstate = source.getState();
         if ((bstate.getType().equals(FIRE) || bstate.getType().getName().contains("lava"))){
@@ -426,7 +435,7 @@ public class PlotListener {
                 }
             }
         }
-    }
+    }*/
             
     @Listener
     public void onExplosion(ExplosionEvent.Pre event) {
@@ -442,5 +451,65 @@ public class PlotListener {
     public void onPVP(DamageEntityEvent event, @First EntityDamageSource source){
         getGame().getServer().getConsole().sendMessage(MESSAGE(source.getSource().getType().getName())); //attaquant
         getGame().getServer().getConsole().sendMessage(MESSAGE(event.getTargetEntity().getType().getName())); //victime
+    }
+    
+    @Listener
+    public void onDamageEntity(DamageEntityEvent event, @Root DamageSource damage, @First EntityDamageSource entity) {
+	Optional<Plot> plot = plotManager.getPlot(event.getTargetEntity().getLocation());
+        if (plot.isPresent()) {
+            if (event.getTargetEntity() instanceof Player) {
+                Entity ent = entity.getSource();
+                //Player player = (Player) event.getTargetEntity();
+            
+                if (damage.getType() == DamageTypes.FIRE || damage.getType() == DamageTypes.MAGMA) {
+                    if(plot.get().getNoFire() == 1)event.setCancelled(true);
+		} else if (damage.getType() == DamageTypes.EXPLOSIVE) {
+                    if (ent.getType() == EntityTypes.DRAGON_FIREBALL || ent.getType() == EntityTypes.ENDER_CRYSTAL
+                    || ent.getType() == EntityTypes.SMALL_FIREBALL || ent.getType() == EntityTypes.FIREBALL) {
+                        if(plot.get().getNoTNT() == 1)event.setCancelled(true);
+                    } else if (ent.getType() == EntityTypes.TNT_MINECART || ent.getType() == EntityTypes.PRIMED_TNT) {
+			if(plot.get().getNoTNT() == 1)event.setCancelled(true);
+                    }	
+		} else if (damage.getType() == DamageTypes.PROJECTILE || damage.getType() == DamageTypes.ATTACK) {
+                    if (ent.getType() == EntityTypes.SPECTRAL_ARROW || ent.getType() == EntityTypes.TIPPED_ARROW) {
+			Arrow arrow = (Arrow) ent;
+			if (arrow.getShooter() instanceof Monster) {
+                            if(plot.get().getNoMob() == 1)event.setCancelled(true);
+			}
+                    }	
+                }
+  
+            } else if(event.getTargetEntity() instanceof Monster) {
+		if(plot.get().getNoMob() == 1)event.setCancelled(true);
+            } else if(event.getTargetEntity() instanceof Animal) {
+		if(plot.get().getNoMob() == 1)event.setCancelled(true);
+            } 
+	}
+    }
+	
+    @Listener
+    public void onDamage(DamageEntityEvent event, @Root DamageSource damage) {
+	if (event.getTargetEntity() instanceof Player) {
+            Optional<Plot> plot = plotManager.getPlot(event.getTargetEntity().getLocation());
+            if (plot.isPresent()) {
+                Player player = (Player) event.getTargetEntity();
+		if(plot.get().getNoMob() == 1)event.setCancelled(true);
+            }
+	}
+    }
+      
+    /**
+     *
+     * @param event
+     * @param block
+     */
+    @Listener
+    public void onBurningBlock(ChangeBlockEvent.Pre event, @Root LocatableBlock block) {
+        if(block.getBlockState().getType().equals(FIRE) || event.getLocations().get(0).getBlock().equals(FIRE)){
+            Optional<Plot> plot = plotManager.getPlot(event.getLocations().get(0));
+            if (plot.isPresent()) {
+                event.setCancelled(true);
+            }
+        }
     }
 }

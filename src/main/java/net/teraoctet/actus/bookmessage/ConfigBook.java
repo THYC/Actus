@@ -29,7 +29,7 @@ public class ConfigBook {
         File file = new File("config/actus/book/" + fileName + ".conf");
         if(!file.exists())return Optional.empty();
         ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-        ConfigurationNode node = manager.createEmptyNode(ConfigurationOptions.defaults());
+        ConfigurationNode node;// = manager.createEmptyNode(ConfigurationOptions.defaults());
         node = manager.load();
         Book book = node.getNode("book").getValue(TOKEN_CONFIG);
         return Optional.of(book);
@@ -59,7 +59,7 @@ public class ConfigBook {
         File rep = new File("config/actus/book"); 
         String [] files = rep.list(); 
         Text fileList = Text.builder().append(MESSAGE("&1  ++ Messagerie ++\n\n")).toText();
-        Text tmp = Text.EMPTY;
+        Text tmp; //= Text.EMPTY;
         for (String file : files){ 
             if(file.contains(player.getName() + "_")){
                 String[] arg = file.split("_");
