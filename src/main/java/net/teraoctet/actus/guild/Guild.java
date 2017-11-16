@@ -30,18 +30,18 @@ public class Guild {
     }
         
     public void insert() {
-        queue("INSERT INTO gguilds VALUES (" + id_guild + ",'" + name + "', '" + world + "', " + X + ", " + Y + ", " + Z + ", " + money + ", " + point + ", " + kill + ", " + dead + ")");
+        queue("INSERT INTO GUILDS VALUES (" + id_guild + ",'" + name + "', '" + world + "', " + X + ", " + Y + ", " + Z + ", " + money + ", " + point + ", " + kill + ", " + dead + ")");
         addGuild(id_guild, this);
     }
 
     public void update() {
-        queue("UPDATE gguilds SET name = '" + name + "', world = '" + world + "', X = " + X + ", Y = " + Y + ", Z = " + Z + ", money = " + money + ", point = " + point + ", kill = " + kill + ", dead = " + dead + " WHERE id_guild = " + id_guild);
+        queue("UPDATE GUILDS SET name = '" + name + "', world = '" + world + "', X = " + X + ", Y = " + Y + ", Z = " + Z + ", money = " + money + ", point = " + point + ", kill = " + kill + ", dead = " + dead + " WHERE id_guild = " + id_guild);
         removeGuild(id_guild);
         addGuild(id_guild, this);
     }
 
     public void delete() {
-        queue("DELETE FROM gguilds WHERE id_guild = " + id_guild);
+        queue("DELETE FROM GUILDS WHERE id_guild = " + id_guild);
         removeGuild(id_guild);
     }
     

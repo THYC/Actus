@@ -26,14 +26,14 @@ public class CommandMagicCompass implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.magiccompass")) {
+        if(src instanceof Player && src.hasPermission("actus.player.magiccompass")) {
             Player player = (Player)src;
             
             Optional<String> direction = ctx.<String> getOne("direction");
             if(direction.isPresent()){
                 Optional<String> nameOpt = ctx.<String> getOne("name");
                 SettingCompass sc = new SettingCompass();
-                String name = "";
+                String name;
                 Optional<ItemStack> is = Optional.empty();
                 
                 switch(direction.get().toLowerCase()){
@@ -62,7 +62,7 @@ public class CommandMagicCompass implements CommandExecutor {
                         name = "GRAVE";
                         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
                         Optional<Location<World>> location = getLocation(aplayer.getLastdeath());
-                        if(!location.isPresent()){
+                        if(location.isPresent()){
                             int x = location.get().getBlockX();
                             int y = location.get().getBlockY();
                             int z = location.get().getBlockZ();

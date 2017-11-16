@@ -20,10 +20,10 @@ public class CommandPlotList implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-        if(src instanceof Player && src.hasPermission("actus.plot.list")) {
+        if(src instanceof Player && src.hasPermission("actus.player.plot.list")) {
             Player player = (Player) src;
 
-            if(ctx.getOne("tplayer").isPresent() && src.hasPermission("actus.plot.otherlist")){
+            if(ctx.getOne("tplayer").isPresent() && src.hasPermission("actus.admin.plot.otherlist")){
                 String targetName = ctx.<String> getOne("tplayer").get();
                 APlayer aplayer = getAPlayer(targetName);
                 // si <tplayer> n'est pas dans la base de donnée

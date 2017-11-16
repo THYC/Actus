@@ -1,5 +1,6 @@
 package net.teraoctet.actus.commands;
 
+import net.teraoctet.actus.commands.troc.CommandTrocSet;
 import net.teraoctet.actus.commands.world.CommandWorldTP;
 import net.teraoctet.actus.commands.world.CommandWorldLoad;
 import net.teraoctet.actus.commands.world.CommandWorldCreate;
@@ -56,11 +57,12 @@ import net.teraoctet.actus.commands.plot.CommandPlotClaim;
 import net.teraoctet.actus.commands.plot.CommandPlotListNameAllowed;
 import net.teraoctet.actus.commands.plot.CommandPlotSetLevel;
 import net.teraoctet.actus.commands.plot.CommandPlotTag;
+import net.teraoctet.actus.commands.troc.CommandTrocAdd;
 import net.teraoctet.actus.commands.world.CommandWorld;
 import net.teraoctet.actus.commands.world.CommandWorldList;
+import net.teraoctet.actus.troc.EnumTransactType;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.text.Text;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.world.DimensionType;
@@ -71,195 +73,195 @@ import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 public class CommandManager {
         
         public CommandSpec CommandActus = CommandSpec.builder()
-                .description(Text.of("/actus"))
+                .description(MESSAGE("/actus"))
                 .executor(new CommandActus())
                 .build();
     
         public CommandSpec CommandSetName = CommandSpec.builder()
-                .description(Text.of("/setname <name>"))
+                .description(MESSAGE("/setname <name>"))
                 .permission("actus.admin.setname")
                 .arguments(GenericArguments.firstParsing(
-                    GenericArguments.remainingJoinedStrings(Text.of("arguments"))))
+                    GenericArguments.remainingJoinedStrings(MESSAGE("arguments"))))
                 .executor(new CommandSetName())
                 .build();
     
         public CommandSpec CommandKill = CommandSpec.builder()
-                .description(Text.of("/kill"))
+                .description(MESSAGE("/kill"))
                 .permission("actus.player.kill")
                 .arguments(GenericArguments.optional(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))))
+                        GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player")))))
                 .executor(new CommandKill())
                 .build();
         
         public CommandSpec CommandSun = CommandSpec.builder()
-                .description(Text.of("/sun"))
+                .description(MESSAGE("/sun"))
                 .permission("actus.fun.weather.sun")
                 .executor(new CommandSun())
                 .build();
 
         public CommandSpec CommandRain = CommandSpec.builder()
-                .description(Text.of("Commande rain pluie"))
+                .description(MESSAGE("Commande rain pluie"))
                 .permission("actus.fun.weather.rain")
                 .executor(new CommandRain())
                 .build();
         
         public CommandSpec CommandStorm = CommandSpec.builder()
-                .description(Text.of("Commande storm orage"))
+                .description(MESSAGE("Commande storm orage"))
                 .permission("actus.fun.weather.storm")
                 .executor(new CommandStorm())
                 .build();
         
         public CommandSpec CommandDay = CommandSpec.builder()
-                .description(Text.of("Commande day jour"))
+                .description(MESSAGE("Commande day jour"))
                 .permission("actus.fun.time.day")
                 .executor(new CommandDay())
                 .build();
         
         public CommandSpec CommandNight = CommandSpec.builder()
-                .description(Text.of("Commande night nuit"))
+                .description(MESSAGE("Commande night nuit"))
                 .permission("actus.fun.time.night")
                 .executor(new CommandNight())
                 .build();
                 
         public CommandSpec CommandPlotCreate = CommandSpec.builder() 
-                .description(Text.of("/plot create <name> [strict]")) 
+                .description(MESSAGE("/plot create <name> [strict]")) 
                 .permission("actus.player.plot.create") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("strict")))))
+                        GenericArguments.onlyOne(GenericArguments.string(MESSAGE("name"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("strict")))))
                 .executor(new CommandPlotCreate()) 
                 .build(); 
                 
         public CommandSpec CommandPlotFlag = CommandSpec.builder()
-                .description(Text.of("/plot flag <flag> <0|1> [name]")) 
-                .extendedDescription(Text.of("/plot flag <flag> <0|1> [name]"))
+                .description(MESSAGE("/plot flag <flag> <0|1> [name]")) 
+                .extendedDescription(MESSAGE("/plot flag <flag> <0|1> [name]"))
                 .permission("actus.player.plot.flag") 
                 .arguments(GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.string(Text.of("flag"))),
-                        GenericArguments.optional(GenericArguments.integer(Text.of("value"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("flag"))),
+                        GenericArguments.optional(GenericArguments.integer(MESSAGE("value"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotFlag()) 
                 .build(); 
         
         public CommandSpec CommandPlotFlaglist = CommandSpec.builder()
-                .description(Text.of("/plot flaglist [name]")) 
+                .description(MESSAGE("/plot flaglist [name]")) 
                 .permission("actus.player.plot.flag")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("name")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotFlaglist()) 
                 .build(); 
         
         public CommandSpec CommandPlotRemove = CommandSpec.builder()
-                .description(Text.of("/plot remove [name]")) 
-                .permission("actus.player.plot.remove")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("name")))))
+                .description(MESSAGE("/plot remove [name]")) 
+                //.permission("actus.player.plot.remove")
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotRemove()) 
                 .build(); 
         
         public CommandSpec CommandPlotSale = CommandSpec.builder()
-                .description(Text.of("/plot sale <price> [name]")) 
-                .permission("actus.player.plot.sale") 
+                .description(MESSAGE("/plot sale <price> [name]")) 
+                //.permission("actus.player.plot.sale") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.integer(Text.of("price"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                        GenericArguments.optional(GenericArguments.integer(MESSAGE("price"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotSale()) 
                 .build(); 
         
         public CommandSpec CommandPlotAddplayer = CommandSpec.builder()
-                .description(Text.of("/plot addplayer <player> [name]")) 
-                .permission("actus.player.plot.addplayer") 
+                .description(MESSAGE("/plot addplayer <player> [name]")) 
+                //.permission("actus.player.plot.addplayer") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.string(Text.of("player"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("player"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotAddplayer()) 
                 .build();
         
         public CommandSpec CommandPlotRemoveplayer = CommandSpec.builder()
-                .description(Text.of("/plot removeplayer <player> [name]")) 
-                .permission("actus.player.plot.removeplayer") 
+                .description(MESSAGE("/plot removeplayer <player> [name]")) 
+                //.permission("actus.player.plot.removeplayer") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                        GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotRemoveplayer()) 
                 .build(); 
         
         public CommandSpec CommandPlotOwnerset = CommandSpec.builder()
-                .description(Text.of("/plot ownerset <player> [name]")) 
-                .permission("actus.player.plot.ownerset") 
+                .description(MESSAGE("/plot ownerset <player> [name]")) 
+                //.permission("actus.player.plot.ownerset") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                        GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotOwnerset()) 
                 .build(); 
         
         public CommandSpec CommandPlotList = CommandSpec.builder()
-                .description(Text.of("/plot list [player]")) 
+                .description(MESSAGE("/plot list [player]")) 
                 .permission("actus.player.plot.list") 
-                .arguments(GenericArguments.optional(GenericArguments.string(Text.of("tplayer"))))
+                .arguments(GenericArguments.optional(GenericArguments.string(MESSAGE("tplayer"))))
                 .executor(new CommandPlotList()) 
                 .build(); 
         
         public CommandSpec CommandPlotExpand = CommandSpec.builder()
-                .description(Text.of("/plot expand <value>")) 
+                .description(MESSAGE("/plot expand <value>")) 
                 .permission("actus.player.plot.expand") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.integer(Text.of("value"))),
-                        GenericArguments.optional(GenericArguments.integer(Text.of("point"))),
-                        GenericArguments.optional(GenericArguments.string(Text.of("axe")))))
+                        GenericArguments.optional(GenericArguments.integer(MESSAGE("value"))),
+                        GenericArguments.optional(GenericArguments.integer(MESSAGE("point"))),
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("axe")))))
                 .executor(new CommandPlotExpand()) 
                 .build(); 
         
         public CommandSpec CommandPlotMsg = CommandSpec.builder()
-                .description(Text.of("/plot msg [message]"))
+                .description(MESSAGE("/plot msg [message]"))
                 .permission("actus.player.plot.msg")
-                .arguments(GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("arguments"))))
+                .arguments(GenericArguments.optional(GenericArguments.remainingJoinedStrings(MESSAGE("arguments"))))
                 .executor(new CommandPlotMsg())
                 .build();
         
         public CommandSpec CommandPlotTP = CommandSpec.builder()
-                .description(Text.of("/plot tp <name>"))
+                .description(MESSAGE("/plot tp <name>"))
                 .permission("actus.player.plot.tp")
-                .arguments(GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+                .arguments(GenericArguments.optional(GenericArguments.string(MESSAGE("name"))))
                 .executor(new CommandPlotTP())
                 .build();
         
         public CommandSpec CommandPlotLevel = CommandSpec.builder()
-                .description(Text.of("/plot level [level]")) 
+                .description(MESSAGE("&9/plot level [name] &eAffiche le level de la parelle")) 
                 .permission("actus.player.plot.level") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                        GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotLevel()) 
                 .build(); 
         
         public CommandSpec CommandPlotSetLevel = CommandSpec.builder()
-                .description(Text.of("/plot level [level]")) 
-                .permission("actus.admin.plot.level") 
+                .description(MESSAGE("&9/plot setlevel [level] &eChange le level de la parcelle")) 
+                .permission("actus.admin.plot.setlevel") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.optional(GenericArguments.integer(Text.of("level")))))
+                        GenericArguments.optional(GenericArguments.integer(MESSAGE("level")))))
                 .executor(new CommandPlotSetLevel()) 
                 .build(); 
         
         public CommandSpec CommandPlotTag = CommandSpec.builder()
-                .description(Text.of("/plot tag")) 
+                .description(MESSAGE("&9/plot tag &ePose une banniere aux angles de ta parcelle")) 
                 .permission("actus.player.plot.tag") 
                 .executor(new CommandPlotTag()) 
                 .build(); 
         
         public CommandSpec CommandPlotListNameAllowed = CommandSpec.builder()
-                .description(Text.of("/plot allow")) 
+                .description(MESSAGE("&9/plot allow &eAffiche les habitants de la parcelle")) 
                 .permission("actus.player.plot") 
                 .executor(new CommandPlotListNameAllowed()) 
                 .build(); 
         
         public CommandSpec CommandPlot = CommandSpec.builder()
-                .description(Text.of("/plot")) 
+                .description(MESSAGE("&9/plot &eAfiche toutes les commandes plot")) 
                 .permission("actus.player.plot") 
                 .child(CommandPlotCreate, "create", "add", "+", "new")
                 .child(CommandPlotListNameAllowed, "player", "habitant", "allow", "joueur")
@@ -275,103 +277,103 @@ public class CommandManager {
                 .child(CommandPlotMsg, "msg")
                 .child(CommandPlotTP, "tp")
                 .child(CommandPlotLevel, "level")
-                .child(CommandPlotSetLevel, "setlevel")
+                .child(CommandPlotSetLevel, "setlevel", "levelset", "level set")
                 .child(CommandPlotTag, "tag", "borne", "balise")
                 .executor(new CommandPlot())
                 .build();
 
         public CommandSpec CommandFly = CommandSpec.builder()
-                .description(Text.of("/fly"))
+                .description(MESSAGE("&9/fly &eActive desactive le vol"))
                 .permission("actus.fun.fly")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player")))))
                 .executor(new CommandFly())
                 .build();
         
         public CommandSpec CommandSetHome = CommandSpec.builder()
-                .description(Text.of("/sethome [home]"))
+                .description(MESSAGE("&9/sethome [home] &eEngistre la position comme ton Home"))
                 .permission("actus.player.sethome")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("home")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("home")))))
                 .executor(new CommandSetHome())
                 .build();
         
         public CommandSpec CommandHome = CommandSpec.builder()
-                .description(Text.of("/home [home]"))
+                .description(MESSAGE("/home [home]"))
                 .permission("actus.player.home")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("home")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("home")))))
                 .executor(new CommandHome())
                 .build();
         
         public CommandSpec CommandDelhome = CommandSpec.builder()
-                .description(Text.of("/delhome [home]"))
+                .description(MESSAGE("/delhome [home]"))
                 .permission("actus.player.delhome")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("home")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("home")))))
                 .executor(new CommandDelhome())
                 .build();
         
         public CommandSpec CommandBack = CommandSpec.builder()
-                .description(Text.of("/back"))
+                .description(MESSAGE("/back"))
                 .permission("actus.modo.back")
                 .executor(new CommandBack())
                 .build();
         
         public CommandSpec CommandLevel = CommandSpec.builder()
-                .description(Text.of("/level <level> [player]"))
+                .description(MESSAGE("/level <level> [player]"))
                 .permission("actus.admin.level")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.integer(Text.of("level"))),
-                    GenericArguments.optional(GenericArguments.player(Text.of("player")))))
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("level"))),
+                    GenericArguments.optional(GenericArguments.player(MESSAGE("player")))))
                 .executor(new CommandLevel())
                 .build();
         
         public CommandSpec CommandSkull = CommandSpec.builder()
-                .description(Text.of("/skull [name]"))
+                .description(MESSAGE("/skull [name]"))
                 .permission("actus.fun.skull")
                 .arguments(GenericArguments.optional(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of("head")))))
+                        GenericArguments.onlyOne(GenericArguments.string(MESSAGE("head")))))
                 .executor(new CommandSkull())
                 .build();
                 
         public CommandSpec CommandWorldCreate = CommandSpec.builder()
-                .description(Text.of("/world create <name> <environment> <gamemode> <difficulty>"))
+                .description(MESSAGE("/world create <name> <environment> <gamemode> <difficulty>"))
                 .permission("actus.admin.world.worldcreate")
                 .arguments(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("name"))), 
                         GenericArguments.flags()
-                        .valueFlag(GenericArguments.catalogedElement(Text.of("dimensionType"), DimensionType.class), "d")
-    			.valueFlag(GenericArguments.catalogedElement(Text.of("generatorType"), GeneratorType.class), "g")
-    			.valueFlag(GenericArguments.catalogedElement(Text.of("modifier"), WorldGeneratorModifier.class), "m")
-                        .valueFlag(GenericArguments.catalogedElement(Text.of("gamemode"), GameMode.class),"e")
-                        .valueFlag(GenericArguments.catalogedElement(Text.of("difficulty"), Difficulty.class),"y")
-                        .valueFlag(GenericArguments.string(Text.of("seed")),"s")
+                        .valueFlag(GenericArguments.catalogedElement(MESSAGE("dimensionType"), DimensionType.class), "d")
+    			.valueFlag(GenericArguments.catalogedElement(MESSAGE("generatorType"), GeneratorType.class), "g")
+    			.valueFlag(GenericArguments.catalogedElement(MESSAGE("modifier"), WorldGeneratorModifier.class), "m")
+                        .valueFlag(GenericArguments.catalogedElement(MESSAGE("gamemode"), GameMode.class),"e")
+                        .valueFlag(GenericArguments.catalogedElement(MESSAGE("difficulty"), Difficulty.class),"y")
+                        .valueFlag(GenericArguments.string(MESSAGE("seed")),"s")
                         .buildWith(GenericArguments.none()))
                 .executor(new CommandWorldCreate())
                 .build();
         
         public CommandSpec CommandWorldTP = CommandSpec.builder()
-                .description(Text.of("/world tp"))
+                .description(MESSAGE("/world tp"))
                 .permission("actus.modo.world.worldtp")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.onlyOne(GenericArguments.string(Text.of("worldName"))),
-                    GenericArguments.optional(GenericArguments.player(Text.of("target")))))
+                    GenericArguments.onlyOne(GenericArguments.string(MESSAGE("worldName"))),
+                    GenericArguments.optional(GenericArguments.player(MESSAGE("target")))))
                 .executor(new CommandWorldTP())
                 .build();
         
         public CommandSpec CommandWorldLoad = CommandSpec.builder()
-                .description(Text.of("/world load"))
+                .description(MESSAGE("/world load"))
                 .permission("actus.admin.world.worldload")      
-                .arguments(GenericArguments.string(Text.of("folderName")))
+                .arguments(GenericArguments.string(MESSAGE("folderName")))
                 .executor(new CommandWorldLoad())
                 .build();
         
         public CommandSpec CommandWorldList = CommandSpec.builder()
-                .description(Text.of("/world list : Liste les mondes actifs"))
-                .permission("actus.player.world.worldlist")      
-                //.arguments(GenericArguments.world(Text.of("world")), GenericArguments.optional(GenericArguments.bool(Text.of("value"))))
+                .description(MESSAGE("/world list : Liste les mondes actifs"))
+                .permission("actus.modo.world.worldlist")      
+                //.arguments(GenericArguments.world(MESSAGE("world")), GenericArguments.optional(GenericArguments.bool(MESSAGE("value"))))
                 .executor(new CommandWorldList())
                 .build();
                 
         public CommandSpec CommandWorld = CommandSpec.builder()
-                .description(Text.of("/world : Gestion des mondes/World"))
+                .description(MESSAGE("/world : Gestion des mondes/World"))
                 .permission("actus.admin.word")
                 .child(CommandWorldCreate, "create", "+")
                 .child(CommandWorldList, "list")
@@ -381,123 +383,123 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandClearinventory = CommandSpec.builder()
-                .description(Text.of("/clearinventory [player] : supprimme le contenu de l'inventaire"))
+                .description(MESSAGE("/clearinventory [player] : supprimme le contenu de l'inventaire"))
                 .permission("actus.player.clearinventory")
-                .arguments(GenericArguments.optional(GenericArguments.player(Text.of("player"))))
+                .arguments(GenericArguments.optional(GenericArguments.player(MESSAGE("player"))))
                 .executor(new CommandClearinventory())
                 .build();
         
         public CommandSpec CommandInvsee = CommandSpec.builder()
-                .description(Text.of("/invsee <player>"))
+                .description(MESSAGE("/invsee <player>"))
                 .permission("actus.modo.invsee")
-                .arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("target"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("target"))))
                 .executor(new CommandInvsee())
                 .build();
         
         public CommandSpec CommandPlayerinfo = CommandSpec.builder()
-                .description(Text.of("/playerinfo [player]"))
-                .permission("actus.modo.playerinfo")
-                .arguments(GenericArguments.optional(GenericArguments.string(Text.of("tplayer"))))
+                .description(MESSAGE("/playerinfo [player]"))
+                .permission("actus.player.playerinfo")
+                .arguments(GenericArguments.optional(GenericArguments.string(MESSAGE("tplayer"))))
                 .executor(new CommandPlayerinfo())
                 .build();
         
         public CommandSpec CommandBroadcast = CommandSpec.builder()
-                .description(Text.of("/broadcast [hide = 0:1] <message..>"))
-                .permission("actus.admin.broadcast")
+                .description(MESSAGE("/broadcast [hide = 0:1] <message..>"))
+                .permission("actus.modo.broadcast")
                 .arguments(GenericArguments.firstParsing( 
                     GenericArguments.flags()
                         .flag("-hide", "h")
-                        .buildWith(GenericArguments.remainingJoinedStrings(Text.of("message")))))
+                        .buildWith(GenericArguments.remainingJoinedStrings(MESSAGE("message")))))
                 .executor(new CommandBroadcast())
                 .build();
          
         public CommandSpec CommandFactionCreate = CommandSpec.builder()
-                .description(Text.of("/guild create <name>")) 
+                .description(MESSAGE("/guild create <name>")) 
                 .permission("actus.player.guild.create") 
-                .arguments(GenericArguments.remainingJoinedStrings(Text.of("name")))
+                .arguments(GenericArguments.remainingJoinedStrings(MESSAGE("name")))
                 .executor(new CommandGuildCreate()) 
                 .build();
          
         public CommandSpec CommandFactionDelete = CommandSpec.builder()
-                .description(Text.of("/guild delete <name>")) 
+                .description(MESSAGE("/guild delete <name>")) 
                 .permission("actus.player.guild.delete") 
-                .arguments(GenericArguments.remainingJoinedStrings(Text.of("name")))
+                .arguments(GenericArguments.remainingJoinedStrings(MESSAGE("name")))
                 .executor(new CommandGuildDelete()) 
                 .build();
         
         public CommandSpec CommandFactionLeave = CommandSpec.builder()
-                .description(Text.of("/guild leave")) 
+                .description(MESSAGE("/guild leave")) 
                 .permission("actus.player.guild.leave") 
                 .executor(new CommandGuildLeave()) 
                 .build();
         
         public CommandSpec CommandFactionRename = CommandSpec.builder()
-                .description(Text.of("/guild rename <name>")) 
+                .description(MESSAGE("/guild rename <name>")) 
                 .permission("actus.player.guild.rename") 
-                .arguments(GenericArguments.remainingJoinedStrings(Text.of("name")))
+                .arguments(GenericArguments.remainingJoinedStrings(MESSAGE("name")))
                 .executor(new CommandGuildRename()) 
                 .build();
          
         public CommandSpec CommandFactionList = CommandSpec.builder()
-                .description(Text.of("/guild list")) 
+                .description(MESSAGE("/guild list")) 
                 .permission("actus.player.guild.list")
                 .executor(new CommandGuildList()) 
                 .build();
          
         public CommandSpec CommandFactionMemberslist = CommandSpec.builder()
-                .description(Text.of("/guild memberslist")) 
+                .description(MESSAGE("/guild memberslist")) 
                 .permission("actus.player.guild.memberslist")
                 .executor(new CommandGuildMemberslist()) 
                 .build();
          
         public CommandSpec CommandFactionInvit = CommandSpec.builder()
-                .description(Text.of("/guild invit <player>")) 
+                .description(MESSAGE("/guild invit <player>")) 
                 .permission("actus.player.guild.invit") 
-                .arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))))
                 .executor(new CommandGuildInvit()) 
                 .build();
          
         public CommandSpec CommandFactionRemoveplayer = CommandSpec.builder()
-                .description(Text.of("/guild removeplayer <player>")) 
+                .description(MESSAGE("/guild removeplayer <player>")) 
                 .permission("actus.player.guild.removeplayer") 
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("name"))))
                 .executor(new CommandGuildRemoveplayer()) 
                 .build();
          
         public CommandSpec CommandFactionSetplayergrade = CommandSpec.builder()
-                .description(Text.of("/guild setplayergrade <player> <grade>")) 
+                .description(MESSAGE("/guild setplayergrade <player> <grade>")) 
                 .permission("actus.player.guild.setplayergrade") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of("grade")))))
+                        GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))),
+                        GenericArguments.onlyOne(GenericArguments.string(MESSAGE("grade")))))
                 .executor(new CommandGuildRemoveplayer()) 
                 .build();
         
         public CommandSpec CommandFactionSetowner = CommandSpec.builder()
-                .description(Text.of("/guild setowner <player>")) 
+                .description(MESSAGE("/guild setowner <player>")) 
                 .permission("actus.player.guild.setowner") 
-                .arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))))
                 .executor(new CommandGuildSetowner()) 
                 .build();
         
         public CommandSpec CommandFactionDeposit = CommandSpec.builder()
-                .description(Text.of("/guild depot <montant>")) 
+                .description(MESSAGE("/guild depot <montant>")) 
                 .permission("actus.player.guild.deposit") 
-                .arguments(GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.doubleNum(MESSAGE("amount"))))
                 .executor(new CommandGuildDeposit()) 
                 .build();
         
         public CommandSpec CommandFactionWithdrawal = CommandSpec.builder()
-                .description(Text.of("/guild retrait <montant>")) 
+                .description(MESSAGE("/guild retrait <montant>")) 
                 .permission("actus.player.guild.withdrawal") 
                 .arguments(
-                    GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of("amount"))))
+                    GenericArguments.onlyOne(GenericArguments.doubleNum(MESSAGE("amount"))))
                 .executor(new CommandGuildWithdrawal()) 
                 .build();
          
         public CommandSpec CommandFaction = CommandSpec.builder()
-                .description(Text.of("Affiche des informations sur votre guild"))
+                .description(MESSAGE("Affiche des informations sur votre guild"))
                 .permission("actus.player.guild")
                 .child(CommandFactionCreate, "create", "new", "add", "creer", "+")
                 .child(CommandFactionDelete, "delete")
@@ -516,66 +518,66 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandTest = CommandSpec.builder()
-                .description(Text.of("/test [arg0] [args1]"))
+                .description(MESSAGE("/test [arg0] [args1]"))
                 .permission("actus.admin.test")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("arg0"))),
-                    GenericArguments.optional(GenericArguments.string(Text.of("arg1")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("arg0"))),
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("arg1")))))
                 .executor(new CommandTest())
                 .build();
         
         public CommandSpec CommandRocket = CommandSpec.builder() 
-                .description(Text.of("Rocket Command")) 
+                .description(MESSAGE("Rocket Command")) 
                 .permission("actus.modo.rocket.use") 
                 .arguments(GenericArguments.firstParsing( 
                     GenericArguments.flags() 
                         .flag("-hard", "h") 
-                        .buildWith(GenericArguments.firstParsing(GenericArguments.optional(GenericArguments.player(Text.of("target"))), 
-                    GenericArguments.optional(GenericArguments.string(Text.of("targets"))))))) 
+                        .buildWith(GenericArguments.firstParsing(GenericArguments.optional(GenericArguments.player(MESSAGE("target"))), 
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("targets"))))))) 
                 .executor(new CommandRocket()) 
                 .build();
         
         public CommandSpec CommandPortalMsg = CommandSpec.builder()
-                .description(Text.of("/portal msg <name> [message]"))
+                .description(MESSAGE("/portal msg <name> [message]"))
                 .permission("actus.admin.portal")
                 .arguments(GenericArguments.firstParsing(
-                    GenericArguments.optional(GenericArguments.string(Text.of("name"))),
-                    GenericArguments.remainingJoinedStrings(Text.of("arguments"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))),
+                    GenericArguments.remainingJoinedStrings(MESSAGE("arguments"))))
                 .executor(new CommandPortalMsg())
                 .build();
         
         public CommandSpec CommandPortalTPFrom = CommandSpec.builder() 
-                .description(Text.of("/portal TPFrom <name>")) 
+                .description(MESSAGE("/portal TPFrom <name>")) 
                 .permission("actus.admin.portal") 
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPortalTPFrom()) 
                 .build(); 
         
         public CommandSpec CommandPortalList = CommandSpec.builder() 
-                .description(Text.of("/portal list")) 
+                .description(MESSAGE("/portal list")) 
                 .permission("actus.admin.portal") 
                 .executor(new CommandPortalList()) 
                 .build(); 
         
         public CommandSpec CommandPortalRemove = CommandSpec.builder() 
-                .description(Text.of("/portal remove <name>")) 
+                .description(MESSAGE("/portal remove <name>")) 
                 .permission("actus.admin.portal") 
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPortalRemove()) 
                 .build(); 
                 
         public CommandSpec CommandPortalCreate = CommandSpec.builder()
-                .description(Text.of("/portal create [name]"))
+                .description(MESSAGE("/portal create [name]"))
                 .permission("actus.admin.portal")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("name")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPortalCreate())
                 .build();
         
         public CommandSpec CommandPortal = CommandSpec.builder()
-                .description(Text.of("/portal")) 
+                .description(MESSAGE("/portal")) 
                 .permission("actus.admin.portal") 
                 .child(CommandPortalCreate, "create", "add")
                 .child(CommandPortalRemove, "remove", "rem", "del")
@@ -586,175 +588,175 @@ public class CommandManager {
                 .build();
                
         public CommandSpec CommandMagicCompass = CommandSpec.builder()
-                .description(Text.of("/mc <Direction> <name> <X> <Y> <Z>"))
-                .permission("actus.admin.magiccompass")
+                .description(MESSAGE("/mc <Direction> <name> <X> <Y> <Z>"))
+                .permission("actus.player.magiccompass")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("direction"))),
-                    GenericArguments.optional(GenericArguments.string(Text.of("name"))),
-                    GenericArguments.optional(GenericArguments.integer(Text.of("x"))),
-                    GenericArguments.optional(GenericArguments.integer(Text.of("y"))),
-                    GenericArguments.optional(GenericArguments.integer(Text.of("z")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("direction"))),
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))),
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("x"))),
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("y"))),
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("z")))))
                 .executor(new CommandMagicCompass())
                 .build();
         
         public CommandSpec CommandSignWrite = CommandSpec.builder()
-                .description(Text.of("/write <line> <message>"))
+                .description(MESSAGE("/write <line> <message>"))
                 .permission("actus.admin.sign.write")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.integer(Text.of("line"))), 
-                    GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("message")))))
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("line"))), 
+                    GenericArguments.optional(GenericArguments.remainingJoinedStrings(MESSAGE("message")))))
                 .executor(new CommandSignWrite())
                 .build();
         
         public CommandSpec CommandSignHelp = CommandSpec.builder()
-                .description(Text.of("/signhelp <name>"))
+                .description(MESSAGE("/signhelp <name>"))
                 .permission("actus.admin.sign.help")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))))
                 .executor(new CommandSignHelp())
                 .build();
         
         public CommandSpec CommandSignPost = CommandSpec.builder()
-                .description(Text.of("/signpost <name>"))
+                .description(MESSAGE("/signpost <name>"))
                 .permission("actus.admin.sign.post")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("name"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))))
                 .executor(new CommandSignPost())
                 .build();
         
         public CommandSpec CommandSignCmd = CommandSpec.builder()
-                .description(Text.of("/signcmd <cmd>"))
+                .description(MESSAGE("/signcmd <cmd>"))
                 .permission("actus.admin.sign.cmd")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("cmd"))), 
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("cmd"))), 
                     GenericArguments.flags()
-                        .valueFlag(GenericArguments.string(Text.of("arg1")),"a")
-                        .valueFlag(GenericArguments.string(Text.of("arg2")),"b")
+                        .valueFlag(GenericArguments.string(MESSAGE("arg1")),"a")
+                        .valueFlag(GenericArguments.string(MESSAGE("arg2")),"b")
                         .buildWith(GenericArguments.none()))
                 .executor(new CommandSignCmd())
                 .build();
                 
         public CommandSpec CommandSignBank = CommandSpec.builder()
-                .description(Text.of("/signbank <type>"))
+                .description(MESSAGE("/signbank <type>"))
                 .permission("actus.admin.sign.bank")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("type"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("type"))))
                 .executor(new CommandSignBank())
                 .build();
         
         public CommandSpec CommandShopCreate = CommandSpec.builder()
-                .description(Text.of("/shopcreate <uuid> <transacttype> <price> <qte>"))
+                .description(MESSAGE("/shopcreate <uuid> <transacttype> <price> <qte>"))
                 .permission("actus.admin.shop")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("uuid"))),
-                    GenericArguments.optional(GenericArguments.string(Text.of("transacttype"))),
-                    GenericArguments.optional(GenericArguments.doubleNum(Text.of("price"))),
-                    GenericArguments.optional(GenericArguments.integer(Text.of("qte"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("uuid"))),
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("transacttype"))),
+                    GenericArguments.optional(GenericArguments.doubleNum(MESSAGE("price"))),
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("qte"))))
                 .executor(new CommandShopCreate())
                 .build();
         
         public CommandSpec CommandShopPurchase = CommandSpec.builder()
-                .description(Text.of("/shoppurchase <uuid>"))
+                .description(MESSAGE("/shoppurchase <uuid>"))
                 .permission("actus.admin.shop")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("uuid"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("uuid"))))
                 .executor(new CommandShopPurchase())
                 .build();
         
         public CommandSpec CommandShopSell = CommandSpec.builder()
-                .description(Text.of("/shopsell <uuid>"))
+                .description(MESSAGE("/shopsell <uuid>"))
                 .permission("actus.admin.shop")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("uuid"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("uuid"))))
                 .executor(new CommandShopSell())
                 .build();
         
         public CommandSpec CommandTPA = CommandSpec.builder()
-                .description(Text.of("/tpa <player>"))
+                .description(MESSAGE("/tpa <player>"))
                 .permission("actus.player.tpa")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player")))))
                 .executor(new CommandTPA())
                 .build();
         
         public CommandSpec CommandTPhere = CommandSpec.builder()
-                .description(Text.of("/tphere <player>"))
+                .description(MESSAGE("/tphere <player>"))
                 .permission("actus.player.tpa")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player")))))
                 .executor(new CommandTPhere())
                 .build();
         
         public CommandSpec CommandTPaccept = CommandSpec.builder()
-                .description(Text.of("/tpaccept"))
+                .description(MESSAGE("/tpaccept"))
                 .permission("actus.player.tpa")
                 .executor(new CommandTPaccept())
                 .build();
         
         public CommandSpec CommandVanish = CommandSpec.builder()
-                .description(Text.of("/vanish [player]"))
+                .description(MESSAGE("/vanish [player]"))
                 .permission("actus.modo.vanish")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("target")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("target")))))
                 .executor(new CommandVanish())
                 .build();
         
         public CommandSpec CommandInvisible = CommandSpec.builder()
-                .description(Text.of("/invisible [player]"))
-                .permission("actus.admin.invisible")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("target")))))
+                .description(MESSAGE("/invisible [player]"))
+                .permission("actus.modo.invisible")
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("target")))))
                 .executor(new CommandInvisible())
                 .build();
         
         public CommandSpec CommandEnchant = CommandSpec.builder()
-                .description(Text.of("/enchant <enchantement> <level> [player]"))
+                .description(MESSAGE("/enchant <enchantement> <level> [player]"))
                 .permission("actus.admin.enchant")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(Text.of("enchantment"))),
-                    GenericArguments.optional(GenericArguments.integer(Text.of("level"))),
-                GenericArguments.optional(GenericArguments.player(Text.of("target"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("enchantment"))),
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("level"))),
+                GenericArguments.optional(GenericArguments.player(MESSAGE("target"))))
                 .executor(new CommandEnchant())
                 .build();
         
         public CommandSpec CommandRule = CommandSpec.builder()
-                .description(Text.of("/rule"))
+                .description(MESSAGE("/rule"))
                 .permission("actus.player.rule")
                 .executor(new CommandRule())
                 .build();
         
         public CommandSpec CommandBank = CommandSpec.builder()
-                .description(Text.of("/bank"))
+                .description(MESSAGE("/bank"))
                 .permission("actus.player.bank")
                 .executor(new CommandBank())
                 .build();
         
         public CommandSpec CommandShopList = CommandSpec.builder()
-                .description(Text.of("/shoplist"))
+                .description(MESSAGE("/shoplist"))
                 .permission("actus.admin.shoplist")
                 .executor(new CommandShopList())
                 .build();
         
         public CommandSpec CommandChestAdd = CommandSpec.builder()
-                .description(Text.of("/chest add [player]"))
+                .description(MESSAGE("/chest add [player]"))
                 .permission("actus.player.chest")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("target")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("target")))))
                 .executor(new CommandChestAdd())
                 .build();
         
         public CommandSpec CommandChestRemove = CommandSpec.builder()
-                .description(Text.of("/chest remove [player]"))
+                .description(MESSAGE("/chest remove [player]"))
                 .permission("actus.player.hest")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("target")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("target")))))
                 .executor(new CommandChestRemove())
                 .build();
         
         public CommandSpec CommandChestInfo = CommandSpec.builder()
-                .description(Text.of("/chest info"))
+                .description(MESSAGE("/chest info"))
                 .permission("actus.player.chest")
                 .executor(new CommandChestInfo())
                 .build();
         
         public CommandSpec CommandChest = CommandSpec.builder()
-                .description(Text.of("/chest")) 
+                .description(MESSAGE("&9/chest &eGestion des s\351curit\351s du coffre")) 
                 .permission("actus.player.chest") 
                 .child(CommandChestAdd, "add", "lock")
                 .child(CommandChestRemove, "remove", "sup", "del")
@@ -763,68 +765,68 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandNPC = CommandSpec.builder()
-                .description(Text.of("/npc [skin] [name]"))
+                .description(MESSAGE("/npc [skin] [name]"))
                 .permission("actus.admin.npc")
                 .arguments(
                     GenericArguments.flags()
-                        .valueFlag(GenericArguments.string(Text.of("skin")),"s")
-                        .valueFlag(GenericArguments.string(Text.of("name")),"n")
+                        .valueFlag(GenericArguments.string(MESSAGE("skin")),"s")
+                        .valueFlag(GenericArguments.string(MESSAGE("name")),"n")
                         .buildWith(GenericArguments.none()))
                 .executor(new CommandNPC())
                 .build();
         
         public CommandSpec CommandSetSpawn = CommandSpec.builder()
-                .description(Text.of("/spawn set"))
+                .description(MESSAGE("/spawn set"))
                 .permission("actus.admin.setspawn")
                 .executor(new CommandSetspawn())
                 .build();
         
         public CommandSpec CommandSpawn = CommandSpec.builder()
-                .description(Text.of("/spawn")) 
+                .description(MESSAGE("/spawn")) 
                 .permission("actus.player.spawn") 
                 .child(CommandSetSpawn, "set")
                 .executor(new CommandSpawn())
                 .build();
         
         public CommandSpec CommandSetspawn = CommandSpec.builder()
-                .description(Text.of("/setspawn"))
+                .description(MESSAGE("/setspawn"))
                 .permission("actus.admin.setspawn")
                 .executor(new CommandSetspawn())
                 .build();
         
         public CommandSpec CommandButcher = CommandSpec.builder()
-                .description(Text.of("/butcher [worldName]"))
+                .description(MESSAGE("/butcher [worldName]"))
                 .permission("actus.admin.butcher")
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("worldName")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("worldName")))))
                 .executor(new CommandButcher())
                 .build();
         
         public CommandSpec CommandTPR = CommandSpec.builder()
-                .description(Text.of("/tpr")) 
+                .description(MESSAGE("&9/tpr &eT\351l\351porte un point al\351atoire de la carte")) 
                 .permission("actus.player.tpr") 
                 .executor(new CommandTPR())
                 .build();
         
         public CommandSpec CommandTPThru = CommandSpec.builder()
-                .description(Text.of("/tpthru")) 
+                .description(MESSAGE("&9/tpthru &eT\351l\351porte sur le point en visuel")) 
                 .permission("actus.admin.tpthru") 
                 .executor(new CommandTPThru())
                 .build();
         
         public CommandSpec CommandDataSave = CommandSpec.builder()
-                .description(Text.of("/data save")) 
+                .description(MESSAGE("/data save")) 
                 .permission("actus.admin.data") 
                 .executor(new CommandDataSave()) 
                 .build(); 
         
         public CommandSpec CommandDataReload = CommandSpec.builder()
-                .description(Text.of("/data reload")) 
+                .description(MESSAGE("/data reload")) 
                 .permission("actus.admin.data") 
                 .executor(new CommandDataReload()) 
                 .build(); 
         
         public CommandSpec CommandData = CommandSpec.builder()
-                .description(Text.of("/data")) 
+                .description(MESSAGE("&9/data &eGestion des donn\351e du plugin &bACTUS")) 
                 .permission("actus.admin.data") 
                 .child(CommandDataSave, "save", "sauve", "s")
                 .child(CommandDataReload, "reload", "load")
@@ -832,74 +834,99 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandAS = CommandSpec.builder()
-                .description(Text.of("/as")) 
+                .description(MESSAGE("&9/as &eAffiche les propri\351t\351 de l'armorStand en visuel")) 
                 .permission("actus.fun.as") 
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("uuid")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("uuid")))))
                 .executor(new CommandAS())
                 .build();
         
         public CommandSpec CommandMailBox = CommandSpec.builder()
-                .description(Text.of("/mailbox")) 
+                .description(MESSAGE("&9/mailbox &econsulte la boite aux lettres")) 
                 .executor(new CommandMailBox())
                 .build();
         
         public CommandSpec CommandPlotClaim = CommandSpec.builder() 
-                .description(Text.of("/claim")) 
-                .permission("actus.player.plot.create") 
+                .description(MESSAGE("&9/claim &eRevendique le chunk sur ta position")) 
                 .executor(new CommandPlotClaim()) 
                 .build(); 
         
         public CommandSpec CommandGraveList = CommandSpec.builder()
-                .description(Text.of("/grave list")) 
-                //.permission("actus.admin.grave.list")
+                .description(MESSAGE("/grave list")) 
                 .executor(new CommandGraveList()) 
                 .build();
         
         public CommandSpec CommandGraveTp = CommandSpec.builder()
-                .description(Text.of("/grave tp")) 
-                //.permission("actus.admin.grave.tp")
+                .description(MESSAGE("&9/grave tp &eT\351l\351porte sur la tombe")) 
+                .permission("actus.admin.grave")
                 .executor(new CommandGraveTp()) 
                 .build();
         
         public CommandSpec CommandGraveInfo = CommandSpec.builder()
-                .description(Text.of("/grave info")) 
-                //.permission("actus.admin.grave.tp")
+                .description(MESSAGE("&9/grave info &eAffiche les infos de la tombe a proximit\351"))
+                .permission("actus.player.grave")
                 .executor(new CommandGraveInfo()) 
                 .build();
         
         public CommandSpec CommandGrave = CommandSpec.builder()
-                .description(Text.of("/grave")) 
-                //.permission("actus.admin.grave") 
+                .description(MESSAGE("&9/grave &eGestion des tombes"))
+                .permission("actus.admin.grave")
                 .child(CommandGraveList, "list")
                 .child(CommandGraveTp, "tp")
                 .child(CommandGraveInfo, "info")
                 .arguments(
                     GenericArguments.flags()
-                        .valueFlag(GenericArguments.bool(Text.of("sign")),"s")
-                        .valueFlag(GenericArguments.bool(Text.of("skull")),"k")
+                        .valueFlag(GenericArguments.bool(MESSAGE("sign")),"s")
+                        .valueFlag(GenericArguments.bool(MESSAGE("skull")),"k")
                         .buildWith(GenericArguments.none()))
                 .executor(new CommandGrave())
                 .build();
         
         public CommandSpec CommandGraveyardCreate = CommandSpec.builder()
-                .description(Text.of("/graveyard create")) 
-                //.permission("actus.admin.grave.tp")
+                .description(MESSAGE("&9/graveyard create &eCr\351ation d'une tombe de crypte/cimetiere")) 
                 .executor(new CommandGraveyardCreate()) 
                 .build();
         
         public CommandSpec CommandGraveyard = CommandSpec.builder()
-                .description(Text.of("/graveyard")) 
-                //.permission("actus.admin.grave") 
+                .description(MESSAGE("&9/graveyard &eGestion des cryptes/cimetieres")) 
+                .permission("actus.admin.grave") 
                 //.child(CommandGraveyardList, "list")
                 //.child(CommandGraveTp, "tp")
                 .child(CommandGraveyardCreate, "create", "add", "ajout", "+")
                 .arguments(GenericArguments.seq(
-                    GenericArguments.optional(GenericArguments.string(Text.of("arg")))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("arg")))))
                 .executor(new CommandGraveyard())
                 .build();
         
         public CommandSpec CommandTrocSet = CommandSpec.builder()
-                .description(Text.of("/trocset")) 
+                .description(MESSAGE("&9/troc set &eD\351clare le coffre en visuel comme coffre Troc")) 
+                .permission("actus.admin.troc.set")
                 .executor(new CommandTrocSet())
+                .build();
+        
+        public CommandSpec CommandTrocAdd = CommandSpec.builder()
+                .description(MESSAGE("&9/troc add <name> <type> <price> <qte> &eAjoute un itemTroc dans le coffre Troc"))
+                .permission("actus.player.troc.add")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))), 
+                    GenericArguments.onlyOne(GenericArguments.enumValue(MESSAGE("type"), EnumTransactType.class)),
+                    GenericArguments.onlyOne(GenericArguments.doubleNum(MESSAGE("price"))),
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("qte"))))
+                .executor(new CommandTrocAdd()) 
+                .build();
+        
+        public CommandSpec CommandTroc = CommandSpec.builder()
+                .description(MESSAGE("&9/troc &eGestion des trocs"))
+                //.permission("actus.admin.troc")
+                //.child(CommandTrocList, "list")
+                //.child(CommandTrocTp, "tp")
+                //.child(CommandTrocInfo, "info")
+                .child(CommandTrocSet, "set")
+                .child(CommandTrocAdd, "add","+")
+                //.arguments(
+                   // GenericArguments.flags()
+                        //.valueFlag(GenericArguments.bool(MESSAGE("sign")),"s")
+                        //.valueFlag(GenericArguments.bool(MESSAGE("skull")),"k")
+                        //.buildWith(GenericArguments.none()))
+                //.executor(new CommandTroc())
                 .build();
 }

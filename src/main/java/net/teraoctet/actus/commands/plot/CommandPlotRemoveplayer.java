@@ -23,10 +23,10 @@ public class CommandPlotRemoveplayer implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.plot.removeplayer")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.removeplayer")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            Optional<Plot> plot = Optional.empty();
+            Optional<Plot> plot;
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();

@@ -15,7 +15,6 @@ import static net.teraoctet.actus.Actus.mapCountDown;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;
-import static net.teraoctet.actus.Actus.worldManager;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.inventory.AInventory;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
@@ -47,7 +46,6 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import static org.spongepowered.api.item.ItemTypes.COMPASS;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -81,6 +79,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
 import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
 
@@ -310,8 +309,9 @@ public class PlayerListener {
     }
     
     @Listener
+    @SuppressWarnings("UnusedAssignment")
     public void onColorSign(ChangeSignEvent event, @First Player player){
-        if (player.hasPermission("actus.sign.color")){
+        if (player.hasPermission("actus.fun.sign.color")){
             SignData signData = event.getText();
             if (signData.getValue(Keys.SIGN_LINES).isPresent()){
                 String line0 = signData.getValue(Keys.SIGN_LINES).get().get(0).toPlain();
@@ -404,6 +404,7 @@ public class PlayerListener {
                         if (txt1.equals(MESSAGE("&l&8[POST]"))){
                             String dest = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
                             Optional<APlayer> aplayer = getAPlayerName(dest);
+                            ItemStack writableBook = ItemStack.builder().itemType(ItemTypes.WRITABLE_BOOK).build();
                             if(aplayer.isPresent()){
                                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                                 if(is.isPresent()){
@@ -418,6 +419,7 @@ public class PlayerListener {
                                         }else{
                                             book.setAuthor(MESSAGE(player.getName()));
                                         }
+         
                                         book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + serverManager.dateShortToString()));
                                         String tmp;
                                         List<Text> pages = new ArrayList();
@@ -440,6 +442,7 @@ public class PlayerListener {
                                         book.setPages(pages);
                                         configBook.saveBook(book);
                                         player.sendMessage(MESSAGE("&dTa lettre a bien ete poste !"));
+                                        player.setItemInHand(HandTypes.MAIN_HAND, writableBook);
                                     }else{
                                         player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et le tenir dans ta main"));
                                     }
@@ -449,6 +452,60 @@ public class PlayerListener {
                                     }
                                 }
                             }else{
+                                if(dest.equalsIgnoreCase("[======]")){
+                                    Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
+                                    if(is.isPresent()){
+                                        if(is.get().getItem().equals(WRITTEN_BOOK)){
+                                            Book book = new Book();
+                                            if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
+                                                book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
+                                                dest = is.get().get(Keys.DISPLAY_NAME).get().toPlain();
+                                                aplayer = getAPlayerName(dest);
+                                                if(!aplayer.isPresent()){
+                                                    dest = player.getName();
+                                                    player.sendMessage(MESSAGE("&dErreur sur le nom du destinataire"));
+                                                    player.sendMessage(MESSAGE("&dTu recevra le courrier dans ta boite"));
+                                                }
+                                            }else{
+                                                player.sendMessage(MESSAGE("&dEnvoi impossible !\n" +
+                                                        "tu dois signer ton livre en mettant le &lnom&r \n" +
+                                                        "du destinataire sur &lle titre du livre !"));
+                                            }
+                                            
+                                            book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + serverManager.dateShortToString()));
+                                            String tmp;
+                                            List<Text> pages = new ArrayList();
+                                            if(!is.get().get(Keys.BOOK_PAGES).isPresent()){
+                                                player.sendMessage(MESSAGE("&dEnvoi impossible, ton livre ne contient aucun message !"));
+                                                return;
+                                            }
+                                            for(Text text : is.get().get(Keys.BOOK_PAGES).get()){
+                                                tmp = text.toString();
+                                                tmp = tmp.replace("\\\\", "\\");
+                                                tmp = tmp.replace("Text{{", "");
+                                                tmp = tmp.replace("Text{", "");
+                                                tmp = tmp.replace("}}", "");
+                                                tmp = tmp.replace("}", "");
+                                                tmp = tmp.replace("\"", "");
+                                                tmp = tmp.replace("text:", "");
+                                                tmp = tmp.replace("\\n", "\n");
+                                                pages.add(MESSAGE(tmp));
+                                            }
+                                            book.setPages(pages);
+                                            configBook.saveBook(book);
+                                            player.sendMessage(MESSAGE("&eTa lettre a bien ete poste !"));
+                                            player.setItemInHand(HandTypes.MAIN_HAND, writableBook);
+                                        }else{
+                                            player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et\n" +
+                                                    "le tenir dans ta main, puis le signer en mettant dans le titre\n" +
+                                                    "le nom du destinataire"));
+                                        }
+                                    }else{
+                                        if(dest.equalsIgnoreCase(player.getName())){
+                                            configBook.OpenListBookMessage(player);
+                                        }
+                                    }
+                                }else{
                                     List<Text> help = new ArrayList<>();
                                     help.add(MESSAGE("&l&8[POST]"));
                                     help.add(MESSAGE("&o&8Boite aux lettres de :"));
@@ -457,6 +514,8 @@ public class PlayerListener {
                                     offering.set(Keys.SIGN_LINES,help );
                                     sign.offer(offering);
                                     player.sendMessage(MESSAGE("&eCette boite aux lettres est maintenant à ton nom"));
+                            
+                                }
                             }
                         }
                     }

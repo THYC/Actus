@@ -22,10 +22,10 @@ public class CommandPlotSetLevel implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.plot.setlevel")) { 
+        if(src instanceof Player && src.hasPermission("actus.admin.plot.setlevel")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            Optional<Plot> plot = Optional.empty();
+            Optional<Plot> plot;
 
             plot = plotManager.getPlot(player.getLocation());
             

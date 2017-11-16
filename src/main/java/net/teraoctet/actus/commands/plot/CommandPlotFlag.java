@@ -32,7 +32,7 @@ public class CommandPlotFlag implements CommandExecutor {
     @SuppressWarnings("null")
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if(src instanceof Player && src.hasPermission("actus.plot.flag")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.flag")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             Optional<Plot> plot;
@@ -105,17 +105,12 @@ public class CommandPlotFlag implements CommandExecutor {
 	
             } else {
                 if(!ctx.getOne("value").isPresent()){
-                    player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
+                    player.sendMessage(USAGE("/plot flag <flag> <false|true> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
                     return CommandResult.empty();
                 }
 
                 String flag = ctx.<String> getOne("flag").get();
-                Integer value = ctx.<Integer> getOne("value").get(); 
-
-                if (value != 1 && value != 0){
-                    player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
-                    return CommandResult.empty();	
-                }
+                boolean value = ctx.<Boolean> getOne("value").get(); 
                                
                 switch (flag.toLowerCase()){
                     case "noenter":
@@ -180,16 +175,7 @@ public class CommandPlotFlag implements CommandExecutor {
     return CommandResult.empty();	
     }
     
-    private Integer getValue(Integer value){
-        int val = 0;
-        switch(value){
-            case 0:
-                val = 1;
-                break;
-            case 1:
-                val = 0;
-                break;
-        }
-        return val;
+    private boolean getValue(boolean value){
+        return !value;
     }
 }

@@ -1,5 +1,6 @@
 package net.teraoctet.actus;
 
+import com.flowpowered.math.vector.Vector3i;
 import net.teraoctet.actus.plot.PlotListener;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.portal.PortalListener;
@@ -18,11 +19,13 @@ import net.teraoctet.actus.utils.ServerManager;
 import net.teraoctet.actus.utils.TPAH;
 
 import com.google.inject.Inject;
+import com.sk89q.worldedit.IncompleteRegionException;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import net.teraoctet.actus.bookmessage.CallBackBook;
 import net.teraoctet.actus.bookmessage.ConfigBook;
 import net.teraoctet.actus.commands.grave.CallBackGrave;
@@ -35,9 +38,10 @@ import net.teraoctet.actus.grave.GraveListener;
 import net.teraoctet.actus.player.PlayerListener;
 import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.plot.PlotSelection;
 import net.teraoctet.actus.trace.TraceListener;
 import net.teraoctet.actus.trace.TraceManager;
-import net.teraoctet.actus.troc.trocListener;
+import net.teraoctet.actus.troc.TrocListener;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.warp.WarpManager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -51,21 +55,34 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.channel.MessageChannel;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionSelector;
+import com.sk89q.worldedit.session.SessionManager;
+import net.teraoctet.actus.troc.ItemTransact;
+import net.teraoctet.actus.troc.TrocManager;
+import org.spongepowered.api.world.World;
 
 @Plugin(
     id = "actus", 
     name = "Actus", 
     version = "0.1.0",
-    description = "Server management plugin",
     url = "http://actus.teraoctet.net",
     authors = {
         "thyc82","Votop"
-    }
+    },
+    description = "Server management plugin",
+    dependencies=@Dependency(id = "worldedit", optional = true)
 )
 
 public class Actus {
@@ -81,6 +98,7 @@ public class Actus {
     public static WarpManager warpManager = new WarpManager();
     public static TraceManager traceManager = new TraceManager();
     public static WorldManager worldManager = new WorldManager();
+    public static TrocManager trocManager = new TrocManager(); 
     public Logger getLogger(){return logger;}  
     public static Game game;
     public static PluginContainer plugin;
@@ -88,6 +106,7 @@ public class Actus {
     public static Map<Player,String>inputShop = new HashMap<>();
     public static Map<Player,Double>inputDouble = new HashMap<>();
     public static Map<Player,String>action = new HashMap<>();
+    public static Map<Player, Map<Integer, ItemTransact>> TROC = new HashMap<>();
     public static final ArrayList<TPAH> ATPA = new ArrayList<>();
     public static Config config = new Config();
     public static ConfigBook configBook = new ConfigBook();
@@ -97,6 +116,8 @@ public class Actus {
     public static final CallBackBook CB_BOOK = new CallBackBook();
     public static final CallBackPlot CB_PLOT = new CallBackPlot();
     public static final CallBackGrave CB_GRAVE = new CallBackGrave();
+    public static EconomyService economyService;
+    private static WorldEdit WEdit;
     
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -119,7 +140,7 @@ public class Actus {
         getGame().getEventManager().registerListeners(this, new ShopListener());
         getGame().getEventManager().registerListeners(this, new TraceListener());
         getGame().getEventManager().registerListeners(this, new GraveListener());
-        getGame().getEventManager().registerListeners(this, new trocListener());
+        getGame().getEventManager().registerListeners(this, new TrocListener());
         
         getGame().getCommandManager().register(this, new CommandManager().CommandActus, "actus");
 	getGame().getCommandManager().register(this, new CommandManager().CommandKill, "kill", "tue");
@@ -177,7 +198,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandWorld, "world", "aworld", "monde");
         getGame().getCommandManager().register(this, new CommandManager().CommandGrave, "grave", "tombe");
         getGame().getCommandManager().register(this, new CommandManager().CommandGraveyard, "graveyard", "crypte", "caveau", "cav", "cim");
-        getGame().getCommandManager().register(this, new CommandManager().CommandTrocSet, "trocset", "troc set");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTroc, "troc");
     }
         
     @Listener
@@ -210,6 +231,16 @@ public class Actus {
     } 
     
     @Listener
+    public void onGamePostInit(GamePostInitializationEvent event){
+	Optional<EconomyService> econService = Sponge.getServiceManager().provide(EconomyService.class);
+	if (econService.isPresent()){
+            economyService = econService.get();
+	}else{
+            getLogger().error("aucun plugin economy detecte !");
+	}
+    }
+    
+    @Listener
     public void reload(GameReloadEvent event) {
         init();
     }
@@ -226,6 +257,53 @@ public class Actus {
         ItemShopManager.init();
         ConfigGrave.init();
         ConfigGraveyard.init();
+        TrocManager.init();
         return true;
+    }
+    
+    /**
+     * retourne True si WorldEdit est actif
+     * @return Boolean
+     */
+    public boolean WEisActive() {
+	return Sponge.getPluginManager().getPlugin("worldedit").isPresent();
+    }
+    
+    /**
+     * Retourne la region selectionné par le joueur sur WorldEdit
+     * @param player
+     * @return PlotSelection
+     */
+    public static Optional<PlotSelection> getWESelection(Player player)
+    {
+        PlotSelection plotSelect;
+        LocalSession localSession = getLocalSession(player);
+        com.sk89q.worldedit.world.World w = localSession.getSelectionWorld();
+        if (w == null) return Optional.empty();
+        RegionSelector regionSelector = localSession.getRegionSelector(w);
+        Region sel;
+        if (!regionSelector.isDefined()) return Optional.empty();
+        try {
+            sel = regionSelector.getRegion();
+            com.sk89q.worldedit.world.World weWorld = sel.getWorld();
+            if (weWorld==null) return Optional.empty();
+            Optional<World> world = Sponge.getGame().getServer().getWorld(weWorld.getName());
+            if(!world.isPresent())return Optional.empty();
+            plotSelect = new PlotSelection(VectorWEToSponge(sel.getMinimumPoint()),VectorWEToSponge(sel.getMaximumPoint()),world.get());
+        } catch (IncompleteRegionException e) {
+            return Optional.empty();
+        }
+        return Optional.of(plotSelect);
+    }
+    
+    private static LocalSession getLocalSession(Player player){
+        if (WEdit == null) WEdit = WorldEdit.getInstance();
+        SessionManager sessionManager = WEdit.getSessionManager();
+        LocalSession localSession = sessionManager.findByName(player.getName());
+        return localSession;
+    }
+    
+    private static Vector3i VectorWEToSponge(Vector v){
+        return new Vector3i(v.getX(), v.getY(), v.getZ());
     }
 }

@@ -24,7 +24,7 @@ public class CommandPlotMsg implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.plot.msg")) {
+        if(src instanceof Player && src.hasPermission("actus.player.plot.msg")) {
             Optional<String> arguments = ctx.<String> getOne("arguments");
                         
             Player player = (Player)src;

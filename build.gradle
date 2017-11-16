@@ -1,13 +1,5 @@
-//buildscript {
-    //dependencies {
-        //classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-    //}
-//}
-
 plugins {
-    //id 'org.spongepowered.plugin' version '0.8.1'
-    id "com.qixalite.spongestart" version "1.4.6"
-    id "java"
+    id 'org.spongepowered.plugin' version '0.8.1'
 }
 
 sourceCompatibility = 1.8
@@ -22,19 +14,12 @@ repositories {
         name = 'sponge'
         url = 'https://repo.spongepowered.org/maven'
     }
+    maven {
+    	url "http://maven.sk89q.com/repo/"
+    }
 }
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:7.0.0-20171028.203107-48'
-}
-
-
-spongestart{
-   eula true
-   
-   //optional configs
-   spongeVanillaBuild 'LATEST'
-   spongeForgeBuild 'LATEST'
-   forgeServerFolder 'run/forge'
-   vanillaServerFolder 'run/vanilla'
+    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
+    compile 'com.sk89q.worldedit:worldedit-core:6.1'
 }

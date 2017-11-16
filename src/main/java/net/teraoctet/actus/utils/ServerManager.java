@@ -4,23 +4,30 @@ import com.flowpowered.math.vector.Vector3d;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 import static net.teraoctet.actus.Actus.mapCountDown;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Config.DAYS_BEFORE_MOVE_GRAVE;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
-import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -349,11 +356,33 @@ public class ServerManager {
      * @param location Location du coffre a ajouter
      * @return loction du coffre existant
      */
-    public Optional<Location> locDblChest(Location location) {
-	if(location.add(1, 0, 0).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(1, 0, 0));
-        if(location.add(-1, 0, 0).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(-1, 0, 0));
-        if(location.add(0, 0, 1).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(0, 0, 1));
-        if(location.add(0, 0, -1).getBlock().getType().equals(BlockTypes.CHEST))return Optional.of(location.add(0, 0, -1));
+    public Optional<Location<World>> locDblChest(Location<World> location) {
+        TileEntity chest = location.getTileEntity().get();
+        final Set<Direction> directions = chest.get(Keys.CONNECTED_DIRECTIONS).orElse(new HashSet<>());
+            
+        for (Direction direction : directions) {
+            if (chest.getLocation().getBlockRelative(direction).getBlock().getType().equals(chest.getBlock().getType())) {
+                return Optional.of(chest.getLocation().getBlockRelative(direction));
+            }
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<Integer> getItemID(ItemStack is){
+        DataContainer container = is.toContainer();
+	DataQuery query = DataQuery.of('/', "UnsafeDamage");
+        if(container.get(query).isPresent()){
+            return Optional.of(Integer.valueOf(container.get(query).get().toString()));
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<Integer> getItemID(ItemStackSnapshot is){
+        DataContainer container = is.toContainer();
+	DataQuery query = DataQuery.of('/', "UnsafeDamage");
+        if(container.get(query).isPresent()){
+            return Optional.of(Integer.valueOf(container.get(query).get().toString()));
+        }
         return Optional.empty();
     }
 }

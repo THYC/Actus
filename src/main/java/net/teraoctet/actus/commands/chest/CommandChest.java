@@ -19,7 +19,7 @@ public class CommandChest implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.chest")) {
+        if(src instanceof Player && src.hasPermission("actus.player.chest")) {
             PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
             PaginationList.Builder builder = paginationService.builder();  
 

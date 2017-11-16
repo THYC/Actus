@@ -29,7 +29,7 @@ public class CommandPlotClaim implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if(src instanceof Player && src.hasPermission("actus.plot.create")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.create")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             PlotManager plotManager = PlotManager.getSett(player);

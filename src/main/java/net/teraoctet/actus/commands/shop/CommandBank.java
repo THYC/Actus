@@ -17,7 +17,7 @@ public class CommandBank implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.")) {
+        if(src instanceof Player && src.hasPermission("actus.player.bank")) {
             Player player = (Player)src;
             APlayer aplayer = getAPlayer(player.getIdentifier());
             player.sendMessage(MESSAGE("&6Tu disposes de " + String.valueOf(aplayer.getMoney()) + " Emeraude(s)"));

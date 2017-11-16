@@ -23,7 +23,7 @@ public class CommandSetName implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.admin.setname")) {
             Player player = (Player) src;
             Optional<String> arguments = ctx.<String> getOne("arguments");
-            String item = "";
+            String item;
             
             if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
                 

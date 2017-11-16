@@ -1,7 +1,6 @@
 package net.teraoctet.actus.commands.chest;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.playerManager;
 import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -29,7 +28,7 @@ public class CommandChestAdd implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.chest")) {
+        if(src instanceof Player && src.hasPermission("actus.player.chest")) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             
@@ -44,7 +43,7 @@ public class CommandChestAdd implements CommandExecutor {
                 return CommandResult.empty();
             }
         
-            Optional<Location> optlocation = Optional.empty();
+            Optional<Location<World>> optlocation = Optional.empty();
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
             { 
@@ -60,7 +59,7 @@ public class CommandChestAdd implements CommandExecutor {
             if (optlocation.isPresent()){
                 Optional<TileEntity> chestBlock = optlocation.get().getTileEntity();
                 TileEntity tileChest = chestBlock.get();
-                String chestName = "";
+                String chestName;
                 if(tileChest.get(Keys.DISPLAY_NAME).isPresent()){
                     chestName = tileChest.get(Keys.DISPLAY_NAME).get().toPlain();
                     String players[] = chestName.split(" ");

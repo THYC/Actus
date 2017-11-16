@@ -14,6 +14,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class CommandGrave implements CommandExecutor {
@@ -41,11 +42,11 @@ public class CommandGrave implements CommandExecutor {
             PaginationList.Builder builder = paginationService.builder();  
 
             builder.title(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6Grave")).toText())
-                .contents(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave info : &7Information sur la tombe")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave [-s true/false] [-k true/false] : &7Active le panneau et/ou skull")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave list : &7liste les tombes actives")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave del : &7Supprime la tombe")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave move : &7d\351place la tombe dans une crypte")).toText())
+                .contents(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave info : &7Information sur la tombe")).onClick(TextActions.runCommand("grave info")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave [-s true/false] [-k true/false] : &7Active le panneau et/ou skull")).onClick(TextActions.runCommand("grave")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave list : &7liste les tombes actives")).onClick(TextActions.runCommand("grave list")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave del : &7Supprime la tombe")).onClick(TextActions.runCommand("grave del")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/grave move : &7d\351place la tombe dans une crypte")).onClick(TextActions.runCommand("grave move")).toText())
                 .header(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&eUsage:")).toText())
                 .padding(Text.of("-"))
                 .sendTo(src); 

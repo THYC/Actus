@@ -36,23 +36,23 @@ public class Plot {
     private int x2;
     private int y2;
     private int z2;
-    private int jail;
-    private int noEnter;
-    private int noFly;
-    private int noBuild;
-    private int noBreak;
-    private int noTeleport;
-    private int noInteract;
-    private int noFire;
+    private boolean jail;
+    private boolean noEnter;
+    private boolean noFly;
+    private boolean noBuild;
+    private boolean noBreak;
+    private boolean noTeleport;
+    private boolean noInteract;
+    private boolean noFire;
     private String message;
     private int mode;
-    private int noMob;
-    private int noTNT;
-    private int noCommand;
+    private boolean noMob;
+    private boolean noTNT;
+    private boolean noCommand;
     private String uuidOwner;
     private String uuidAllowed;
     private int id_guild;
-    private int spawnGrave;
+    private boolean spawnGrave;
     private boolean noPVPplayer;
     private boolean noPVPmonster;
     private boolean noProjectile;
@@ -60,9 +60,9 @@ public class Plot {
     private boolean autoForest;
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
-    int jail, int noEnter, int noFly, int noBuild, int noBreak, int noTeleport, int noInteract, int noFire, 
-    String message, int mode, int noMob, int noTNT, int noCommand, String uuidOwner, String uuidAllowed, 
-    int id_guild, int spawnGrave){
+    boolean jail, boolean noEnter, boolean noFly, boolean noBuild, boolean noBreak, boolean noTeleport, boolean noInteract, boolean noFire, 
+    String message, int mode, boolean noMob, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed, 
+    int id_guild, boolean spawnGrave, boolean noPVPplayer, boolean noPVPmonster, boolean noProjectile, boolean noLiquidFlow, boolean autoForest){
         
         this.plotName = plotName;
         this.level = level;
@@ -89,17 +89,17 @@ public class Plot {
         this.noTNT = noTNT;
         this.noCommand = noCommand;
         this.id_guild = id_guild;
-        this.spawnGrave = 1;
-        this.noPVPplayer = false;
-        this.noPVPmonster = false;
-        this.noProjectile = false;
-        this.noLiquidFlow = false;
-        this.autoForest = false;
+        this.spawnGrave = spawnGrave;
+        this.noPVPplayer = noPVPplayer;
+        this.noPVPmonster = noPVPmonster;
+        this.noProjectile = noProjectile;
+        this.noLiquidFlow = noLiquidFlow;
+        this.autoForest = autoForest;
     }
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
-    int jail, int noEnter, int noFly, int noBuild, int noBreak, int noTeleport, int noInteract, int noFire, 
-    String message, int mode, int noMob, int noTNT, int noCommand, String uuidOwner, String uuidAllowed){
+    boolean jail, boolean noEnter, boolean noFly, boolean noBuild, boolean noBreak, boolean noTeleport, boolean noInteract, boolean noFire, 
+    String message, int mode, boolean noMob, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed){
         
         this.plotName = plotName;
         this.level = level;
@@ -120,18 +120,50 @@ public class Plot {
         this.noFire = noFire;
         this.message = message;
         this.mode = mode;
-        this.uuidOwner = uuidOwner;
-        this.uuidAllowed = uuidAllowed;
         this.noMob = noMob;
         this.noTNT = noTNT;
+        this.uuidOwner = uuidOwner;
+        this.uuidAllowed = uuidAllowed;
         this.noCommand = noCommand;
         this.id_guild = 0;
-        this.spawnGrave = 1;
+        this.spawnGrave = true;
         this.noPVPplayer = false;
         this.noPVPmonster = false;
         this.noProjectile = false;
         this.noLiquidFlow = false;
-        this.autoForest = false;
+        this.autoForest = true;
+    }
+    
+    public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, String uuidOwner, String uuidAllowed){
+        this.plotName = plotName;
+        this.level = level;
+        this.world = world;
+        this.x1 = x1;
+        this.y1 = y1;
+        this.z1 = z1;
+        this.x2 = x2;
+        this.y2 = y2;
+        this.z2 = z2;
+        this.jail = false;
+        this.noEnter = false;
+        this.noFly = true;
+        this.noBuild = true;
+        this.noBreak = true;
+        this.noTeleport = false;
+        this.noInteract = true;
+        this.message = "&b-- SECURISED --";
+        this.mode = 0;
+        this.uuidOwner = uuidOwner;
+        this.uuidAllowed = uuidAllowed;
+        this.noMob = false;
+        this.noTNT = true;
+        this.noCommand = false;
+        this.spawnGrave = true;
+        this.noPVPplayer = false;
+        this.noPVPmonster = false;
+        this.noProjectile = false;
+        this.noLiquidFlow = false;
+        this.autoForest = true;
     }
     
     public Plot(String world, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -144,34 +176,34 @@ public class Plot {
         this.x2 = x2;
         this.y2 = y2;
         this.z2 = z2;
-        this.jail = 0;
-        this.noEnter = 0;
-        this.noFly = 0;
-        this.noBuild = 0;
-        this.noBreak = 0;
-        this.noTeleport = 0;
-        this.noInteract = 0;
-        this.noFire = 0;
-        this.message = "";
+        this.jail = false;
+        this.noEnter = false;
+        this.noFly = true;
+        this.noBuild = true;
+        this.noBreak = true;
+        this.noTeleport = false;
+        this.noInteract = true;
+        this.message = "&b-- SECURISED --";
         this.mode = 0;
         this.uuidOwner = "";
         this.uuidAllowed = "";
-        this.noMob = 0;
-        this.noTNT = 0;
-        this.noCommand = 1;
-        this.spawnGrave = 1;
+        this.noMob = false;
+        this.noTNT = true;
+        this.noCommand = false;
+        this.spawnGrave = true;
         this.noPVPplayer = false;
         this.noPVPmonster = false;
         this.noProjectile = false;
         this.noLiquidFlow = false;
-        this.autoForest = false;
+        this.autoForest = true;
     }
     
     public void insert() {
 	Data.queue("INSERT INTO plot VALUES ('" + plotName + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
         + ", " + x2 + ", " + y2 + ", " + z2 + ", " + jail + ", " + noEnter + ", " + noFly + ", " + noBuild + ", " + noBreak + ", " + noTeleport 
-        + ", " + noInteract + ", " + noFire + ", '" + message + "', " + mode + ", " + noMob + ", " + noTNT + ", " + noCommand + ", '" + 
-                 uuidOwner + "', '" + uuidAllowed + "', " + id_guild + ", "+ spawnGrave + ")");
+        + ", " + noInteract + ", " + noFire + ", '" + message + "', " + mode + ", " + noMob + ", " + noTNT + ", " + noCommand 
+        + ", '" + uuidOwner + "', '" + uuidAllowed + "', " + id_guild + ", "+ spawnGrave + ", " + noPVPplayer + ", " + noPVPmonster 
+        + ", " + noProjectile + ", " + noLiquidFlow + ", " + autoForest + ")");
     }
     
     /**
@@ -229,7 +261,8 @@ public class Plot {
         + ", noEnter = " + noEnter + ", noFly = " + noFly + ", noBuild = " + noBuild + ", noBreak = " + noBreak + ", noTeleport = " + noTeleport 
         + ", noInteract = " + noInteract + ", noFire = " + noFire + ", message = '" + message + "', mode = " + mode + ", uuidOwner = '" + uuidOwner 
         + "', uuidAllowed = '" + uuidAllowed + "', noMob = " + noMob + ", noTNT = " + noTNT 
-        + ", noCommand = " + noTNT + ", id_guild = " + id_guild + ", " + spawnGrave + " WHERE plotName = '" + plotName + "'");
+        + ", noCommand = " + noTNT + ", id_guild = " + id_guild + ", spawnGrave = " + spawnGrave + ", noPVPplayer = " + noPVPplayer 
+        + ", noPVPmonster = " + noPVPmonster + ", noProjectile = " + noProjectile + ", noLiquidFlow = " + noLiquidFlow + ", autoForest = " + autoForest + " WHERE plotName = '" + plotName + "'");
     }
 	
     public void delete() {
@@ -259,7 +292,7 @@ public class Plot {
    
     public void setUuidOwner(String uuidOwner){this.uuidOwner = uuidOwner;}
     public void setUuidAllowed(String uuidAllowed){this.uuidAllowed = uuidAllowed;}
-    public void setNoInteract(int noInteract){this.noInteract = noInteract;}
+    public void setNoInteract(boolean noInteract){this.noInteract = noInteract;}
     public void setName(String plotName){this.plotName = plotName;}
     public void setLevel(int level){this.level = level;}
     public void setworld(String world){this.world = world;}
@@ -269,24 +302,29 @@ public class Plot {
     public void setY2(int y2){this.y2 = y2;}
     public void setZ1(int z1){this.z1 = z1;}
     public void setZ2(int z2){this.z2 = z2;}
-    public void setNoBreak(int noBreak){this.noBreak = noBreak;}
-    public void setNoBuild(int noBuild){this.noBuild = noBuild;}
-    public void setNoFire(int noFire){this.noFire = noFire;}
-    public void setNoTeleport(int noTeleport){this.noTeleport = noTeleport;}
-    public void setNoFly(int noFly){this.noFly = noFly;}
-    public void setJail(int jail){this.jail = jail;}
-    public void setNoEnter(int noEnter){this.noEnter = noEnter;}
+    public void setNoBreak(boolean noBreak){this.noBreak = noBreak;}
+    public void setNoBuild(boolean noBuild){this.noBuild = noBuild;}
+    public void setNoFire(boolean noFire){this.noFire = noFire;}
+    public void setNoTeleport(boolean noTeleport){this.noTeleport = noTeleport;}
+    public void setNoFly(boolean noFly){this.noFly = noFly;}
+    public void setJail(boolean jail){this.jail = jail;}
+    public void setNoEnter(boolean noEnter){this.noEnter = noEnter;}
     public void setMessage(String message){this.message = message;}
-    public void setNoMob(int noMob){this.noMob = noMob;}
-    public void setNoTNT(int noTNT){this.noTNT = noTNT;}
+    public void setNoMob(boolean noMob){this.noMob = noMob;}
+    public void setNoTNT(boolean noTNT){this.noTNT = noTNT;}
     public void setMode(int mode){this.mode = mode;} 
-    public void setNoCommand(int noCommand){this.noCommand = noCommand;} 
+    public void setNoCommand(boolean noCommand){this.noCommand = noCommand;} 
     public void setIdGuild(int id_guild){this.id_guild = id_guild;}
-    public void setSpawnGrave(int spawnGrave){this.spawnGrave = spawnGrave;}
+    public void setSpawnGrave(boolean spawnGrave){this.spawnGrave = spawnGrave;}
+    public void setNoPVPplayer(boolean noPVPplayer){this.noPVPplayer = noPVPplayer;}
+    public void setNoPVPmonster(boolean noPVPmonster){this.noPVPmonster = noPVPmonster;}
+    public void setNoProjectile(boolean noProjectile){this.noProjectile = noProjectile;}
+    public void setNoLiquidFlow(boolean noLiquidFlow){this.noLiquidFlow = noLiquidFlow;}
+    public void setAutoForest(boolean autoForest){this.autoForest = autoForest;}
     
     public String getUuidOwner(){return this.uuidOwner;}
     public String getUuidAllowed(){return this.uuidAllowed;}
-    public int getNoInteract(){return this.noInteract;}
+    public boolean getNoInteract(){return this.noInteract;}
     public String getName(){return this.plotName;}
     public int getLevel(){return this.level;}
     public String getworldName(){return this.world;}
@@ -296,20 +334,25 @@ public class Plot {
     public int getY2(){return this.y2;}
     public int getZ1(){return this.z1;}
     public int getZ2(){return this.z2;}
-    public int getNoBreak(){return this.noBreak;}
-    public int getNoBuild(){return this.noBuild;}
-    public int getNoFire(){return this.noFire;}
-    public int getNoTeleport(){return this.noTeleport;}
-    public int getNoFly(){return this.noFly;}
-    public int getJail(){return this.jail;}
-    public int getNoEnter(){return this.noEnter;}
+    public boolean getNoBreak(){return this.noBreak;}
+    public boolean getNoBuild(){return this.noBuild;}
+    public boolean getNoFire(){return this.noFire;}
+    public boolean getNoTeleport(){return this.noTeleport;}
+    public boolean getNoFly(){return this.noFly;}
+    public boolean getJail(){return this.jail;}
+    public boolean getNoEnter(){return this.noEnter;}
     public String getMessage(){return this.message;}
-    public int getNoMob(){return this.noMob;}
-    public int getNoTNT(){return this.noTNT;}
+    public boolean getNoMob(){return this.noMob;}
+    public boolean getNoTNT(){return this.noTNT;}
     public int getMode(){return this.mode;} 
-    public int getNoCommand(){return this.noCommand;}
+    public boolean getNoCommand(){return this.noCommand;}
     public int getIdGuild(){return this.id_guild;}
-    public int getSpawnGrave(){return this.spawnGrave;}
+    public boolean getSpawnGrave(){return this.spawnGrave;}
+    public boolean getNoPVPplayer(){return this.noPVPplayer;}
+    public boolean getNoPVPmonster(){return this.noPVPmonster;}
+    public boolean getNoProjectile(){return this.noProjectile;} 
+    public boolean getNoLiquidFlow(){return this.noLiquidFlow;}
+    public boolean getAutoForest(){return this.autoForest;}
     
     /**
      * Retourne l'objet World correspondant

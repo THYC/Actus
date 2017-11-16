@@ -39,7 +39,12 @@ public class CommandSignPost implements CommandExecutor {
                 return CommandResult.empty();  
             }
             String name = ctx.<String> getOne("name").get();
+            String line2 = "&o&8Boite aux lettres de :";
             
+            if(name.equalsIgnoreCase("public")){
+                line2 = "&o&8* Tous destinataires *";
+                name = "[======]";
+            }
             Optional<Location> optlocation = Optional.empty();
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
@@ -67,7 +72,7 @@ public class CommandSignPost implements CommandExecutor {
             SignData signData = opSign.get();
             List<Text> help = new ArrayList<>();
             help.add(MESSAGE("&l&8[POST]"));
-            help.add(MESSAGE("&o&8Boite aux lettres de :"));
+            help.add(MESSAGE(line2));
             help.add(MESSAGE("&l&4" + name));
             help.add(MESSAGE("&8Clique droit ici"));
             signData.set(Keys.SIGN_LINES,help );

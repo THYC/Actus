@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -31,7 +30,6 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.event.cause.Cause;
 
 public class CommandPlotSale implements CommandExecutor {
        
@@ -39,7 +37,7 @@ public class CommandPlotSale implements CommandExecutor {
     @SuppressWarnings("UnusedAssignment")
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.plot.sale")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.sale")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         

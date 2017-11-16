@@ -6,6 +6,7 @@ import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import net.teraoctet.actus.utils.DeSerialize;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -25,10 +26,10 @@ public class CommandPlotTP implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if(src instanceof Player && src.hasPermission("actus.plot.tp")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.tp")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            Optional<Plot> plot = Optional.empty();
+            Optional<Plot> plot;
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
@@ -37,7 +38,7 @@ public class CommandPlotTP implements CommandExecutor {
                 if (!plot.isPresent()){
                     player.sendMessage(NO_PLOT());
                     return CommandResult.empty();
-                } else if (plot.get().getNoTeleport() == 1 || aplayer.getLevel() == 10){
+                } else if (plot.get().getNoTeleport() || aplayer.getLevel() == LEVEL_ADMIN()){
                     Optional<Location> spawn = plot.get().getSpawnPlot();
                     if(spawn.isPresent()){
                         Location lastLocation = player.getLocation();

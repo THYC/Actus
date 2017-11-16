@@ -13,7 +13,6 @@ import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.plots;
 import static net.teraoctet.actus.utils.MessageManager.BEDROCK2SKY_PROTECT_PLOT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PROTECT_LOADED_PLOT;
@@ -32,7 +31,7 @@ import org.spongepowered.api.world.World;
 
 public class CallBackPlot {
     
-    public Consumer<CommandSource> callChangeFlag(Plot plot, String flag, Integer value) {
+    public Consumer<CommandSource> callChangeFlag(Plot plot, String flag, boolean value) {
 	return (CommandSource src) -> {
             Player player = (Player)src;
             switch (flag.toLowerCase()){
@@ -132,7 +131,7 @@ public class CallBackPlot {
                         
             String message = "&b-- SECURISED --";
 
-            Plot plot = new Plot(plotName,level,worldName,x1,y1,z1,x2,y2,z2,0,0,1,1,1,0,1,1,message,0,1,1,1,playerUUID,playerUUID);
+            Plot plot = new Plot(plotName,level,worldName,x1,y1,z1,x2,y2,z2,playerUUID,playerUUID);
             plot.insert();
             Data.commit();
             Data.addPlot(plot);
@@ -172,7 +171,7 @@ public class CallBackPlot {
                         
             String message = "&b-- SECURISED --";
 
-            Plot plot = new Plot(plotName,level,worldName,x1,y1,z1,x2,y2,z2,0,0,1,1,1,0,1,1,message,0,1,1,1,playerUUID,playerUUID);
+            Plot plot = new Plot(plotName,level,worldName,x1,y1,z1,x2,y2,z2,playerUUID,playerUUID);
             plot.insert();
             Data.commit();
             Data.addPlot(plot);

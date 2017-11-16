@@ -2,13 +2,12 @@ package net.teraoctet.actus.plot;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
-import static net.teraoctet.actus.utils.Data.jails;
-import static net.teraoctet.actus.utils.Data.plots;
+import static net.teraoctet.actus.utils.Data.PJAILS;
+import static net.teraoctet.actus.utils.Data.PLOTS;
 import static net.teraoctet.actus.utils.Data.setts;
 import org.spongepowered.api.block.BlockType;
 import static org.spongepowered.api.block.BlockTypes.AIR;
@@ -49,10 +48,10 @@ public class PlotManager {
   
     private Optional<Plot> plotContainsVector(Location loc, boolean flagJail){
         if (flagJail == true){
-            for(Plot jail : jails){if(foundPlot(loc,jail)){return Optional.of(jail);}}
+            for(Plot jail : PJAILS){if(foundPlot(loc,jail)){return Optional.of(jail);}}
         }else{
             Optional<Plot> plotmaxlevel = Optional.empty();
-            for (Plot plot : plots) {
+            for (Plot plot : PLOTS) {
                 if(foundPlot(loc,plot)){
                     if(plotmaxlevel.isPresent()){
                         if(plot.getLevel() > plotmaxlevel.get().getLevel())plotmaxlevel=Optional.of(plot);
@@ -68,10 +67,10 @@ public class PlotManager {
     
     private Optional<Plot> plotContainsVector(String world, Vector3d vector, boolean flagJail){
         if (flagJail == true){
-            for(Plot jail : jails){if(foundPlot(world, vector,jail)){return Optional.of(jail);}}
+            for(Plot jail : PJAILS){if(foundPlot(world, vector,jail)){return Optional.of(jail);}}
         }else{
             Optional<Plot> plotmaxlevel = Optional.empty();
-            for (Plot plot : plots) {
+            for (Plot plot : PLOTS) {
                 if(foundPlot(world, vector,plot)){
                     if(plotmaxlevel.isPresent()){
                         if(plot.getLevel() > plotmaxlevel.get().getLevel())plotmaxlevel=Optional.of(plot);
@@ -151,14 +150,14 @@ public class PlotManager {
      * @param name Nom du Plot
      * @return Boolean
      */
-    public Boolean hasPlot(String name){return plots.stream().anyMatch((plot) -> (plot.getName().contains(name)));}
+    public Boolean hasPlot(String name){return PLOTS.stream().anyMatch((plot) -> (plot.getName().contains(name)));}
     
     /**
      * Retourne True si le nom indiqué correspond a une parcelle enregistré en Jail(Prison)
      * @param name Nom de la parcelle (Plot)
      * @return Boolean
      */
-    public Boolean hasJail(String name){return jails.stream().anyMatch((jail) -> (jail.getName().contains(name)));}
+    public Boolean hasJail(String name){return PJAILS.stream().anyMatch((jail) -> (jail.getName().contains(name)));}
     
     /**
      * Retourne la valeur Plot de la parcelle nommée
@@ -166,7 +165,7 @@ public class PlotManager {
      * @return Object Plot
      */
     public Optional<Plot> getPlot(String plotName){
-        for (Plot plot : plots) {
+        for (Plot plot : PLOTS) {
             if(plot.getName().contains(plotName)){return Optional.of(plot);}
         }
         return Optional.empty();
@@ -178,7 +177,7 @@ public class PlotManager {
      * @return String
      */
     public String getPlotOwner(String plotName){
-        for(Plot plot : plots){
+        for(Plot plot : PLOTS){
             if(plot.getName().contains(plotName)){return plot.getUuidOwner();}
         }
         return null;
@@ -221,7 +220,7 @@ public class PlotManager {
     }
     
     /**
-     * Si TRUE retourne la list des jails enregistré
+     * Si TRUE retourne la list des JAILS enregistré
      * Si FALSE retourne la liste des parcelles enregistré
      * @param flagJail Boolean 
      * @return Text
@@ -229,11 +228,11 @@ public class PlotManager {
     public Text getListPlot(boolean flagJail){
         String listplot = "&6";
         if (flagJail == true){
-            for(Plot jail : jails){
+            for(Plot jail : PJAILS){
                 listplot = listplot + "\n" + jail.getName();
             }
         } else {
-            for(Plot plot : plots){
+            for(Plot plot : PLOTS){
                 listplot = listplot + "\n" + plot.getName();
             }
         }
@@ -247,8 +246,8 @@ public class PlotManager {
      * @return  Text
      */
     public Text getListPlot(String playerUUID){
-        String listplot = "&6Total : " + plots.size();
-        for (Plot plot : plots) {
+        String listplot = "&6Total : " + PLOTS.size();
+        for (Plot plot : PLOTS) {
             if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
                 listplot = listplot + "\n" + plot.getName();
             }
@@ -265,7 +264,7 @@ public class PlotManager {
     public static final ArrayList<Plot> playerPlots (String playerUUID)
     {
         ArrayList<Plot> playerPlots = new ArrayList<>();
-        plots.stream().filter((plot) -> (plot.getUuidOwner().equalsIgnoreCase(playerUUID))).forEach((plot) -> {playerPlots.add(plot);});
+        PLOTS.stream().filter((plot) -> (plot.getUuidOwner().equalsIgnoreCase(playerUUID))).forEach((plot) -> {playerPlots.add(plot);});
         return playerPlots;        
     }
     
@@ -278,7 +277,7 @@ public class PlotManager {
     {
         APlayer aplayer = getAPlayer(player.getIdentifier());
         ArrayList<Plot> guildPlots = new ArrayList<>();
-        plots.stream().filter((plot) -> (plot.getIdGuild()==aplayer.getID_guild())).forEach((plot) -> {guildPlots.add(plot);});
+        PLOTS.stream().filter((plot) -> (plot.getIdGuild()==aplayer.getID_guild())).forEach((plot) -> {guildPlots.add(plot);});
         return guildPlots;        
     }
     
@@ -294,8 +293,8 @@ public class PlotManager {
         World world = w.getExtent();
         Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
                 
-        for(Plot plot : plots){
-            if(plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return true;
+        for(Plot plot : PLOTS){
+            //if(!plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return true;
             if(foundPlot(plot.getLocX1Y1Z1(),newPlot) || foundPlot(plot.getLocX2Y2Z2(),newPlot) ||
                 foundPlot(plot.getLocX1Y1Z2(),newPlot) || foundPlot(plot.getLocX2Y2Z1(),newPlot) ||
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
@@ -344,7 +343,7 @@ public class PlotManager {
     }
     
     /**
-     * retourne True si toutes le player est Owner de toutes les parcelles parentes
+     * retourne True si le player est Owner de toutes les parcelles parentes
      * @param player
      * @param l1
      * @param l2
@@ -465,17 +464,17 @@ public class PlotManager {
      */
     public int getCountPlotGuild(int id_guild){
         int nb = 0;
-        nb = plots.stream().filter((plot) -> (plot.getIdGuild() == id_guild)).map((_item) -> 1).reduce(nb, Integer::sum);
+        nb = PLOTS.stream().filter((plot) -> (plot.getIdGuild() == id_guild)).map((_item) -> 1).reduce(nb, Integer::sum);
         return nb;
     }
     
     /**
-     * Retourne "OUI si value = 1 sinon retourne NON
+     * Retourne "OUI si value = true sinon retourne NON
      * @param id 
      * @return Valeur String OUI ou NON
      */
-    public String ValueOf(int id) {
-        if(id == 0) return "NON";
+    public String ValueOf(boolean id) {
+        if(id == false) return "NON";
         return "OUI ";
     }
 }

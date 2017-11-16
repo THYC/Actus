@@ -84,7 +84,7 @@ public class GraveListener {
                     
             Optional<Plot> plot = plotManager.getPlot(player.getLocation());
             if(plot.isPresent()){
-                if(plot.get().getSpawnGrave() == 0) {
+                if(plot.get().getSpawnGrave()) {
                     return;
                 }else{
                     locgrave1 = player.getLocation();

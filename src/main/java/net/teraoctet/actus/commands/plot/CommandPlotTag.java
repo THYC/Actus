@@ -23,7 +23,7 @@ public class CommandPlotTag implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if(src instanceof Player && src.hasPermission("actus.plot.tag")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.tag")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             

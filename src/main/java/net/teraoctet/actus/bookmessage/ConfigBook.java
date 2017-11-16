@@ -58,8 +58,8 @@ public class ConfigBook {
     public Text getMailBook(Player player){
         File rep = new File("config/actus/book"); 
         String [] files = rep.list(); 
-        Text fileList = Text.builder().append(MESSAGE("&1  ++ Messagerie ++\n\n")).toText();
-        Text tmp; //= Text.EMPTY;
+        Text fileList = Text.builder().append(MESSAGE("&1   ++ Messagerie ++\n\n")).toText();
+        Text tmp;
         for (String file : files){ 
             if(file.contains(player.getName() + "_")){
                 String[] arg = file.split("_");

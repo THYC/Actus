@@ -26,7 +26,7 @@ public class CommandRocket implements CommandExecutor{
         if (!target.isPresent() && !targets.isPresent()) { 
             if (src instanceof Player) { 
                 Player player = (Player) src; 
-                Vector3d velocity = null; 
+                Vector3d velocity; 
 
                 if (ctx.hasAny("hard")) { 
                     velocity = new Vector3d(0, 4, 0); 
@@ -47,7 +47,7 @@ public class CommandRocket implements CommandExecutor{
             String targ = targets.get(); 
             if(targ.equalsIgnoreCase("a") || targ.equalsIgnoreCase("@a")) { 
                 for(Player player : Sponge.getServer().getOnlinePlayers()) { 
-                    Vector3d velocity = null;
+                    Vector3d velocity;
 
                     if (ctx.hasAny("hard")) { 
                         velocity = new Vector3d(0, 4, 0); 
@@ -67,7 +67,7 @@ public class CommandRocket implements CommandExecutor{
         
         else if(target.isPresent()) { 
             Player player = target.get(); 
-            Vector3d velocity = null; 
+            Vector3d velocity; 
 
             if (ctx.hasAny("hard")) { 
                 velocity = new Vector3d(0, 4, 0); 

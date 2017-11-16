@@ -2,15 +2,18 @@ package net.teraoctet.actus.utils;
 
 import net.teraoctet.actus.plot.Jail;
 import net.teraoctet.actus.player.APlayer;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.spongepowered.api.Sponge;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.sql.DataSource;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.guild.Guild;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.addUUID;
@@ -23,20 +26,25 @@ import net.teraoctet.actus.ticket.Ticket;
 import net.teraoctet.actus.warp.Warp;
 import static net.teraoctet.actus.warp.WarpManager.addWarp;
 
-import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.service.sql.SqlService;
 
+
 public class Data {
-	public static SqlService sql;
+	private static SqlService sql;
 	public static DataSource datasource;
 	public static List<String> queue = new ArrayList<>();
 	
+        public static DataSource getDataSource(String jdbcUrl) throws SQLException {
+            if (sql == null) {
+                sql = Sponge.getServiceManager().provide(SqlService.class).get();
+            }
+            return sql.getDataSource(jdbcUrl);
+        }
+    
 	public static void setup() {
             try {
-                sql = getGame().getServiceManager().provide(SqlService.class).get();
-                
                 if(!Config.MYSQL_USE()) { 
-                    datasource = sql.getDataSource("jdbc:sqlite:config/actus/actus.db");
+                    datasource = getDataSource("jdbc:h2:./config/actus/actus.db");
                 } else {
                         String host = Config.MYSQL_HOST();
                         String port = String.valueOf(Config.MYSQL_PORT());
@@ -49,10 +57,12 @@ public class Data {
                 DatabaseMetaData metadata = datasource.getConnection().getMetaData();
                 ResultSet resultset = metadata.getTables(null, null, "%", null);
                 List<String> tables = new ArrayList<>();		
-                while(resultset.next()) { tables.add(resultset.getString(3));}
+                while(resultset.next()) { 
+                    tables.add(resultset.getString(3));
+                }
 
-                if(!tables.contains("jails")) {
-                        execute("CREATE TABLE jails ("
+                if(!tables.contains("JAILS")) {
+                        execute("CREATE TABLE JAILS ("
                                 + "uuid TEXT, "
                                 + "player TEXT, "
                                 + "jail TEXT, "
@@ -61,8 +71,8 @@ public class Data {
                                 + "duration DOUBLE)");
                 }
 
-                if(!tables.contains("homes")) {
-                        execute("CREATE TABLE homes ("
+                if(!tables.contains("HOMES")) {
+                        execute("CREATE TABLE HOMES ("
                                 + "uuid TEXT, "
                                 + "name TEXT, "
                                 + "world TEXT, "
@@ -71,8 +81,8 @@ public class Data {
                                 + "z INT)");
                 }
 
-                if(!tables.contains("aplayers")) {
-                        execute("CREATE TABLE aplayers ("
+                if(!tables.contains("APLAYERS")) {
+                        execute("CREATE TABLE APLAYERS ("
                                 + "uuid TEXT, "
                                 + "level INT, "
                                 + "name TEXT, "
@@ -90,9 +100,9 @@ public class Data {
                                 + "guild_rank INT)");
                 }
                 
-                if(!tables.contains("guilds")) {
-                        execute("CREATE TABLE guilds ("
-                                + "id_guild, "
+                if(!tables.contains("GUILDS")) {
+                        execute("CREATE TABLE GUILDS ("
+                                + "id_guild INT, "
                                 + "name TEXT, "
                                 + "world TEXT, "
                                 + "X INT, "
@@ -104,8 +114,8 @@ public class Data {
                                 + "dead INT)");
                 }
 
-                if(!tables.contains("tickets")) {
-                        execute("CREATE TABLE tickets ("
+                if(!tables.contains("TICKETS")) {
+                        execute("CREATE TABLE TICKETS ("
                                 + "date DOUBLE, "
                                 + "uuid TEXT, "
                                 + "message TEXT, "
@@ -118,8 +128,8 @@ public class Data {
                                 + "status TEXT)");
                 }
 
-                if(!tables.contains("warps")) {
-                        execute("CREATE TABLE warps ("
+                if(!tables.contains("WARPS")) {
+                        execute("CREATE TABLE WARPS ("
                                 + "name TEXT, "
                                 + "world TEXT, "
                                 + "x DOUBLE, "
@@ -128,8 +138,8 @@ public class Data {
                                 + "message TEXT)");
                 }
                 
-                if(!tables.contains("trace")) {
-                        execute("CREATE TABLE trace ("
+                if(!tables.contains("TRACE")) {
+                        execute("CREATE TABLE TRACE ("
                                 + "date DOUBLE, "
                                 + "world TEXT, "
                                 + "x DOUBLE, "
@@ -140,8 +150,8 @@ public class Data {
                                 + "block TEXT)");
                 }
                 
-                if(!tables.contains("plot")) {
-                        execute("CREATE TABLE plot ("
+                if(!tables.contains("PLOT")) {
+                        execute("CREATE TABLE PLOT ("
                                 + "plotName TEXT, "
                                 + "level INT, "
                                 + "world TEXT, "
@@ -151,33 +161,38 @@ public class Data {
                                 + "X2 INT, "
                                 + "Y2 INT, "
                                 + "Z2 INT, "
-                                + "jail INT, "
-                                + "noEnter INT, "
-                                + "noFly INT, "
-                                + "noBuild INT, "
-                                + "noBreak INT, "
-                                + "noTeleport INT, "
-                                + "noInteract INT, "
-                                + "noFire INT, "
+                                + "jail BOOLEAN, "
+                                + "noEnter BOOLEAN, "
+                                + "noFly BOOLEAN, "
+                                + "noBuild BOOLEAN, "
+                                + "noBreak BOOLEAN, "
+                                + "noTeleport BOOLEAN, "
+                                + "noInteract BOOLEAN, "
+                                + "noFire BOOLEAN, "
                                 + "message TEXT, "
                                 + "mode INT, "
-                                + "noMob INT, "
-                                + "noTNT INT, "
-                                + "noCommand INT, "
+                                + "noMob BOOLEAN, "
+                                + "noTNT BOOLEAN, "
+                                + "noCommand BOOLEAN, "
                                 + "uuidOwner TEXT, "
-                                + "uuidAllowed TEX, "
+                                + "uuidAllowed TEXT, "
                                 + "id_guild INT, "
-                                + "spawnGrave INT)");
+                                + "spawnGrave BOOLEAN,"
+                                + "noPVPplayer BOOLEAN,"
+                                + "noPVPmonster BOOLEAN,"
+                                + "noProjectile BOOLEAN,"
+                                + "noLiquidFlow BOOLEAN,"
+                                + "autoForest BOOLEAN)");
                 }
                 
-                if(!tables.contains("plsale")) {
-                        execute("CREATE TABLE plsale ("
+                if(!tables.contains("PLSALE")) {
+                        execute("CREATE TABLE PLSALE ("
                                 + "plotName TEXT, "
                                 + "location TEXT)");
                 }
                 
-                if(!tables.contains("portal")) {
-                        execute("CREATE TABLE portal ("
+                if(!tables.contains("PORTAL")) {
+                        execute("CREATE TABLE PORTAL ("
                                 + "portalname TEXT, "
                                 + "level INT, "
                                 + "world TEXT, "
@@ -194,8 +209,8 @@ public class Data {
                                 + "message TEXT)");
                 }
                 
-                if(!tables.contains("itemshop")) {
-                        execute("CREATE TABLE itemshop ("
+                if(!tables.contains("ITEMSHOP")) {
+                        execute("CREATE TABLE ITEMSHOP ("
                                 + "portalname TEXT, "
                                 + "level INT, "
                                 + "world TEXT, "
@@ -220,7 +235,8 @@ public class Data {
             try {
                 Connection c = datasource.getConnection();
                 Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM jail");
+
+                ResultSet rs = s.executeQuery("SELECT * FROM JAILS");
                 while(rs.next()) {
                     Jail jail = new Jail(
                         rs.getString("uuid"), 
@@ -231,15 +247,8 @@ public class Data {
                         rs.getInt("duration"));
                     Data.addJail(jail.getUUID(), jail);
                 }
-                s.close();
-                c.close();
-            } catch (SQLException e) {}
-
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM aplayers");
-
+                
+                rs = s.executeQuery("SELECT * FROM APLAYERS");
                 while(rs.next()) {
                     APlayer player = new APlayer(
                         rs.getString("uuid"), 
@@ -260,13 +269,8 @@ public class Data {
                     addAPlayer(player.getUUID(), player);
                     addUUID(player.getName(), player.getUUID());
                 }   
-            } catch (SQLException e) {}
-            
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM guilds");
                 
+                rs = s.executeQuery("SELECT * FROM GUILDS");
                 while(rs.next()) {
                     Guild guild = new Guild(
                         rs.getInt("id_guild"),
@@ -279,14 +283,10 @@ public class Data {
                         rs.getInt("point"),
                         rs.getInt("kill"),
                         rs.getInt("dead"));
-                    Data.addGuild(guild.getID(), guild);
+                    addGuild(guild.getID(), guild);
                 }   
-            } catch (SQLException e) {}
-		
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM homes");
+                
+                rs = s.executeQuery("SELECT * FROM HOMES");
                 while(rs.next()) {
                     Home home = new Home(
                         rs.getString("uuid"), 
@@ -300,14 +300,8 @@ public class Data {
                         removeAPlayer(home.getUUID());
                         addAPlayer(home.getUUID(), aplayer);
                 }
-                s.close();
-                c.close();
-            } catch (SQLException e) {}
-                
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM plot ORDER BY level desc");
+               
+                rs = s.executeQuery("SELECT * FROM PLOT ORDER BY level desc");
                 while(rs.next()) {
                     Plot plot = new Plot(
                         rs.getString("plotName"),
@@ -319,34 +313,33 @@ public class Data {
                         rs.getInt("X2"),
                         rs.getInt("Y2"),
                         rs.getInt("Z2"),
-                        rs.getInt("jail"),
-                        rs.getInt("noEnter"), 
-                        rs.getInt("noFly"),
-                        rs.getInt("noBuild"),
-                        rs.getInt("noBreak"),
-                        rs.getInt("noTeleport"),
-                        rs.getInt("noInteract"), 
-                        rs.getInt("noFire"),
+                        rs.getBoolean("jail"),
+                        rs.getBoolean("noEnter"), 
+                        rs.getBoolean("noFly"),
+                        rs.getBoolean("noBuild"),
+                        rs.getBoolean("noBreak"),
+                        rs.getBoolean("noTeleport"),
+                        rs.getBoolean("noInteract"), 
+                        rs.getBoolean("noFire"),
                         rs.getString("message"),
                         rs.getInt("mode"),
-                        rs.getInt("noMob"),
-                        rs.getInt("noTNT"),
-                        rs.getInt("noCommand"),
+                        rs.getBoolean("noMob"),
+                        rs.getBoolean("noTNT"),
+                        rs.getBoolean("noCommand"),
                         rs.getString("uuidOwner"), 
                         rs.getString("uuidAllowed"),
                         rs.getInt("id_guild"),   
-                        rs.getInt("spawnGrave"));
-                    if(plot.getJail()==1){jails.add(plot);}
-                    else{plots.add(plot);}   
+                        rs.getBoolean("spawnGrave"),
+                        rs.getBoolean("noPVPplayer"),
+                        rs.getBoolean("noPVPmonster"),
+                        rs.getBoolean("noProjectile"),
+                        rs.getBoolean("noLiquidFlow"),
+                        rs.getBoolean("autoForest"));
+                    if(plot.getJail()){PJAILS.add(plot);}
+                    else{PLOTS.add(plot);}   
                 }
-                s.close();
-                c.close();
-            } catch (SQLException e) {}
-            
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM portal");
+                
+                rs = s.executeQuery("SELECT * FROM PORTAL");
                 while(rs.next()) {
                     Portal portal = new Portal(
                         rs.getString("portalname"),
@@ -363,16 +356,10 @@ public class Data {
                         rs.getInt("toy"),
                         rs.getInt("toz"),
                         rs.getString("message"));
-                    portals.add(portal);  
+                    PORTALS.add(portal);  
                 }
-                s.close();
-                c.close();
-            } catch (SQLException e) {}
-				
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM tickets");
+                
+                rs = s.executeQuery("SELECT * FROM TICKETS");
                 while(rs.next()) {
                     Ticket ticket = new Ticket(
                         rs.getInt("date"), 
@@ -387,14 +374,8 @@ public class Data {
                         rs.getString("status"));
                     //addTicket(ticket.getID(), ticket);
                 }
-                s.close();
-                c.close();
-            } catch (SQLException e) {}
-		
-            try {
-                Connection c = datasource.getConnection();
-                Statement s = c.createStatement();
-                ResultSet rs = s.executeQuery("SELECT * FROM warps");
+                
+                rs = s.executeQuery("SELECT * FROM WARPS");
                 while(rs.next()) {
                     Warp warp = new Warp(
                         rs.getString("name"),
@@ -405,9 +386,11 @@ public class Data {
                         rs.getString("message"));
                     addWarp(warp.getName(), warp);
                 }
-                    s.close();
-                    c.close();
-		} catch (SQLException e) {}
+                s.close();
+                c.close();
+            } catch (SQLException e) {
+                plugin.getLogger().error(e.getMessage());
+            }
 	}
 	
 	public static void execute(String execute) {	
@@ -434,40 +417,36 @@ public class Data {
 	
 	public static void queue(String queue) { Data.queue.add(queue); }
 	        
-	private static final HashMap<String, Jail> gjails = new HashMap<>();
-	public static void addJail(String uuid, Jail gjail) { if(!gjails.containsKey(uuid)) gjails.put(uuid, gjail); }
-	public static void removeJail(String uuid) { if(gjails.containsKey(uuid)) gjails.remove(uuid); }
-	public static Jail getJail(String uuid) { return gjails.containsKey(uuid) ? gjails.get(uuid) : null; }
-	public static HashMap<String, Jail> getBans() { return gjails; }
+	private static final HashMap<String, Jail> JAILS = new HashMap<>();
+	public static void addJail(String uuid, Jail jail) { if(!JAILS.containsKey(uuid)) JAILS.put(uuid, jail); }
+	public static void removeJail(String uuid) { if(JAILS.containsKey(uuid)) JAILS.remove(uuid); }
+	public static Jail getJail(String uuid) { return JAILS.containsKey(uuid) ? JAILS.get(uuid) : null; }
+	public static HashMap<String, Jail> getJails() { return JAILS; }
 
-        private static final HashMap<Integer, Guild> guilds = new HashMap<>();
+        private static final HashMap<Integer, Guild> GUILDS = new HashMap<>();
         @SuppressWarnings("element-type-mismatch")
-	public static void addGuild(Integer ID, Guild guild) { if(!guilds.containsKey(guilds)) guilds.put(ID, guild); }
-	public static void removeGuild(Integer id_guild) { if(guilds.containsKey(id_guild)) guilds.remove(id_guild); }
-	public static Guild getGuild(Integer id_guild) { return guilds.containsKey(id_guild) ? guilds.get(id_guild) : null; }
-        public static HashMap<Integer, Guild> getFactions() { return guilds; }
+	public static void addGuild(Integer ID, Guild guild) { if(!GUILDS.containsKey(GUILDS)) GUILDS.put(ID, guild); }
+	public static void removeGuild(Integer id_guild) { if(GUILDS.containsKey(id_guild)) GUILDS.remove(id_guild); }
+	public static Guild getGuild(Integer id_guild) { return GUILDS.containsKey(id_guild) ? GUILDS.get(id_guild) : null; }
+        public static HashMap<Integer, Guild> getFactions() { return GUILDS; }
         
         public static HashMap<String, PlotManager> setts = new HashMap();
-        public static final ArrayList<Plot> plots = new ArrayList<>();
-        public static final ArrayList<Plot> jails = new ArrayList<>();
-        public static void addPlot(Plot plot) { if(!plots.contains(plot)) plots.add(plot); }
-        public static void addJail(Plot plot) { if(!jails.contains(plot)) jails.add(plot); }
-        public static void removePlot(Plot plot) { if(plots.contains(plot)) plots.remove(plot); }
-        public static void removeJail(Plot plot) { if(jails.contains(plot)) jails.remove(plot); }
+        public static final ArrayList<Plot> PLOTS = new ArrayList<>();
+        public static final ArrayList<Plot> PJAILS = new ArrayList<>();
+        public static void addPlot(Plot plot) { if(!PLOTS.contains(plot)) PLOTS.add(plot); }
+        public static void addJail(Plot plot) { if(!PJAILS.contains(plot)) PJAILS.add(plot); }
+        public static void removePlot(Plot plot) { if(PLOTS.contains(plot)) PLOTS.remove(plot); }
+        public static void removeJail(Plot plot) { if(PJAILS.contains(plot)) PJAILS.remove(plot); }
 
-        public static final ArrayList<Portal> portals = new ArrayList<>();
-        public static void addPortal(Portal portal) { if(!portals.contains(portal)) portals.add(portal); } 
-        public static void removePortal(Portal portal) { if(portals.contains(portal)) portals.remove(portal); } 
+        public static final ArrayList<Portal> PORTALS = new ArrayList<>();
+        public static void addPortal(Portal portal) { if(!PORTALS.contains(portal)) PORTALS.add(portal); } 
+        public static void removePortal(Portal portal) { if(PORTALS.contains(portal)) PORTALS.remove(portal); } 
 	
-	private static HashMap<Integer, Ticket> tickets = new HashMap<>();
-	public static void addTicket(int id, Ticket ticket) { if(!tickets.containsKey(id)) tickets.put(id, ticket); }
-	public static void removeTicket(int id) { if(tickets.containsKey(id)) tickets.remove(id); }
-	public static Ticket getTicket(int id) { return tickets.containsKey(id) ? tickets.get(id) : null; }
-	public static HashMap<Integer, Ticket> getTickets() { return tickets; }
-	public static void clearTickets() { tickets.clear(); }
-	
-	
-        
-
+	private static HashMap<Integer, Ticket> TICKETS = new HashMap<>();
+	public static void addTicket(int id, Ticket ticket) { if(!TICKETS.containsKey(id)) TICKETS.put(id, ticket); }
+	public static void removeTicket(int id) { if(TICKETS.containsKey(id)) TICKETS.remove(id); }
+	public static Ticket getTicket(int id) { return TICKETS.containsKey(id) ? TICKETS.get(id) : null; }
+	public static HashMap<Integer, Ticket> getTickets() { return TICKETS; }
+	public static void clearTickets() { TICKETS.clear(); }
 }
 

@@ -5,6 +5,7 @@ import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.Sign;
@@ -30,7 +31,7 @@ public class CommandSignWrite implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.sign.write")) {
+        if(src instanceof Player && src.hasPermission("actus.fun.sign.write")) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         
@@ -54,7 +55,7 @@ public class CommandSignWrite implements CommandExecutor {
 
             Optional<Plot> plot = plotManager.getPlot(location);
             if (plot.isPresent()){ 
-                if(!plot.get().getUuidOwner().equalsIgnoreCase(player.getIdentifier())){
+                if(!plot.get().getUuidOwner().equalsIgnoreCase(player.getIdentifier()) && aplayer.getLevel() != LEVEL_ADMIN()){
                     src.sendMessage(NO_PERMISSIONS());
                     return CommandResult.empty(); 
                 }

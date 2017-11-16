@@ -18,7 +18,7 @@ public class CommandRain implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.player.weather.rain")) { 
+        if(src instanceof Player && src.hasPermission("actus.fun.weather.rain")) { 
             Player player = (Player) src; 
             World world = player.getWorld();
             world.setWeather(Weathers.RAIN);

@@ -8,8 +8,6 @@ import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.utils.DeSerialize.getVector3d;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
-import static net.teraoctet.actus.utils.MessageManager.HOME_NOT_FOUND;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;

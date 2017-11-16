@@ -27,11 +27,11 @@ public class CommandChestRemove implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.chest")) {
+        if(src instanceof Player && src.hasPermission("actus.player.chest")) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
                    
-            Optional<Location> optlocation = Optional.empty();
+            Optional<Location<World>> optlocation = Optional.empty();
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
             while (playerBlockRay.hasNext()) 
             { 
@@ -48,7 +48,7 @@ public class CommandChestRemove implements CommandExecutor {
                 
                 Optional<TileEntity> chestBlock = optlocation.get().getTileEntity();
                 TileEntity tileChest = chestBlock.get();
-                String chestName = "";
+                String chestName;
                 
                 if(tileChest.get(Keys.DISPLAY_NAME).isPresent()){
                     chestName = tileChest.get(Keys.DISPLAY_NAME).get().toPlain();
@@ -68,8 +68,9 @@ public class CommandChestRemove implements CommandExecutor {
                             Optional<TileEntity> dblchestBlock = loc.getTileEntity();
                             TileEntity tiledblChest = dblchestBlock.get();
                             tiledblChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
-                            player.sendMessage(MESSAGE("&e" + target.get() + " &bn'est plus utilisateur de ce coffre !"));
                         }
+                        player.sendMessage(MESSAGE("&e" + target.get() + " &bn'est plus utilisateur de ce coffre !"));
+                        return CommandResult.success();
                         
                     }else{
                         tileChest.offer(Keys.DISPLAY_NAME, Text.EMPTY);
@@ -78,13 +79,15 @@ public class CommandChestRemove implements CommandExecutor {
                             Optional<TileEntity> dblchestBlock = loc.getTileEntity();
                             TileEntity tiledblChest = dblchestBlock.get();
                             tiledblChest.offer(Keys.DISPLAY_NAME, Text.EMPTY);
-                            player.sendMessage(MESSAGE("&bCe coffre est maintenant public !"));
                         }
+                        player.sendMessage(MESSAGE("&bCe coffre est maintenant public !"));
+                        return CommandResult.success();
                     }
                 }
+            }else{
+                player.sendMessage(MESSAGE("&bAucun coffre dans la vision !"));
+                return CommandResult.empty();
             }
-            
-            return CommandResult.success();
         } 
         
         else if (src instanceof ConsoleSource) {

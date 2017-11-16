@@ -30,7 +30,7 @@ public class CommandPlotListNameAllowed implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-        if(src instanceof Player && src.hasPermission("actus.plot")) {
+        if(src instanceof Player && src.hasPermission("actus.player.plot")) {
             Player player = (Player) src;
 
             APlayer aplayer = getAPlayer(player.getIdentifier());

@@ -1,7 +1,7 @@
 package net.teraoctet.actus.portal;
 
 import java.util.Optional;
-import static net.teraoctet.actus.utils.Data.portals;
+import static net.teraoctet.actus.utils.Data.PORTALS;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
@@ -12,14 +12,14 @@ public class PortalManager {
     public PortalManager(){}
     
     private Optional<Portal> portalContainsVector(Location loc){
-        for (Portal portal : portals) {
+        for (Portal portal : PORTALS) {
             if(foundPortal(loc,portal)){return Optional.of(portal);}
         }
         return Optional.empty();
     }
     
     public Boolean hasPortal(String name){
-        return portals.stream().anyMatch((portal) -> (portal.getName().contains(name)));
+        return PORTALS.stream().anyMatch((portal) -> (portal.getName().contains(name)));
     }
             
     private boolean foundPortal(Location location, Portal portal){
@@ -39,7 +39,7 @@ public class PortalManager {
     public Optional<Portal> getPortal(Location loc){return portalContainsVector(loc);}
         
     public Optional<Portal> getPortal(String portalName){
-        for(Portal portal : portals){
+        for(Portal portal : PORTALS){
             if(portal.getName().contains(portalName)){return Optional.of(portal);}
         }
         return Optional.empty();
@@ -47,7 +47,7 @@ public class PortalManager {
                     
     public Text listPortal(){
         String listportal = "";
-        for(Portal portal : portals){
+        for(Portal portal : PORTALS){
             listportal = listportal + System.getProperty("line.separator") + portal.getName() 
                     + " " + portal.getworld() 
                     + " 1: xyz" + String.valueOf(portal.getX1()) + " " + String.valueOf(portal.getY1()) + " " + String.valueOf(portal.getZ1())

@@ -3,7 +3,6 @@ package net.teraoctet.actus.commands.plot;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -20,9 +19,9 @@ public class CommandPlotLevel implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.plot.level")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.level")) { 
             Player player = (Player) src;
-            Optional<Plot> plot = Optional.empty();
+            Optional<Plot> plot;
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
@@ -37,7 +36,6 @@ public class CommandPlotLevel implements CommandExecutor {
             }
 
             player.sendMessage(MESSAGE("&ePlot : &7" + plot.get().getName() + " &elevel :&7" + plot.get().getLevel()));
-            player.sendMessage(USAGE("/plot setlevel [level]"));
         } 
         
         else if (src instanceof ConsoleSource) {

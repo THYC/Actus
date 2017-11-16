@@ -23,7 +23,7 @@ public class CommandChestInfo implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.chest")) {
+        if(src instanceof Player && src.hasPermission("actus.player.chest")) {
             Player player = (Player) src;
                     
             Optional<Location> optlocation = Optional.empty();

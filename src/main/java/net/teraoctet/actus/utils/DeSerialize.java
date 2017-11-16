@@ -2,13 +2,20 @@ package net.teraoctet.actus.utils;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.Optional;
-import java.util.UUID;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 public class DeSerialize {
-
+    
+    /**
+     * Retourne la location au format String worldName:x:y:z
+     * @param world
+     * @param x
+     * @param y
+     * @param z
+     * @return 
+     */
     public static String location(String world, double x, double y, double z) {
         return world + ":" + x + ":" + y + ":" + z;
     }

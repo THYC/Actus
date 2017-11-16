@@ -3,7 +3,6 @@ package net.teraoctet.actus.commands.plot;
 import com.flowpowered.math.vector.Vector3d;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.plot.Plot;
-import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.utils.Data;
@@ -17,6 +16,8 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import static java.lang.Math.abs;
 import java.util.Optional;
+import net.teraoctet.actus.player.PlayerManager;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.BUYING_COST_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -38,9 +39,10 @@ public class CommandPlotExpand implements CommandExecutor {
         }
         
         Player player = (Player) sender;
+        APlayer aplayer = PlayerManager.getAPlayer(player.getIdentifier());
         
         // on vérifie que le joueur à bien les droits d'utiliser cette commande
-        if(!player.hasPermission("actus.plot.create")) { 
+        if(!player.hasPermission("actus.player.plot.create")) { 
                 sender.sendMessage(NO_PERMISSIONS()); 
                 return CommandResult.empty(); 
         }
@@ -60,7 +62,7 @@ public class CommandPlotExpand implements CommandExecutor {
         }
         
         // on vérifie que le joueur est bien le propiétaire de la parcelle sinon on sort
-        if(!plot.get().getUuidOwner().contains(player.getIdentifier())){
+        if(!plot.get().getUuidOwner().contains(player.getIdentifier()) && aplayer.getLevel() != LEVEL_ADMIN()){
             player.sendMessage(MESSAGE("&bVous devez être le propriétaire de cette parcelle"));
             return CommandResult.empty();
         }
@@ -162,10 +164,7 @@ public class CommandPlotExpand implements CommandExecutor {
                 player.sendMessage(USAGE("/plot expand <value> : extension d'une parcelle"));
                 return CommandResult.empty();
             }
-            
-            String playerUUID = player.getUniqueId().toString();
-            APlayer aplayer = getAPlayer(playerUUID);
-            
+                        
             axe = ctx.<String> getOne("axe").get();         // on récupère l'axe vers laquelle on étend la parcelle 
             point = ctx.<Integer> getOne("point").get();    // on récupére le nouveau point de coordonnée 
             
@@ -176,50 +175,50 @@ public class CommandPlotExpand implements CommandExecutor {
                 case "Z1": 
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
                     loc = new Location<>(plot.get().getWorld().get(), new Vector3d(plot.get().getX1(), plot.get().getY1(), point));
-                    if(IsAllowed(loc,aplayer)){
+                    if(!IsAllowed(loc,aplayer)){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
                     nbBlock = expand * abs(plot.get().getX1() - plot.get().getX2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
-                    if (SuccessTransaction == true)plot.get().setZ1(point);
+                    if (SuccessTransaction)plot.get().setZ1(point);
                     break;
                 case "Z2":
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
                     loc = new Location<>(plot.get().getWorld().get(), new Vector3d(plot.get().getX2(), plot.get().getY2(), point));
-                    if(IsAllowed(loc,aplayer)){
+                    if(!IsAllowed(loc,aplayer)){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
                     nbBlock = expand * abs(plot.get().getX1() - plot.get().getX2()); 
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
-                    if (SuccessTransaction == true)plot.get().setZ2(point);
+                    if (SuccessTransaction)plot.get().setZ2(point);
                     break; 
                 case "X1":
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
                     loc = new Location<>(plot.get().getWorld().get(), new Vector3d(point, plot.get().getY1(), plot.get().getZ1()));
-                    if(IsAllowed(loc,aplayer)){
+                    if(!IsAllowed(loc,aplayer)){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
                     nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
-                    if (SuccessTransaction == true)plot.get().setX1(point);
+                    if (SuccessTransaction)plot.get().setX1(point);
                     break;     
                 case "X2":
                     // on calcul le nombre de bloc ajouté pour le calcul du prix
                     loc = new Location<>(plot.get().getWorld().get(), new Vector3d(point, plot.get().getY2(), plot.get().getZ2()));
-                    if(IsAllowed(loc,aplayer)){
+                    if(!IsAllowed(loc,aplayer)){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
                     nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
-                    if (SuccessTransaction == true)plot.get().setX2(point);
+                    if (SuccessTransaction)plot.get().setX2(point);
                     break;
             }
             
-            if (SuccessTransaction == true){
+            if (SuccessTransaction){
                 plot.get().update();
                 Data.commit();
                 player.sendMessage(PROTECT_LOADED_PLOT(player,plot.get().getName()));
@@ -246,7 +245,7 @@ public class CommandPlotExpand implements CommandExecutor {
     
     private boolean IsAllowed(Location<World> loc, APlayer aplayer){
         if(plotManager.plotNotAllow(loc, loc)){
-            if(aplayer.getLevel() != 10){
+            if(aplayer.getLevel() != LEVEL_ADMIN()){
                 return false;
             }
         }

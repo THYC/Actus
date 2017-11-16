@@ -1,10 +1,10 @@
 package net.teraoctet.actus.commands.plot;
 
 import static net.teraoctet.actus.Actus.CB_PLOT;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -29,7 +29,7 @@ public class CommandPlotCreate implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         
-        if(src instanceof Player && src.hasPermission("actus.plot.create")) { 
+        if(src instanceof Player && src.hasPermission("actus.player.plot.create")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             PlotManager plotManager = PlotManager.getSett(player);
@@ -55,7 +55,7 @@ public class CommandPlotCreate implements CommandExecutor {
                 Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
                 int level = 1;
                 if(plotManager.plotNotAllow(plotManager.getBorder1().get(), plotManager.getBorder2().get())){
-                    if(aplayer.getLevel() != 10 && plotManager.hasOwnerPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get())){
+                    if(aplayer.getLevel() != LEVEL_ADMIN() && !plotManager.hasOwnerPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }

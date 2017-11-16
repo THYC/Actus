@@ -3,13 +3,11 @@ package net.teraoctet.actus.plot;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.serverManager;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.commands.plot.CallBackPlot;
@@ -17,6 +15,7 @@ import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Config.DISPLAY_PLOT_MSG_FOR_OWNER;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -54,8 +53,6 @@ import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.block.BlockState;
-import static org.spongepowered.api.block.BlockTypes.AIR;
 import static org.spongepowered.api.block.BlockTypes.BEDROCK;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
 import static org.spongepowered.api.block.BlockTypes.FIRE;
@@ -68,13 +65,10 @@ import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Monster;
 import org.spongepowered.api.entity.projectile.arrow.Arrow;
 import static org.spongepowered.api.item.ItemTypes.ARROW;
-import org.spongepowered.api.event.block.NotifyNeighborBlockEvent;
 import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.filter.cause.Root;
 import static org.spongepowered.api.item.ItemTypes.WOODEN_AXE;
-import org.spongepowered.api.util.Direction;
-import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.LocatableBlock;
 
 public class PlotListener {
@@ -97,7 +91,7 @@ public class PlotListener {
         // Event click gauche -- saisie angle 1 plot
         if (event instanceof InteractBlockEvent.Primary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL) || itemInHand.get().getItem().equals(WOODEN_AXE)){
+                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL) /*|| itemInHand.get().getItem().equals(WOODEN_AXE)*/){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
@@ -132,7 +126,7 @@ public class PlotListener {
         // Event click droit -- saisie angle 2 plot
 	if (event instanceof InteractBlockEvent.Secondary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem() == WOODEN_SHOVEL  || itemInHand.get().getItem() == WOODEN_AXE){
+                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL)  /*|| itemInHand.get().getItem() == WOODEN_AXE*/){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
@@ -141,6 +135,7 @@ public class PlotListener {
                                 if(plotPlayer.getBorder2().get().equals(loc)){
                                     event.setCancelled(true);
                                     return;
+                                    
                                 }       
                             }
                             plotPlayer.setBorder(2, loc);
@@ -249,13 +244,65 @@ public class PlotListener {
                     }
                 }
             }
-            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && plot.get().getNoInteract() == 1 && aplayer.getLevel() != 10) {
+            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && plot.get().getNoInteract() && aplayer.getLevel() != LEVEL_ADMIN()) {
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
             }else{
                 if(plotManager.hasTag(loc, plot.get())){
                     plotManager.remTag(plot.get());
                 }
+            }
+        }
+    }
+    
+    @Listener
+    public void onInteractWithWoodenAxe(InteractBlockEvent  event, @First Player player){
+        //APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+        BlockSnapshot b = event.getTargetBlock();
+        if(!b.getLocation().isPresent()){return;}
+        Location loc = b.getLocation().get();
+        Optional<ItemStack> itemInHand = player.getItemInHand(HandTypes.MAIN_HAND);
+        Optional<Plot> plot = plotManager.getPlot(loc);
+        PlotManager plotPlayer = PlotManager.getSett(player);
+        
+        // Event click gauche -- saisie angle 1 plot
+        if (event instanceof InteractBlockEvent.Primary){
+            if(itemInHand.isPresent()){
+                if(itemInHand.get().getItem().equals(WOODEN_AXE)){
+                    if (plot.isPresent()) {
+                        player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
+                        if(player.hasPermission("actus.admin.plot")){
+                                                        plotPlayer.setBorder(1, loc);
+                            player.sendMessage(MESSAGE("&aNiveau : &e" + plot.get().getLevel()));
+                            player.sendMessage(MESSAGE("&bAngle1 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
+                        }
+                    } else {
+                        plotPlayer.setBorder(1, loc);
+                        player.sendMessage(MESSAGE("&bAngle1 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
+                    }
+                    event.setCancelled(true);
+                    return;
+                } 
+            }
+        }
+        
+        // Event click droit -- saisie angle 2 plot
+	if (event instanceof InteractBlockEvent.Secondary){
+            if(itemInHand.isPresent()){
+                if(itemInHand.get().getItem().equals(WOODEN_AXE)){
+                    if (plot.isPresent()) {
+                        player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
+                        if(player.hasPermission("actus.player.plot")){
+                            plotPlayer.setBorder(2, loc);
+                            player.sendMessage(MESSAGE("&aNiveau : &e" + plot.get().getLevel()));
+                            player.sendMessage(MESSAGE("&bAngle2 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
+                        }
+                    } else {
+                        plotPlayer.setBorder(2, loc);
+                        player.sendMessage(MESSAGE("&bAngle2 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
+                    }
+                    event.setCancelled(true);
+                } 
             }
         }
     }
@@ -269,7 +316,7 @@ public class PlotListener {
         Optional<Plot> plot = plotManager.getPlot(to.getLocation());
         Optional<Plot> jail = plotManager.getPlot(from.getLocation(),true);
         Optional<Plot> fplot = plotManager.getPlot(from.getLocation());
-
+        
         if(!fplot.isPresent()) {
             if(plot.isPresent()){
                 if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
@@ -287,22 +334,32 @@ public class PlotListener {
         if(plot.isPresent()){
             if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
                 if (player.get(Keys.CAN_FLY).isPresent()) { 
-                    if(player.get(Keys.CAN_FLY).get() == true && plot.get().getNoFly() == 1) {
+                    if(player.get(Keys.CAN_FLY).get() == true && plot.get().getNoFly()) {
                         player.offer(Keys.IS_FLYING, false); 
                         player.offer(Keys.CAN_FLY, false); 
                         player.sendMessage(PLOT_NO_FLY());
-                        event.setCancelled(true);
                     }
                 }
 
-                if(!plotManager.getPlot(from.getLocation()).isPresent()) {
+                if(!fplot.isPresent()) {
                     player.sendMessage(MESSAGE(plot.get().getMessage(),player));
-                    if(plot.get().getNoEnter() == 1 && !player.hasPermission("actus.plot.enter")) {
+                    if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
                         player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
                         player.sendMessage(PLOT_NO_ENTER());
                         event.setCancelled(true);
                     }
                 }
+                
+                if(fplot.isPresent()) {
+                    if(!fplot.get().equals(plot.get())){
+                        player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                        if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
+                            player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
+                            player.sendMessage(PLOT_NO_ENTER());
+                            event.setCancelled(true);
+                        }
+                    }
+                }                
             }
         }
 
@@ -320,7 +377,7 @@ public class PlotListener {
         Location loc = player.getLocation();
         Optional<Plot> plot = plotManager.getPlot(loc);
         if (plot.isPresent()){
-            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10 && plot.get().getNoCommand() == 1){
+            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN() && plot.get().getNoCommand()){
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
             }
@@ -337,8 +394,8 @@ public class PlotListener {
                        
         Optional<Plot> plot = plotManager.getPlot(loc);
         if (plot.isPresent()){
-            if(plot.get().getNoBreak() == 1 && !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && 
-                    aplayer.getLevel() != 10){
+            if(plot.get().getNoBreak() && !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && 
+                    aplayer.getLevel() != LEVEL_ADMIN()){
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
             }else{
@@ -368,7 +425,7 @@ public class PlotListener {
         
         Optional<Plot> plot = plotManager.getPlot(loc);
         if (plot.isPresent()){
-            if(plot.get().getNoBuild() == 1 && !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
+            if(plot.get().getNoBuild() && !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN()){
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
             }
@@ -391,51 +448,15 @@ public class PlotListener {
     }
     
     @Listener
-    public void onLiquidFlow(ChangeBlockEvent.Place event, @Root BlockSnapshot block) {
-        Optional<MatterProperty> matter = block.getState().getProperty(MatterProperty.class);
-        if (matter.isPresent() && matter.get().getValue() == Matter.LIQUID) {
-            Optional<Location<World>> optLoc = block.getLocation();
-            if(!optLoc.isPresent())return;
-            Location loc = optLoc.get();
-            Optional<Plot> plot = plotManager.getPlot(loc);
-            if (plot.isPresent()) {                
-                Optional<Player> player = event.getCause().first(Player.class);
-                if(player.isPresent()){
-                    APlayer aplayer = getAPlayer(player.get().getIdentifier());
-                    if(!plot.get().getUuidAllowed().contains(player.get().getUniqueId().toString()) && aplayer.getLevel() != 10){
-                        event.setCancelled(true);
-                    }
-                }
+    public void onLiquidFlow(ChangeBlockEvent.Pre event,@Root LocatableBlock block) {
+        Optional<Plot> plot = plotManager.getPlot(block.getLocation());
+        if (plot.isPresent()) {                 
+            Optional<MatterProperty> matter = block.getBlockState().getProperty(MatterProperty.class);
+            if (matter.isPresent() && matter.get().getValue() == Matter.LIQUID) {
+                event.setCancelled(true);
             }
         }
     }
-    
-    /*@Listener	
-    public void onFireSpread(NotifyNeighborBlockEvent  event, @First BlockSnapshot source){
-        BlockState bstate = source.getState();
-        if ((bstate.getType().equals(FIRE) || bstate.getType().getName().contains("lava"))){
-            Map<Direction, BlockState> dirs = event.getNeighbors();
-            for (Direction dir:dirs.keySet()){
-                Location<World> loc = source.getLocation().get().add(dir.asOffset());
-                Optional<Plot> plot = plotManager.getPlot(loc);
-                if(plot.isPresent()){
-                    if(plot.get().getNoFire() == 1){
-                        Optional<Player> player = event.getCause().last(Player.class);
-                        if(player.isPresent()){
-                            APlayer aplayer = getAPlayer(player.get().getIdentifier());
-                            if(plot.get().getUuidAllowed().contains(player.get().getUniqueId().toString()) || aplayer.getLevel() == 10){
-                                event.getNeighbors().clear();
-                                return;
-                            }
-                        }
-                        event.getNeighbors().clear();
-                        source.getLocation().get().setBlockType(AIR); 
-                        event.setCancelled(true);
-                    }
-                }
-            }
-        }
-    }*/
             
     @Listener
     public void onExplosion(ExplosionEvent.Pre event) {
@@ -443,7 +464,7 @@ public class PlotListener {
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
         Optional<Plot> plot = plotManager.getPlot(loc);
         if (plot.isPresent()){
-            if (plot.get().getNoTNT() == 1){ event.setCancelled(true);}
+            if (plot.get().getNoTNT()){ event.setCancelled(true);}
         }
     }
     
@@ -462,27 +483,27 @@ public class PlotListener {
                 //Player player = (Player) event.getTargetEntity();
             
                 if (damage.getType() == DamageTypes.FIRE || damage.getType() == DamageTypes.MAGMA) {
-                    if(plot.get().getNoFire() == 1)event.setCancelled(true);
+                    if(plot.get().getNoPVPplayer())event.setCancelled(true);
 		} else if (damage.getType() == DamageTypes.EXPLOSIVE) {
                     if (ent.getType() == EntityTypes.DRAGON_FIREBALL || ent.getType() == EntityTypes.ENDER_CRYSTAL
                     || ent.getType() == EntityTypes.SMALL_FIREBALL || ent.getType() == EntityTypes.FIREBALL) {
-                        if(plot.get().getNoTNT() == 1)event.setCancelled(true);
+                        if(plot.get().getNoProjectile())event.setCancelled(true);
                     } else if (ent.getType() == EntityTypes.TNT_MINECART || ent.getType() == EntityTypes.PRIMED_TNT) {
-			if(plot.get().getNoTNT() == 1)event.setCancelled(true);
+			if(plot.get().getNoTNT())event.setCancelled(true);
                     }	
 		} else if (damage.getType() == DamageTypes.PROJECTILE || damage.getType() == DamageTypes.ATTACK) {
                     if (ent.getType() == EntityTypes.SPECTRAL_ARROW || ent.getType() == EntityTypes.TIPPED_ARROW) {
 			Arrow arrow = (Arrow) ent;
 			if (arrow.getShooter() instanceof Monster) {
-                            if(plot.get().getNoMob() == 1)event.setCancelled(true);
+                            if(plot.get().getNoPVPmonster())event.setCancelled(true);
 			}
                     }	
                 }
   
             } else if(event.getTargetEntity() instanceof Monster) {
-		if(plot.get().getNoMob() == 1)event.setCancelled(true);
+		if(plot.get().getNoPVPmonster())event.setCancelled(true);
             } else if(event.getTargetEntity() instanceof Animal) {
-		if(plot.get().getNoMob() == 1)event.setCancelled(true);
+		if(plot.get().getNoMob())event.setCancelled(true);
             } 
 	}
     }
@@ -493,16 +514,11 @@ public class PlotListener {
             Optional<Plot> plot = plotManager.getPlot(event.getTargetEntity().getLocation());
             if (plot.isPresent()) {
                 Player player = (Player) event.getTargetEntity();
-		if(plot.get().getNoMob() == 1)event.setCancelled(true);
+		if(plot.get().getNoPVPplayer())event.setCancelled(true);
             }
 	}
     }
       
-    /**
-     *
-     * @param event
-     * @param block
-     */
     @Listener
     public void onBurningBlock(ChangeBlockEvent.Pre event, @Root LocatableBlock block) {
         if(block.getBlockState().getType().equals(FIRE) || event.getLocations().get(0).getBlock().equals(FIRE)){

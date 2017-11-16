@@ -1,5 +1,6 @@
 package net.teraoctet.actus.world;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
@@ -59,13 +60,21 @@ public class WorldListener {
     
     @Listener
     public void onEntitySpawn(SpawnEntityEvent event) {
-	List<Entity> entities = event.getEntities();	
+	List<Entity> entities = event.getEntities();
+        
         for (Entity entity : entities)
         {
             AWorld world = WorldManager.getWorld(entity.getWorld().getName());
+            Optional<Plot> plot = plotManager.getPlot(entity.getLocation());
+                    
             if(world == null) return;
             if(!world.getAnimal() && entity instanceof Animal || entity.getType().equals(EntityTypes.BAT)) { event.setCancelled(true);return;}
             if(!world.getMonster() && entity instanceof Monster) {event.setCancelled(true);return;}
+            
+            if(plot.isPresent()){
+                if(plot.get().getNoMob() && entity instanceof Monster) {event.setCancelled(true);return;}
+            }
+            
     	}	
     }  
                 

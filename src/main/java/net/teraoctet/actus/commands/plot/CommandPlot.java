@@ -13,6 +13,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.text.action.TextActions;
 
 public class CommandPlot implements CommandExecutor {
            
@@ -24,13 +25,13 @@ public class CommandPlot implements CommandExecutor {
 
             builder.title(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&6Plot")).toText())
                 .contents(Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot create &b<name> &b[strict] : &7cr\351ation d'une nouvelle parcelle")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot list &b[player] : &7liste des parcelles poss\351d\351es par un joueur")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot player : &7liste les joueurs habitants la parcelle")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot remove &b[NomParcelle] : &7supprime une parcelle")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot flaglist &b<NomParcelle> : &7liste les diff\351rents flags")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot flag &b<nameFlag]> <0|1> &b[NomParcelle] : &7modifie un flag d'une parcelle")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot addplayer &b<player> &b[NomParcelle] : &7ajoute un habitant \340 la parcelle")).toText(),
-                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot removeplayer &b<player> &b[NomParcelle] : &7retire un habitant de la parcelle")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot list &b[player] : &7liste des parcelles poss\351d\351es par un joueur")).onClick(TextActions.runCommand("/plot list")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot player : &7liste les joueurs habitants la parcelle")).onClick(TextActions.runCommand("/plot player")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot remove &b[NomParcelle] : &7supprime une parcelle")).onClick(TextActions.runCommand("/plot remove")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot flaglist &b<NomParcelle> : &7liste les diff\351rents flags")).onClick(TextActions.runCommand("/plot flaglist")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot flag &b[nameFlag] [false|true] &b[NomParcelle] : &7modifie un flag d'une parcelle")).onClick(TextActions.runCommand("/plot flag")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot addplayer &b<player> &b[NomParcelle] : &7ajoute un habitant \340 la parcelle")).onClick(TextActions.suggestCommand("/plot addplayer")).toText(),
+                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot removeplayer &b<player> &b[NomParcelle] : &7retire un habitant de la parcelle")).onClick(TextActions.suggestCommand("/plot removeplayer")).toText(),
                     Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot ownerset &b<player> &b[NomParcelle] : &7change le propi\351taire de la parcelle")).toText(),
                     Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot sale &b<price> &b[NomParcelle] : &7place un panneau pour vendre ta parcelle")).toText(),
                     Text.builder().append(TextSerializers.formattingCode('&').deserialize("&e/plot msg &5[Message] : &7Lire / modifier le message d'accueil")).toText(),
