@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.commands.plot.CallBackPlot;
 import net.teraoctet.actus.utils.Data;
@@ -203,7 +203,7 @@ public class PlotListener {
                                     vendeur.sendMessage(MESSAGE("&6/bank &7pour consulter votre compte"));  
                                     Book book = new Book();
                                     book.setAuthor(MESSAGE(player.getName()));
-                                    book.setTitle(MESSAGE(vendeur.getName() + "_" + player.getName() + "_" +  serverManager.dateShortToString()));
+                                    book.setTitle(MESSAGE(vendeur.getName() + "_" + player.getName() + "_" +  sm.dateShortToString()));
                                     List<Text> textList = new ArrayList();
                                     textList.add(Text.builder().append(MESSAGE("Votre parcelle a \351t\351 vendu a " + player.getName() + ",\n" + 
                                             String.valueOf(cout) + " \351meraudes ont \351t\351 ajout\351 a votre compte")).build());
@@ -443,7 +443,7 @@ public class PlotListener {
                 player.sendMessage(ALREADY_OWNED_PLOT());
                 return;
             }
-            CB.callCreate(player.getName() + serverManager.dateShortToString(),false,0,level).accept(player);
+            CB.callCreate(player.getName() + sm.dateShortToString(),false,0,level).accept(player);
         }
     }
     

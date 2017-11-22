@@ -9,7 +9,7 @@ public class Troc {
     
     private @Setting String loc;
     private @Setting int slot;
-    private @Setting String itemName;
+    private @Setting String itemName = "";
     private @Setting EnumTransactType transactType;
     private @Setting int qteMax;
     private @Setting double price;
@@ -20,11 +20,10 @@ public class Troc {
     
     public Troc(){}
     
-    public Troc(String itemName,EnumTransactType transactType, int qteMax, double price, 
+    public Troc(EnumTransactType transactType, int qteMax, double price, 
             ItemStackSnapshot item, String playerName, String playerUUID, int id_guild){
         this.loc = "";
         this.slot = 0;
-        this.itemName = itemName;
         this.transactType = transactType;
         this.qteMax = qteMax;
         this.price = price;
@@ -35,11 +34,10 @@ public class Troc {
         
     }
     
-    public Troc(String loc, int slot, String itemName,EnumTransactType transactType, int qteMax, double price, 
+    public Troc(String loc, int slot, EnumTransactType transactType, int qteMax, double price, 
             ItemStackSnapshot item, String playerName, String playerUUID, int id_guild){
         this.loc = loc;
         this.slot = slot;
-        this.itemName = itemName;
         this.transactType = transactType;
         this.qteMax = qteMax;
         this.price = price;

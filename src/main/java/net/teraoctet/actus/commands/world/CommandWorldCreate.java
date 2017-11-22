@@ -90,11 +90,11 @@ public class CommandWorldCreate implements CommandExecutor {
                             true,
                             true,
                             true,
-                            world.get().getSpawnLocation(),
-                            0,
-                            0,
-                            2,
-                            8000);
+                            world.get().getSpawnLocation());
+                            //0,
+                            //0,
+                            //2,
+                            //8000);
                     addWorld(name, w);
                     WorldManager.save(w);
                     src.sendMessage(WORLD_CREATED(player,name));

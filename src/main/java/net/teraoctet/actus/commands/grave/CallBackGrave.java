@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configGrave;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.grave.Grave;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandSource;
@@ -71,7 +71,7 @@ public class CallBackGrave {
             Optional<Grave> grave = configGrave.getGrave(locGrave);
             if(grave.isPresent()){
                 src.sendMessage(MESSAGE("&a&b++++- Ici git " + grave.get().getName() + "  -++++"));
-                src.sendMessage(MESSAGE("&eDecede le :" + serverManager.longToDateString(grave.get().getGraveTime())));
+                src.sendMessage(MESSAGE("&eDecede le :" + sm.longToDateString(grave.get().getGraveTime())));
                 src.sendMessage(MESSAGE("&eCause :").concat(grave.get().getDeadMessage()));
             }
             

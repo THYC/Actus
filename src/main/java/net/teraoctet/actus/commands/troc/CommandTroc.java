@@ -1,8 +1,8 @@
 package net.teraoctet.actus.commands.troc;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
-import static net.teraoctet.actus.Actus.trocManager;
+import static net.teraoctet.actus.Actus.sm;
+import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.utils.DeSerialize;
@@ -46,14 +46,14 @@ public class CommandTroc implements CommandExecutor {
             } 
 
             if (loc1.isPresent()){
-                if(serverManager.locDblChest(loc1.get()).isPresent()){
-                    loc2 = serverManager.locDblChest(loc1.get());
+                if(sm.locDblChest(loc1.get()).isPresent()){
+                    loc2 = sm.locDblChest(loc1.get());
                 }
                 
-                if(trocManager.hasTroc(loc1.get())){
+                if(tm.hasTroc(loc1.get())){
                     locTroc = DeSerialize.location(loc1.get());
                 }else{
-                    if(trocManager.hasTroc(loc2.get())){
+                    if(tm.hasTroc(loc2.get())){
                         locTroc = DeSerialize.location(loc2.get());
                     }else{
                         Optional<TileEntity> chestBlock = loc1.get().getTileEntity();

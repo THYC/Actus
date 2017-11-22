@@ -30,8 +30,8 @@ import net.teraoctet.actus.bookmessage.CallBackBook;
 import net.teraoctet.actus.bookmessage.ConfigBook;
 import net.teraoctet.actus.commands.grave.CallBackGrave;
 import net.teraoctet.actus.commands.plot.CallBackPlot;
-import net.teraoctet.actus.grave.ConfigGrave;
-import net.teraoctet.actus.grave.ConfigGraveyard;
+import net.teraoctet.actus.grave.GraveManager;
+import net.teraoctet.actus.grave.GraveyardManager;
 import net.teraoctet.actus.inventory.ConfigInventory;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.grave.GraveListener;
@@ -69,6 +69,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.session.SessionManager;
+import net.teraoctet.actus.commands.troc.CallBackTroc;
 import net.teraoctet.actus.troc.ItemTransact;
 import net.teraoctet.actus.troc.TrocManager;
 import org.spongepowered.api.world.World;
@@ -89,7 +90,7 @@ public class Actus {
      
     @Inject private Logger logger;
     
-    public static ServerManager serverManager = new ServerManager();
+    public static ServerManager sm = new ServerManager();
     public static PlotManager plotManager = new PlotManager();
     public static PortalManager portalManager = new PortalManager();
     public static GuildManager guildManager = new GuildManager();
@@ -98,7 +99,7 @@ public class Actus {
     public static WarpManager warpManager = new WarpManager();
     public static TraceManager traceManager = new TraceManager();
     public static WorldManager worldManager = new WorldManager();
-    public static TrocManager trocManager = new TrocManager(); 
+    public static TrocManager tm = new TrocManager(); 
     public Logger getLogger(){return logger;}  
     public static Game game;
     public static PluginContainer plugin;
@@ -111,11 +112,12 @@ public class Actus {
     public static Config config = new Config();
     public static ConfigBook configBook = new ConfigBook();
     public static ConfigInventory configInv = new ConfigInventory();
-    public static ConfigGrave configGrave = new ConfigGrave();
-    public static ConfigGraveyard configGraveyard = new ConfigGraveyard();
+    public static GraveManager configGrave = new GraveManager();
+    public static GraveyardManager configGraveyard = new GraveyardManager();
     public static final CallBackBook CB_BOOK = new CallBackBook();
     public static final CallBackPlot CB_PLOT = new CallBackPlot();
     public static final CallBackGrave CB_GRAVE = new CallBackGrave();
+    public static final CallBackTroc CB_TROC = new CallBackTroc();
     public static EconomyService economyService;
     private static WorldEdit WEdit;
     
@@ -126,7 +128,7 @@ public class Actus {
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 
-        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &edevelopped by THYC and Votop ... Init..."));
+        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &9developped by THYC and Votop ... Init..."));
         plugin = Sponge.getPluginManager().getPlugin("actus").get();  
         
         //Sponge.getRegistry().register(WorldGeneratorModifier.class, new OceanWorldGeneratorModifier());
@@ -199,16 +201,17 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandGrave, "grave", "tombe");
         getGame().getCommandManager().register(this, new CommandManager().CommandGraveyard, "graveyard", "crypte", "caveau", "cav", "cim");
         getGame().getCommandManager().register(this, new CommandManager().CommandTroc, "troc");
+        getGame().getCommandManager().register(this, new CommandManager().CommandBankVerse, "bankverse", "verse");
     }
         
     @Listener
     public void onDisable(GameStoppingServerEvent event) {
         game.getServer().getOnlinePlayers().stream().map((player) -> {
             APlayer aplayer = getAPlayer(player.getIdentifier());
-            long timeConnect = serverManager.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
+            long timeConnect = sm.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
             long onlineTime = (long)aplayer.getOnlinetime() + timeConnect;
             PlayerManager.removeFirstTime(player.getIdentifier());
-            aplayer.setLastonline(serverManager.dateToLong());
+            aplayer.setLastonline(sm.dateToLong());
             aplayer.setOnlinetime(onlineTime);
             return aplayer;
         }).forEach((aplayer) -> {
@@ -219,7 +222,7 @@ public class Actus {
 
     @Listener
     public void onServerLoadComplete(GameLoadCompleteEvent event){
-        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &echarging is complete"));
+        MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &9charging is complete"));
         
     }  
     
@@ -255,8 +258,8 @@ public class Actus {
         Data.load();
         MessageManager.init();
         ItemShopManager.init();
-        ConfigGrave.init();
-        ConfigGraveyard.init();
+        GraveManager.init();
+        GraveyardManager.init();
         TrocManager.init();
         return true;
     }

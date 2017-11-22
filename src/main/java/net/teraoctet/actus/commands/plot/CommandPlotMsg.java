@@ -2,7 +2,7 @@ package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Data;
@@ -54,7 +54,7 @@ public class CommandPlotMsg implements CommandExecutor {
                         smsg = smsg + arg + " ";
                     }
                     Text msg = MESSAGE(smsg);
-                    plot.get().setMessage(serverManager.quoteToSQL(smsg));
+                    plot.get().setMessage(sm.quoteToSQL(smsg));
                     plot.get().update();
                     Data.commit();
                     player.sendMessage(MESSAGE("&cVotre nouveau message :"));

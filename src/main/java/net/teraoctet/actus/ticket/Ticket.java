@@ -1,7 +1,7 @@
 package net.teraoctet.actus.ticket;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Data;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.entity.living.player.Player;
@@ -47,7 +47,7 @@ public class Ticket {
     }
     
     public Ticket(Player player, String message) {
-        this.date = Double.valueOf(serverManager.dateToLong());
+        this.date = Double.valueOf(sm.dateToLong());
         this.uuid = player.getIdentifier();
         this.message = message;
         this.world = player.getWorld().getName();
@@ -60,7 +60,7 @@ public class Ticket {
     }
     
     public Ticket(Player player, String message, String priority) {
-        this.date = Double.valueOf(serverManager.dateToLong());
+        this.date = Double.valueOf(sm.dateToLong());
         this.uuid = player.getIdentifier();
         this.message = message;
         this.world = player.getWorld().getName();

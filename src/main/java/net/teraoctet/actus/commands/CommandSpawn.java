@@ -3,7 +3,7 @@ package net.teraoctet.actus.commands;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.game;
 import static net.teraoctet.actus.Actus.plugin;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Config;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -24,7 +24,7 @@ public class CommandSpawn implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.player.spawn")) {
             Player player = (Player) src;
             if(Config.UNIQUE_SPAWN_WORLD() == 0){
-                serverManager.teleport(player,player.getWorld().getName(),
+                sm.teleport(player,player.getWorld().getName(),
                         player.getWorld().getSpawnLocation().getBlockX(),
                         player.getWorld().getSpawnLocation().getBlockY(),
                         player.getWorld().getSpawnLocation().getBlockZ());
@@ -33,7 +33,7 @@ public class CommandSpawn implements CommandExecutor {
                 String worldName = Config.SPAWN_WORLD();
                 Optional<World> world = game.getServer().getWorld(worldName);
                 if(world.isPresent()){
-                    serverManager.teleport(player,world.get().getName(),
+                    sm.teleport(player,world.get().getName(),
                         world.get().getSpawnLocation().getBlockX(),
                         world.get().getSpawnLocation().getBlockY(),
                         world.get().getSpawnLocation().getBlockZ());

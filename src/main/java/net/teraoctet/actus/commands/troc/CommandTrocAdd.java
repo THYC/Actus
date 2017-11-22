@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static net.teraoctet.actus.Actus.serverManager;
-import static net.teraoctet.actus.Actus.trocManager;
+import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.troc.EnumTransactType;
 import net.teraoctet.actus.troc.Troc;
-import net.teraoctet.actus.utils.DeSerialize;
+import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.TileEntity;
@@ -40,16 +39,14 @@ public class CommandTrocAdd implements CommandExecutor {
     @SuppressWarnings("null")
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.admin.troc")) {
+        if(src instanceof Player && src.hasPermission("actus.player.troc.add")) {
             Player player = (Player) src;
-            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-                    
+            APlayer aplayer = getAPlayer(player.getUniqueId().toString());    
             Optional<Location<World>> loc1 = Optional.empty();
-            Optional<Location<World>> loc2 = Optional.empty();
-            String locTroc = "";
-
-            //@SuppressWarnings("UnusedAssignment")
-            Optional<Chest> chest;// = Optional.empty();
+            String locTroc;
+            String ownerTroc;
+            int idGuild;
+            Optional<Chest> chest;
             Optional<TileEntity> chestBlock;
             
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
@@ -62,13 +59,14 @@ public class CommandTrocAdd implements CommandExecutor {
             } 
 
             if (loc1.isPresent()){
-                //on verifie qu'il est bien identifié comme étant un troc
                 chestBlock = loc1.get().getTileEntity();
                 if(chestBlock.isPresent()){
                     if(chestBlock.get().get(Keys.DISPLAY_NAME).isPresent()){
-                        //si c'est bien un chest troc on prend son strinLocation
                         if(chestBlock.get().get(Keys.DISPLAY_NAME).get().toPlain().contains("TROC")){
-                            locTroc = DeSerialize.location(loc1.get());
+                            String[] parts = chestBlock.get().get(Keys.DISPLAY_NAME).get().toPlain().split(" ");
+                            locTroc = parts[1];
+                            ownerTroc = parts[2];
+                            idGuild = Integer.valueOf(parts[3]);
                         }else{
                             player.sendMessage(MESSAGE("&eCe coffre n'est pas un coffre pour le Troc !"));
                             return CommandResult.empty();
@@ -81,32 +79,23 @@ public class CommandTrocAdd implements CommandExecutor {
                     player.sendMessage(MESSAGE("&eCe coffre n'est pas un coffre pour le Troc !"));
                     return CommandResult.empty();
                 }
-                
-                //on verifie si il y a un double chest
-                if(serverManager.locDblChest(loc1.get()).isPresent()){
-                    loc2 = serverManager.locDblChest(loc1.get());
-                }
-                //on verifie si le chest contient des itemTrocs
-                if(trocManager.hasTroc(loc1.get())){
-                    //si oui on recupere son stringLocation
-                    locTroc = DeSerialize.location(loc1.get());
-                }else{
-                    //sinon on regarde si le 2eme chest contient des itemsTrocs
-                    if(loc2.isPresent()){
-                        if(trocManager.hasTroc(loc2.get())){
-                            //si oui on recupere son stringLocation
-                            locTroc = DeSerialize.location(loc2.get());
-                        }
-                    }
-                }
-                                    
+                                                    
                 //ici reste du code
+                if(!ownerTroc.equalsIgnoreCase(player.getName()) && !ownerTroc.equalsIgnoreCase("LIBRE") && idGuild == 0){
+                    player.sendMessage(MESSAGE("&eOperation impossible, ce troc appartient a : " + getAPlayer(ownerTroc)));
+                    return CommandResult.empty();
+                }
+                if(idGuild != 0 && aplayer.getID_guild() != idGuild){
+                    player.sendMessage(MESSAGE("&eOperation impossible, ce troc appartient a la guid : " + Data.getGuild(idGuild)));
+                    return CommandResult.empty();
+                }
+                
                 chest = Optional.of((Chest)chestBlock.get());
                                         
-                Optional<String> name = ctx.<String> getOne("name");
+                /*Optional<String> name = ctx.<String> getOne("name");
                 if(!name.isPresent()){
                     name = Optional.of("-");
-                }
+                }*/
                     
                 Optional<EnumTransactType> type = ctx.<EnumTransactType> getOne("type");
                 Optional<Double> price = ctx.<Double> getOne("price");
@@ -122,7 +111,7 @@ public class CommandTrocAdd implements CommandExecutor {
                 Troc troc;
                 
                 int index = 0;
-                Optional<Inventory> chestTroc;// = Optional.empty();
+                Optional<Inventory> chestTroc;
                 if(chest.isPresent()){
                     if(chest.get().getDoubleChestInventory().isPresent()){
                         chestTroc = chest.get().getDoubleChestInventory();
@@ -136,17 +125,17 @@ public class CommandTrocAdd implements CommandExecutor {
                     for (Inventory inv : chestTroc.get().slots()) {
                         player.sendMessage(MESSAGE("-" + inv.peek().get().getType().getName()));
                         if (inv.peek().get().getType().equals(BARRIER)){
-                            Optional<ItemStack> is = trocManager.setItemTroc(player, name.get(), type.get(),1 , price.get(), locTroc);
+                            Optional<ItemStack> is = tm.setItemTroc(player, type.get(),qte.get() , price.get(), locTroc);
                             if(!is.isPresent()){
                                 player.sendMessage(MESSAGE("&4Creation de l'itemTroc impossible !"));
                                 return CommandResult.empty();
                             }
 
                             inv.set(is.get());
-                            troc = new Troc(locTroc,index,name.get(),type.get(),qte.get() , price.get(),player.getItemInHand(HandTypes.MAIN_HAND).get().createSnapshot(),
+                            troc = new Troc(locTroc, index, type.get(), qte.get(), price.get(), player.getItemInHand(HandTypes.MAIN_HAND).get().createSnapshot(),
                                         player.getName(),player.getIdentifier(),aplayer.getID_guild());
                             try {
-                                trocManager.save(troc);
+                                tm.save(troc);
                             } catch (IOException | ObjectMappingException ex) {
                                 Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
                             }

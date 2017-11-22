@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Home;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -40,7 +40,7 @@ public class CommandHome implements CommandExecutor {
                 if (!name.equalsIgnoreCase("default")){
                     msg = HOME_TP_SUCCESS(player,name);
                 }
-                serverManager.teleport(player, home.getWorld(), home.getX(), home.getY(), home.getZ(),msg);
+                sm.teleport(player, home.getWorld(), home.getX(), home.getY(), home.getZ(),msg);
                 src.sendMessage(MESSAGE("&eVous serez TP dans environ " + Config.COOLDOWN_TO_TP()));
 
                 return CommandResult.success();

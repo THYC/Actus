@@ -14,7 +14,7 @@ import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.mapCountDown;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.inventory.AInventory;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
@@ -108,16 +108,16 @@ public class PlayerListener {
         event.setMessageCancelled(true);
     	
         if(aplayer == null) {
-            aplayer = new APlayer(uuid, 0, name, "", 0, "", 20, "", "", 0, serverManager.dateToLong(),"N",0,0,0);
+            aplayer = new APlayer(uuid, 0, name, "", 0, "", 20, "", "", 0, sm.dateToLong(),"N",0,0,0);
             aplayer.insert();
             commit();
             player.sendMessage(FIRSTJOIN_MESSAGE(player)); 
         } else {
             addAPlayer(aplayer.getUUID(), aplayer);
             player.sendMessage(JOIN_MESSAGE(player));
-            player.sendMessage(LAST_CONNECT(serverManager.longToDateString(aplayer.getLastonline())));
+            player.sendMessage(LAST_CONNECT(sm.longToDateString(aplayer.getLastonline())));
         }
-	PlayerManager.addFirstTime(player.getIdentifier(), serverManager.dateToLong());
+	PlayerManager.addFirstTime(player.getIdentifier(), sm.dateToLong());
         APlayer player_uuid = getAPlayer(uuid);
         
         if(player_uuid != null && getUUID(name) == null) {
@@ -135,10 +135,10 @@ public class PlayerListener {
     public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
         Player player = (Player) event.getTargetEntity();
         APlayer aplayer = getAPlayer(player.getIdentifier());
-        long timeConnect = serverManager.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
+        long timeConnect = sm.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
         long onlineTime = (long)aplayer.getOnlinetime() + timeConnect;
         PlayerManager.removeFirstTime(player.getIdentifier());
-        aplayer.setLastonline(serverManager.dateToLong());
+        aplayer.setLastonline(sm.dateToLong());
         aplayer.setOnlinetime(onlineTime);
         aplayer.update();
         event.setMessage(EVENT_DISCONNECT_MESSAGE(player));
@@ -160,14 +160,9 @@ public class PlayerListener {
         }
         else if(event.getCause().first(ConsoleSource.class).isPresent()) {
             builder.append("console");
-        }
-        else if(event.getCause().first(CommandBlockSource.class).isPresent()) {
+        }else if(event.getCause().first(CommandBlockSource.class).isPresent()) {
             builder.append("command block");
-        //}else{
-            //builder = null;
         }
-
-
         Optional.of(builder.append(": /").append(event.getCommand()).append(" ").append(event.getArguments()));
         getGame().getServer().getConsole().sendMessage(Text.of(builder.toString()));
     }
@@ -191,6 +186,7 @@ public class PlayerListener {
                 inputDouble.replace(player, d);
                 player.sendMessage(CLICK_TO_CONFIRM()
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
+                event.clearMessage();
             }else{
                 
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
@@ -212,10 +208,7 @@ public class PlayerListener {
                 }
                 Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
                 event.clearMessage();
-            }else{
-                //event.setMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
-                //.concat(MESSAGE("&bTapes 0 pour annuler")));
-                
+            }else{                
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
                 .concat(MESSAGE("&bTapes 0 pour annuler")));
             }
@@ -420,7 +413,7 @@ public class PlayerListener {
                                             book.setAuthor(MESSAGE(player.getName()));
                                         }
          
-                                        book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + serverManager.dateShortToString()));
+                                        book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + sm.dateShortToString()));
                                         String tmp;
                                         List<Text> pages = new ArrayList();
                                         if(!is.get().get(Keys.BOOK_PAGES).isPresent()){
@@ -472,7 +465,7 @@ public class PlayerListener {
                                                         "du destinataire sur &lle titre du livre !"));
                                             }
                                             
-                                            book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + serverManager.dateShortToString()));
+                                            book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + sm.dateShortToString()));
                                             String tmp;
                                             List<Text> pages = new ArrayList();
                                             if(!is.get().get(Keys.BOOK_PAGES).isPresent()){
@@ -548,7 +541,7 @@ public class PlayerListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         if(block.getFinal().getState().getType().equals(CHEST)){
-            Optional<Location> locChest = serverManager.locDblChest(loc);
+            Optional<Location> locChest = sm.locDblChest(loc);
             if(locChest.isPresent()){
                 Optional<TileEntity> chest = locChest.get().getTileEntity();
                 if(chest.get().get(Keys.DISPLAY_NAME).isPresent()){

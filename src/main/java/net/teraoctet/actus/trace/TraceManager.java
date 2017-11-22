@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import static net.teraoctet.actus.Actus.plugin;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Data.commit;
 import static net.teraoctet.actus.utils.Data.datasource;
@@ -27,7 +27,7 @@ public class TraceManager {
             if (rs.isBeforeFirst()){
                 while (rs.next()){
                     trace = trace + 
-                            "&bDate : &e" + serverManager.longToDateString(rs.getDouble("date")) + "\n" +
+                            "&bDate : &e" + sm.longToDateString(rs.getDouble("date")) + "\n" +
                             "&bJoueur : &e" + getAPlayer(rs.getString("uuid")).getName() + " &7[" + rs.getString("uuid") + "]\n" +
                             "&bAction : &e" + rs.getString("type") + "\n" +
                             "&bBlock : &e" + rs.getString("block") + "\n" +

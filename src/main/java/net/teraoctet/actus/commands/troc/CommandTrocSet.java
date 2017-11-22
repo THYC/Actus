@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static net.teraoctet.actus.Actus.serverManager;
-import static net.teraoctet.actus.Actus.trocManager;
+import static net.teraoctet.actus.Actus.sm;
+import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.troc.Troc;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -55,15 +55,18 @@ public class CommandTrocSet implements CommandExecutor {
             } 
 
             if (locChest1.isPresent()){
+                String owner = ctx.<String> getOne("owner").orElse("LIBRE");
+                int idGuild = ctx.<Integer> getOne("guild").orElse(0);
+                
                 String locTroc = DeSerialize.location(locChest1.get());
                 Location<World> locChest2;
                 Optional<TileEntity> chestBlock = locChest1.get().getTileEntity();
                 TileEntity tileChest = chestBlock.get();
-                String chestName = "&9TROC " + locTroc;
+                String chestName = "&eTROC&b " + locTroc + " " + owner + " " + idGuild;
                 tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
                 
-                if(serverManager.locDblChest(locChest1.get()).isPresent()){
-                    locChest2 = serverManager.locDblChest(locChest1.get()).get();
+                if(sm.locDblChest(locChest1.get()).isPresent()){
+                    locChest2 = sm.locDblChest(locChest1.get()).get();
                     Optional<TileEntity> dblchestBlock = locChest2.getTileEntity();
                     TileEntity tiledblChest = dblchestBlock.get();
                     tiledblChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
@@ -88,12 +91,12 @@ public class CommandTrocSet implements CommandExecutor {
                     for (Inventory inv : chestTroc.get().slots()) {
                         if(!inv.peek().isPresent()){
                             inv.offer(getIS());
-                        }
-                        troc = new Troc(locTroc,index,"",null,0,0d,getIS().createSnapshot(),"LIBRE","LIBRE",0);
-                        try {
-                            trocManager.save(troc);
-                        } catch (IOException | ObjectMappingException ex) {
-                            Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
+                            troc = new Troc(locTroc,index,null,0,0d,getIS().createSnapshot(),"LIBRE","LIBRE",0);
+                            try {
+                                tm.save(troc);
+                            } catch (IOException | ObjectMappingException ex) {
+                                Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                         index = index + 1;
                         if(index == 9)break;

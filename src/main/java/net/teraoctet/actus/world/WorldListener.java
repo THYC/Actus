@@ -1,6 +1,5 @@
 package net.teraoctet.actus.world;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;

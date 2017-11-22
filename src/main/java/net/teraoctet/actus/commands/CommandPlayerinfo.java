@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands;
 
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getUUID;
@@ -19,6 +19,7 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.DATA_NOT_FOUND;
 import static net.teraoctet.actus.utils.MessageManager.ONHOVER_PI_NAME;
 import static net.teraoctet.actus.utils.MessageManager.TP_AT_COORDS;
+import net.teraoctet.actus.utils.ServerManager;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -54,7 +55,7 @@ public class CommandPlayerinfo implements CommandExecutor {
                             .color(TextColors.DARK_GRAY)
                             .build());*/
                                         
-                if(serverManager.isOnline(targetName)){
+                if(ServerManager.isOnline(targetName)){
                     Player tPlayer = getGame().getServer().getPlayer(targetName).get();
                     src.sendMessage(Text.builder(targetName + " est connect\351")
                             .onHover(TextActions.showText(Text.builder("IP: " + tPlayer.getConnection().getAddress().toString()).build()))
@@ -66,7 +67,7 @@ public class CommandPlayerinfo implements CommandExecutor {
                             .color(TextColors.DARK_GRAY)
                             .build());
                 } else {
-                    //String lastConnection = serverManager.dateShortToString(aplayer.getLastonline());
+                    //String lastConnection = sm.dateShortToString(aplayer.getLastonline());
                     src.sendMessage(Text.builder(targetName + " est d\351connect\351")
                             //.onHover(TextActions.showText(Text.builder("Derni\350re connexion: " + lastConnection.toString()).build()))
                             .color(TextColors.DARK_GRAY)
@@ -117,7 +118,7 @@ public class CommandPlayerinfo implements CommandExecutor {
             src.sendMessage(MESSAGE("&8--------------------"));
             src.sendMessage(MESSAGE("&7Mes infos : " + player.getName()));
             src.sendMessage(MESSAGE("&8--------------------"));
-            src.sendMessage(MESSAGE("&8Temps de connexion : " + serverManager.longToTime((long)aplayer.getOnlinetime()-(3600*1000))));
+            src.sendMessage(MESSAGE("&8Temps de connexion : " + sm.longToTime((long)aplayer.getOnlinetime()-(3600*1000))));
             src.sendMessage(MESSAGE("&8Nombre de points accumulés : "));
             src.sendMessage(MESSAGE("&8Droits suppl\351mentaires accordés : "));
             src.sendMessage(MESSAGE("&8--------------------"));

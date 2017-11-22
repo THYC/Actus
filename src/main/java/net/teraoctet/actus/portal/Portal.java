@@ -1,6 +1,6 @@
 package net.teraoctet.actus.portal;
 
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.Sponge.getGame;
@@ -70,7 +70,7 @@ public class Portal {
     public void update() {
 	Data.queue("UPDATE portal SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 
         + "', x1 = " + x1 + ", y1 = " + y1 + ", z1 = " + z1 + ", x2 = " + x2 + ", y2 = " + y2 + ", z2 = " + z2 
-        + ", toworld = '" + toworld + "', tox = " + tox + ", toy = " + toy + ", toz = " + toz + ", message = '" + serverManager.quoteToSQL(message) 
+        + ", toworld = '" + toworld + "', tox = " + tox + ", toy = " + toy + ", toz = " + toz + ", message = '" + sm.quoteToSQL(message) 
         + "' WHERE portalname = '" + portalname + "'");
         
         getGame().getServer().getConsole().sendMessage(MESSAGE("UPDATE portal SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 

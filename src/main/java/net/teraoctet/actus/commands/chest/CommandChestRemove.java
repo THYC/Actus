@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.chest;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import org.spongepowered.api.block.BlockTypes;
@@ -63,8 +63,8 @@ public class CommandChestRemove implements CommandExecutor {
                         chestName = chestName.replace(target.get() + " ", "");
                         chestName = "&e" + chestName;
                         tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
-                        if(serverManager.locDblChest(optlocation.get()).isPresent()){
-                            Location loc = serverManager.locDblChest(optlocation.get()).get();
+                        if(sm.locDblChest(optlocation.get()).isPresent()){
+                            Location loc = sm.locDblChest(optlocation.get()).get();
                             Optional<TileEntity> dblchestBlock = loc.getTileEntity();
                             TileEntity tiledblChest = dblchestBlock.get();
                             tiledblChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
@@ -74,8 +74,8 @@ public class CommandChestRemove implements CommandExecutor {
                         
                     }else{
                         tileChest.offer(Keys.DISPLAY_NAME, Text.EMPTY);
-                        if(serverManager.locDblChest(optlocation.get()).isPresent()){
-                            Location loc = serverManager.locDblChest(optlocation.get()).get();
+                        if(sm.locDblChest(optlocation.get()).isPresent()){
+                            Location loc = sm.locDblChest(optlocation.get()).get();
                             Optional<TileEntity> dblchestBlock = loc.getTileEntity();
                             TileEntity tiledblChest = dblchestBlock.get();
                             tiledblChest.offer(Keys.DISPLAY_NAME, Text.EMPTY);

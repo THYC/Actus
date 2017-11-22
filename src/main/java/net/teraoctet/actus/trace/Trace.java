@@ -1,7 +1,7 @@
 package net.teraoctet.actus.trace;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Data;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.entity.living.player.Player;
@@ -20,7 +20,7 @@ public class Trace {
     private String block;
                 
     public Trace(String world, double x, double y, double z, String uuid, String type, String block){
-        this.date = Double.valueOf(serverManager.dateToLong());
+        this.date = Double.valueOf(sm.dateToLong());
         this.world = world;
         this.x = x;
         this.y = y;
@@ -31,7 +31,7 @@ public class Trace {
     }
     
     public Trace(Player player, Location<World> loc, String type, String block) {
-        this.date = Double.valueOf(serverManager.dateToLong());
+        this.date = Double.valueOf(sm.dateToLong());
         this.world = loc.getExtent().getName();
         this.x = loc.getX();
         this.y = loc.getY();
@@ -62,7 +62,7 @@ public class Trace {
         if(w.isPresent())return w;
         return Optional.empty();
     }
-    public String getDate(){ return serverManager.longToDateString(this.date);}
+    public String getDate(){ return sm.longToDateString(this.date);}
     public String getUUID(){ return this.uuid;}
     public Double getX(){return this.x;}
     public Double getY(){return this.y;}

@@ -4,7 +4,7 @@ import com.flowpowered.math.vector.Vector3d;
 import java.util.Random;
 import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.utils.Config.DIAMETER_MAX_TPR;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -35,7 +35,7 @@ public class CommandTPR implements CommandExecutor {
             player.sendMessage(MESSAGE("&eRecherche d'un point de chute securis\351 ..."));
             
             Location loc = getRandomLocation(world).add(0, 2, 0);
-            if(serverManager.teleport(player, world.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
+            if(sm.teleport(player, world.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
                 return CommandResult.success();
             }
         } 

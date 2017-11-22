@@ -30,15 +30,15 @@ public final class AWorld {
     @Setting boolean animals;
     @Setting boolean pvp;
     @Setting Location<World> spawn;
-    @Setting double borderCenterX;
-    @Setting double borderCenterY;
-    @Setting double borderDamage;
-    @Setting double borderDiameter;
+    //@Setting double borderCenterX;
+    //@Setting double borderCenterY;
+    //@Setting double borderDamage;
+    //@Setting double borderDiameter;
     
     public AWorld() {}
     
-    public AWorld(String name, UUID uuid, String message, String prefix, Difficulty difficulty, GameMode gamemode, boolean monsters, boolean animals, boolean pvp, Location<World> spawn, 
-            double borderCenterX, double borderCenterY, double borderDamage, double borderDiameter) {
+    public AWorld(String name, UUID uuid, String message, String prefix, Difficulty difficulty, GameMode gamemode, boolean monsters, boolean animals, boolean pvp, Location<World> spawn/*, 
+            double borderCenterX, double borderCenterY, double borderDamage, double borderDiameter*/) {
         this.name = name;
         this.uuid = uuid;
         this.worldInventory = this.name;
@@ -50,23 +50,23 @@ public final class AWorld {
         this.animals = animals;
         this.pvp = pvp;
         this.spawn = spawn;
-        this.borderCenterX = borderCenterX;
-        this.borderCenterY = borderCenterY;
-        this.borderDamage = borderDamage;
-        this.borderDiameter = borderDiameter;
+        //this.borderCenterX = borderCenterX;
+        //this.borderCenterY = borderCenterY;
+        //this.borderDamage = borderDamage;
+        //this.borderDiameter = borderDiameter;
     }
 
     public void update() {
         addWorld(name, this);
-        worldManager.save(this);
+        WorldManager.save(this);
         if(!getGame().getServer().getWorld(name).isPresent()) return;
         World world = getGame().getServer().getWorld(name).get();
         world.getProperties().setDifficulty(difficulty);
         world.getProperties().setGameMode(gamemode);
         world.getProperties().setSpawnPosition(spawn.getBlockPosition());
-        world.getWorldBorder().setCenter(borderCenterX,borderCenterY);
-        world.getWorldBorder().setDamageAmount(borderDamage);
-        world.getWorldBorder().setDiameter(borderDiameter);
+        //world.getWorldBorder().setCenter(borderCenterX,borderCenterY);
+        //world.getWorldBorder().setDamageAmount(borderDamage);
+        //world.getWorldBorder().setDiameter(borderDiameter);
         world.getProperties().setPVPEnabled(pvp);
         game.getServer().saveWorldProperties(world.getProperties());		
     }
@@ -77,8 +77,8 @@ public final class AWorld {
     public void setSpawn(Location<World> spawn) { this.spawn = spawn; update(); }
     public void setDifficulty(Difficulty difficulty) { this.difficulty = difficulty; update(); }
     public void setGamemode(GameMode gamemode) { this.gamemode = gamemode; update(); }
-    public void setBorderDiameter(double border) { this.borderDiameter = border; update(); }
-    public void setBorderDamage(double damage) { this.borderDamage = damage; update(); }
+    //public void setBorderDiameter(double border) { this.borderDiameter = border; update(); }
+    //public void setBorderDamage(double damage) { this.borderDamage = damage; update(); }
     public void allowMonster(boolean state) { this.monsters = state; update(); }
     public void allowAnimal(boolean state) { this.animals = state; update(); }
     public void allowPVP(boolean state) { this.pvp = state; update(); }
@@ -94,8 +94,8 @@ public final class AWorld {
     public boolean getMonster() { return monsters; }
     public boolean getAnimal() { return animals; }
     public boolean getPVP() { return pvp; }
-    public double getBorder() { return borderDiameter; }
-    public double getBorderDamage() { return borderDamage; }
+    //public double getBorder() { return borderDiameter; }
+    //public double getBorderDamage() { return borderDamage; }
 
     public void toSpawn(Player player) {
             player.setLocation(spawn);

@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static net.teraoctet.actus.Actus.plugin;
+import net.teraoctet.actus.troc.Troc;
 
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.world.World;
@@ -25,7 +25,6 @@ import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Chunk;
-import org.spongepowered.api.world.ChunkPreGenerate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.WorldBorder;
 
@@ -76,11 +75,11 @@ public class WorldManager {
                             true, 
                             true, 
                             true, 
-                            world.getSpawnLocation(),
-                            world.getWorldBorder().getCenter().getX(),
-                            world.getWorldBorder().getCenter().getY(),
-                            world.getWorldBorder().getDamageAmount(),
-                            world.getWorldBorder().getDiameter());
+                            world.getSpawnLocation());
+                            //world.getWorldBorder().getCenter().getX(),
+                            //world.getWorldBorder().getCenter().getY(),
+                            //world.getWorldBorder().getDamageAmount(),
+                            //world.getWorldBorder().getDiameter());
                     
                     worlds.getNode("worlds",world.getName()).setValue(TOKEN_CONFIG, aworld);
                     manager.save(worlds);
@@ -94,8 +93,13 @@ public class WorldManager {
                 String worldName = worldnode.getKey().toString(); 
                 if(getGame().getServer().getWorld(worldName).isPresent()){
                     try {
-                        AWorld aworld = new AWorld();
-                        aworld = worlds.getNode("worlds",worldName).getValue(TOKEN_CONFIG);
+                        //trocNode = MANAGER.load();
+            //Troc troc;
+            //if(!trocNode.getNode(loc,String.valueOf(slot)).isVirtual()){
+                //troc = trocNode.getNode(loc,String.valueOf(slot)).getValue(TOKEN_CONFIG);
+                //return Optional.of(troc);
+            //}
+                        AWorld aworld = worlds.getNode("worlds",worldName).getValue(TOKEN_CONFIG);
                         addWorld(worldName,aworld);
                     } catch (ObjectMappingException ex) {}
                 }

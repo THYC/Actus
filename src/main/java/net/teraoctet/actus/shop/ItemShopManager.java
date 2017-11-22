@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import static net.teraoctet.actus.Actus.itemShopManager;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -19,9 +20,12 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
 import org.spongepowered.api.data.persistence.DataTranslators;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.text.Text;
 
 public class ItemShopManager {
@@ -207,4 +211,35 @@ public class ItemShopManager {
         });
         return list;
     }
+    
+    /**
+     * ajoute/retire du credit sur l'item coinpurses de l'inventaire
+     * @param inv inventaire a crediter
+     * @param credit
+     * @return true si un coinpurses est present
+     */
+    public boolean addCoin(Inventory inv, double credit){
+        for(Inventory slotInv : inv.slots()){
+            if(slotInv.peek().isPresent()){
+                if(itemShopManager.hasCoinPurses(slotInv.peek().get())){
+                    slotInv.clear();
+                    slotInv.offer(addCoin(credit, slotInv.peek().get()).get());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public double getQteCoin(Inventory inv){
+        for(Inventory slotInv : inv.slots()){
+            if(slotInv.peek().isPresent()){
+                if(itemShopManager.hasCoinPurses(slotInv.peek().get())){
+                    return getQteCoin(slotInv.peek().get());
+                }
+            }
+        }
+        return 0;
+    }
+
 }

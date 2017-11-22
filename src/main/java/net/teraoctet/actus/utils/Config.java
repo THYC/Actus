@@ -18,6 +18,7 @@ public class Config {
         try {
             if (!FILE.exists()) {
                 FILE.createNewFile();
+                config.getNode("mysql").getOptions().setHeader("PARAMETRE DE CONNECTION MYSQL, SI USE=FALSE ALORS C'EST LA BASE H2 QUI EST UTILISE");
                 config.getNode("mysql", "USE").setValue(false);
                 config.getNode("mysql", "HOST").setValue("localhost");
                 config.getNode("mysql", "PORT").setValue(3306);
@@ -44,8 +45,9 @@ public class Config {
                 config.getNode("server", "LEVEL_ADMIN").setValue(10);
                 config.getNode("server", "LEVEL_DEFAULT").setValue(0);
                 config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").setValue(10);
-                config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue("y");
-                config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue("n");
+                config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue(true);
+                config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue(false);
+                config.getNode("troc", "ENABLE_TROC_SCOREBOARD").setValue(false);
                 config.getNode("version").setValue(1);
                 MANAGER.save(config);
             }
@@ -81,6 +83,7 @@ public class Config {
     public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(); }
     public static boolean ENABLE_SKULL_GRAVE() { return config.getNode("grave", "ENABLE_SKULL_GRAVE").getBoolean(); }
     public static boolean ENABLE_SIGN_GRAVE() { return config.getNode("grave", "ENABLE_SIGN_GRAVE").getBoolean(); }
+    public static boolean ENABLE_TROC_SCOREBOARD() { return config.getNode("troc", "ENABLE_TROC_SCOREBOARD").getBoolean(); }
     
     public void setEnableSkullGrave(boolean val) {
         try {

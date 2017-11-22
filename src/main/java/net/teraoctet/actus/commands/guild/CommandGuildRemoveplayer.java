@@ -1,6 +1,7 @@
 package net.teraoctet.actus.commands.guild;
 
 import static net.teraoctet.actus.Actus.guildManager;
+import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getUUID;
@@ -30,7 +31,7 @@ public class CommandGuildRemoveplayer implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.removeplayer")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyGuild(aplayer)) {
+            if(GuildManager.hasAnyGuild(aplayer)) {
                 int playerRank = aplayer.getGuildRank();
                 if(playerRank <= 2) {
                     String targetName = ctx.<String> getOne("name").get();

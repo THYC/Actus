@@ -22,11 +22,11 @@ public class CommandNPC implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.admin.npc")) {
             Player player = (Player) src;
                     
-            String name = ctx.<String> getOne("name").orElse("");
-            String skin = ctx.<String> getOne("skin").orElse("");
+            String name = ctx.<String> getOne("name").orElse(player.getName());
+            String skin = ctx.<String> getOne("skin").orElse(player.getName());
             
-            if("".equals(name))name = player.getName();
-            if("".equals(skin))skin = player.getName();
+            //if("".equals(name))name = player.getName();
+            //if("".equals(skin))skin = player.getName();
             
             MineSkin ms = new MineSkin(skin);
             

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configGrave;
 import static net.teraoctet.actus.Actus.plotManager;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.utils.Config.ENABLE_SIGN_GRAVE;
@@ -163,7 +163,7 @@ public class GraveListener {
             
             //sauvegarde des parametre de la tombe/grave
             Grave grave = new Grave(player.getIdentifier(), player.getName(), 
-                    player.getLocation(), locgrave1, signgrave, serverManager.dateToLong(), 
+                    player.getLocation(), locgrave1, signgrave, sm.dateToLong(), 
                     bs1, bs2, event.getMessage(), uuidAS);
             try {
                 configGrave.save(grave);

@@ -3,13 +3,12 @@ package net.teraoctet.actus.player;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.serverManager;
+import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.addUUID;
 import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.removeUUID;
 import net.teraoctet.actus.utils.Home;
-import net.teraoctet.actus.utils.ServerManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import static net.teraoctet.actus.utils.Data.queue;
@@ -124,7 +123,7 @@ public class APlayer{
     public double getTimejail() { return timejail; }
     public int getID_guild() { return id_guild; }
     public int getGuildRank() { return guild_rank; }
-    public Optional<Player> getPlayer() { return serverManager.getPlayer(name);}
+    public Optional<Player> getPlayer() { return sm.getPlayer(name);}
     public Optional<Home> getHome(String name) { 
         if(homes == null) homes = new HashMap<>(); 
         if(homes.containsKey(name)){
@@ -153,8 +152,8 @@ public class APlayer{
 
     public void sendMessage(Text text)
     {
-        if(ServerManager.isOnline(name)){
-            Optional<Player> player = serverManager.getPlayer(name);
+        if(sm.isOnline(name)){
+            Optional<Player> player = sm.getPlayer(name);
             if(player.isPresent()){player.get().sendMessage(text);}
         }
     }
