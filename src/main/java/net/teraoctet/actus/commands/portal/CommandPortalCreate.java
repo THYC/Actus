@@ -1,8 +1,11 @@
 package net.teraoctet.actus.commands.portal;
 
 import java.util.function.Consumer;
-import static net.teraoctet.actus.Actus.portalManager;
+import static net.teraoctet.actus.Actus.plm;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.PlotManager;
+import net.teraoctet.actus.plot.PlotSelection;
+import net.teraoctet.actus.plot.Wedit;
 import net.teraoctet.actus.portal.Portal;
 import net.teraoctet.actus.portal.PortalManager;
 import net.teraoctet.actus.utils.Data;
@@ -33,8 +36,8 @@ public class CommandPortalCreate implements CommandExecutor {
           
         if(src instanceof Player && src.hasPermission("actus.admin.portal")) { 
             Player player = (Player) src;
-            PlotManager plotManager = PlotManager.getSett(player);
-        
+            PlotSelection plotSelect = ptm.getPlotSel(player);                      
+                                    
             if(!ctx.getOne("name").isPresent()) { 
                player.sendMessage(USAGE("/portal create <name> : cr\351ation d'un portail au point d\351clar\351"));
                return CommandResult.empty();
@@ -42,12 +45,11 @@ public class CommandPortalCreate implements CommandExecutor {
 
            String name = ctx.<String> getOne("name").get();
 
-           if (portalManager.hasPortal(name) == false){
-               if(!plotManager.getBorder1().isPresent() || !plotManager.getBorder2().isPresent()){
+           if (plm.hasPortal(name) == false){
+               if(!plotSelect.getMinPos().isPresent() || !plotSelect.getMaxPos().isPresent()){
                     player.sendMessage(UNDEFINED_PLOT_ANGLES());
                     return CommandResult.empty();
                 }
-               Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
                
                player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation du portail").onClick(TextActions.executeCallback(callCreate(name))).color(TextColors.AQUA).build()); 
                return CommandResult.success();
@@ -70,15 +72,15 @@ public class CommandPortalCreate implements CommandExecutor {
     public Consumer<CommandSource> callCreate(String portalName) {
 	return (CommandSource src) -> {
             Player player = (Player) src;
-            PlotManager plotManager = PlotManager.getSett(player);
-            PortalManager portalManager = new PortalManager();
+            PlotSelection plotSelect = ptm.getPlotSel(player);
+            PortalManager plm = new PortalManager();
         
-            if(portalManager.hasPortal(portalName)){
+            if(plm.hasPortal(portalName)){
                 player.sendMessage(MESSAGE("&bce portail existe d\351ja"));
                 return;
             }
-
-            Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
+            
+            Location[] c = {plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get()};
             Location <World> world = c[0];
             String worldName = world.getExtent().getName();
             int x1 = c[0].getBlockX();

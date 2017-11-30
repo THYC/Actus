@@ -125,7 +125,7 @@ public class CommandTrocAdd implements CommandExecutor {
                     for (Inventory inv : chestTroc.get().slots()) {
                         player.sendMessage(MESSAGE("-" + inv.peek().get().getType().getName()));
                         if (inv.peek().get().getType().equals(BARRIER)){
-                            Optional<ItemStack> is = tm.setItemTroc(player, type.get(),qte.get() , price.get(), locTroc);
+                            Optional<ItemStack> is = tm.setItemTroc(type.get(),qte.get() , price.get(), locTroc, player.getItemInHand(HandTypes.MAIN_HAND).get().createSnapshot());
                             if(!is.isPresent()){
                                 player.sendMessage(MESSAGE("&4Creation de l'itemTroc impossible !"));
                                 return CommandResult.empty();
@@ -134,11 +134,7 @@ public class CommandTrocAdd implements CommandExecutor {
                             inv.set(is.get());
                             troc = new Troc(locTroc, index, type.get(), qte.get(), price.get(), player.getItemInHand(HandTypes.MAIN_HAND).get().createSnapshot(),
                                         player.getName(),player.getIdentifier(),aplayer.getID_guild());
-                            try {
-                                tm.save(troc);
-                            } catch (IOException | ObjectMappingException ex) {
-                                Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                            tm.save(troc);
                             player.sendMessage(MESSAGE("&eItem troc cr\351\351 avec succes !"));
                             break;
                         }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -20,12 +20,10 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
 import org.spongepowered.api.data.persistence.DataTranslators;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.text.Text;
 
 public class ItemShopManager {
@@ -150,7 +148,6 @@ public class ItemShopManager {
      * @return ItemStack CoinPurses
      */
     public Optional<ItemStack> addCoin(double credit, ItemStack coinPurses){
-        //APlayer aplayer = getAPlayer(player.getIdentifier());
 	LoreData loreD = coinPurses.getOrCreate(LoreData.class).get();                
 	List<Text> lore = loreD.lore().get();
         String[] arg = lore.get(1).toPlain().split(":");
@@ -221,9 +218,8 @@ public class ItemShopManager {
     public boolean addCoin(Inventory inv, double credit){
         for(Inventory slotInv : inv.slots()){
             if(slotInv.peek().isPresent()){
-                if(itemShopManager.hasCoinPurses(slotInv.peek().get())){
-                    slotInv.clear();
-                    slotInv.offer(addCoin(credit, slotInv.peek().get()).get());
+                if(ism.hasCoinPurses(slotInv.peek().get())){
+                    slotInv.set(addCoin(credit, slotInv.peek().get()).get());
                     return true;
                 }
             }
@@ -234,7 +230,7 @@ public class ItemShopManager {
     public double getQteCoin(Inventory inv){
         for(Inventory slotInv : inv.slots()){
             if(slotInv.peek().isPresent()){
-                if(itemShopManager.hasCoinPurses(slotInv.peek().get())){
+                if(ism.hasCoinPurses(slotInv.peek().get())){
                     return getQteCoin(slotInv.peek().get());
                 }
             }

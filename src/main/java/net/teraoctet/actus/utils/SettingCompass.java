@@ -3,7 +3,7 @@ package net.teraoctet.actus.utils;
 import com.flowpowered.math.vector.Vector3d;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.utils.DeSerialize.getVector3d;
@@ -76,7 +76,7 @@ public class SettingCompass {
                 break;
             case "PLOT": 
                 if(arg.length == 1){return Optional.empty();}
-                Optional<Plot> plot = plotManager.getPlot(arg[1]);
+                Optional<Plot> plot = ptm.getPlot(arg[1]);
                 if(plot.isPresent()){
                     loc = DeSerialize.location(plot.get().getSpawnPlot().get());
                 }else{

@@ -17,10 +17,10 @@ import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.BookView;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -98,9 +98,10 @@ public class CallBackTroc {
      * @param type type de transaction
      * @param price prix
      * @param qte qte maximum si transaction = buy/achat
+     * @param item
      * @return 
      */
-    public Consumer<CommandSource> callAddTroc(Inventory chestTroc, int slot, EnumTransactType type, double price, int qte) {
+    public Consumer<CommandSource> callAddTroc(Inventory chestTroc, int slot, EnumTransactType type, double price, int qte, ItemStackSnapshot item) {
 	return (CommandSource src) -> {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());    
@@ -110,7 +111,7 @@ public class CallBackTroc {
             String ownerTroc = parts[2];
             int idGuild = Integer.valueOf(parts[3]);
             
-            if(!ownerTroc.equalsIgnoreCase(player.getName()) && !ownerTroc.equalsIgnoreCase("LIBRE") && idGuild == 0){
+            if(!ownerTroc.equalsIgnoreCase(player.getName()) && !ownerTroc.contains("LIBRE") && idGuild == 0){
                 player.sendMessage(MESSAGE("&eOperation impossible, ce troc appartient a : " + getAPlayer(ownerTroc)));
                 return;
             }
@@ -124,20 +125,16 @@ public class CallBackTroc {
             
             for (Inventory inv : chestTroc.slots()) {
                 if (slot == index){
-                    Optional<ItemStack> is = tm.setItemTroc(player, type, qte, price, locTroc);
+                    Optional<ItemStack> is = tm.setItemTroc(type, qte, price, locTroc, item);
                     if(!is.isPresent()){
                         player.sendMessage(MESSAGE("&4Creation de l'itemTroc impossible !"));
                         return;
                     }
 
                     inv.set(is.get());
-                    troc = new Troc(locTroc, index, type, qte, price, player.getItemInHand(HandTypes.MAIN_HAND).get().copy().createSnapshot(),
+                    troc = new Troc(locTroc, index, type, qte, price, item,
                         player.getName(),player.getIdentifier(),aplayer.getID_guild());
-                    try {
-                        tm.save(troc);
-                    } catch (IOException | ObjectMappingException ex) {
-                        Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    tm.save(troc);
                     player.sendMessage(MESSAGE("&eItem troc cr\351\351 avec succes !"));
                     return;
                 }
@@ -150,7 +147,7 @@ public class CallBackTroc {
         };
     }
     
-    public Consumer<CommandSource> callSelectTransactType(Inventory chestTroc, int slot, EnumTransactType type, double price) {
+    public Consumer<CommandSource> callSelectTransactType(Inventory chestTroc, int slot, EnumTransactType type, double price, ItemStackSnapshot item) {
 	return (CommandSource src) -> {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
@@ -164,63 +161,63 @@ public class CallBackTroc {
             Text text = 
                     
                     Text.builder()               
-                    .append(MESSAGE("&4Item : &l&1" + player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getType().getTranslation().get() + "\n"))
+                    .append(MESSAGE("&4Item : &l&1" + item.getTranslation().get() + "\n"))
                     .append(MESSAGE("&r&4type de transaction : &l&1" + type.toString() + "\n\n"))                
                     .append(MESSAGE("&l&4.  ----  Tarif ----\n"))
-                    .append(MESSAGE("&r&o&1Clique sur les liens plus bas \n&o&1pour modifier le prix\n\n"))
-                    .append(MESSAGE("&r&n&4Prix :  &l&1" + pricetmp + "\n\n"))
+                    .append(MESSAGE("&r&o&1Clique sur les liens suivant \n&o&1pour modifier le prix\n"))
+                    .append(MESSAGE("&r&n&4Prix&r&l&1 :  " + pricetmp + "\n\n"))
 
                     //+10.00
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| + 10.0  "))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 10)))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 10, item)))
                     .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 10"))).build())
                     //-10.00
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| - 10.0  |\n"))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 10)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 10"))).build())
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 10, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer de 10"))).build())
                     //+1.00
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| + 1.00  "))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 1)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 1, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 1")))
                     .append(MESSAGE("")).build())
                     //-1.00
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| - 1.00  |\n"))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 1)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 1, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer de 1")))
                     .append(MESSAGE("")).build())
                    //+0.01
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| + 0.01  "))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 0.01d)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 0.01d, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 0.01")))
                     .append(MESSAGE("")).build())
                     //-0.01
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| - 0.01  |\n"))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 0.01d)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 0.01d, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer de 0.01")))
                     .append(MESSAGE("")).build())
                     //+0.10
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| + 0.10  "))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 0.10d)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp + 0.10d, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 0.1")))
                     .append(MESSAGE("")).build())
                     //-0.01
                     .append(Text.builder()
                     .append(MESSAGE("&r&1| - 0.10  |\n\n"))
-                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 0.10d)))
-                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                    .onClick(TextActions.executeCallback(callSelectTransactType(chestTroc,slot,type,pricetmp - 0.10d, item)))
+                    .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer de 0.1")))
                     .append(MESSAGE("")).build())
                     
                     .append(Text.builder()
                     .append(Text.builder()     
-                    .append(MESSAGE("&r&l&1Clique ici pour valider ce prix"))
-                    .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,pricetmp,0)))
+                    .append(MESSAGE("&r&n&l&4-   [ ENREGISTRE ]   -"))
+                    .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,pricetmp,0, item)))
                     .onHover(TextActions.showText(MESSAGE("&eClique ici pour valider"))).build()).build())
 
                     .build();
@@ -229,7 +226,7 @@ public class CallBackTroc {
         };
     }
     
-    private Consumer<CommandSource> callValidPrice(Inventory chestTroc, int slot, EnumTransactType type, double price, int qte) {
+    private Consumer<CommandSource> callValidPrice(Inventory chestTroc, int slot, EnumTransactType type, double price, int qte, ItemStackSnapshot item) {
 	return (CommandSource src) -> {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString()); 
@@ -245,52 +242,52 @@ public class CallBackTroc {
 
                 Text text = 
                         Text.builder()               
-                        .append(MESSAGE("&4Item : &l&1" + player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getType().getTranslation().get() + "\n"))
+                        .append(MESSAGE("&4Item : &l&1" + item.getTranslation().get() + "\n"))
                         .append(MESSAGE("&r&4type de transaction : &l&1" + type.toString() + "\n"))                
                         .append(MESSAGE("&r&4prix : &l&1" + price + "\n\n"))
                                
-                        .append(MESSAGE("&l&4--  Qte maxi a acheter --\n"))
-                        .append(MESSAGE("&r&o&1Clique sur les liens plus bas \n&o&1pour modifier la qte\n\n"))
-                        .append(MESSAGE("&r&n&4QTE :  &l&1" + qtetmp + "\n\n"))
+                        .append(MESSAGE("&l&4--Qte maxi a acheter--\n"))
+                        .append(MESSAGE("&r&o&1Clique sur les liens plus bas \n&o&1pour modifier la qte\n"))
+                        .append(MESSAGE("&r&n&4QTE &r&l&1:  " + qtetmp + "\n\n"))
 
                         //+10.00
                         .append(Text.builder()
                         .append(MESSAGE("&r&1| + 10  "))
-                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price,qtetmp + 10)))
+                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price,qtetmp + 10, item)))
                         .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 10"))).build())
                         //-10.00
                         .append(Text.builder()
                         .append(MESSAGE("&r&1| - 10  |\n"))
-                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price, qtetmp - 10)))
-                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour augmenter de 10"))).build())
+                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price, qtetmp - 10, item)))
+                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer de 10"))).build())
                         //+1.00
                         .append(Text.builder()
                         .append(MESSAGE("&r&1| + 1   "))
-                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price,qtetmp + 1)))
-                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price,qtetmp + 1, item)))
+                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour aumenter de 1")))
                         .append(MESSAGE("")).build())
                         //-1.00
                         .append(Text.builder()
                         .append(MESSAGE("&r&1| - 1   |\n\n"))
-                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price,qtetmp - 1)))
-                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer")))
+                        .onClick(TextActions.executeCallback(callValidPrice(chestTroc,slot,type,price,qtetmp - 1, item)))
+                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour diminuer de 1")))
                         .append(MESSAGE("")).build())
                         
                         .append(Text.builder()
-                        .append(MESSAGE("&r&l&1Clique ici pour valider cette quantite : &l&1" + qtetmp))
-                        .onClick(TextActions.executeCallback(callValidTroc(chestTroc,slot,type,price,qtetmp)))
-                        .onHover(TextActions.showText(MESSAGE("&eClique ici pour valider"))).build())
+                        .append(MESSAGE("&r&n&l&4-   [ ENREGISTRE ]   -"))
+                        .onClick(TextActions.executeCallback(callValidTroc(chestTroc,slot,type,price,qtetmp, item)))
+                        .onHover(TextActions.showText(MESSAGE("&e** Clique ici pour valider **"))).build())
 
                         .build();
                 bv.addPage(text);
                 player.sendBookView(bv.build()); 
             }else{
-                callValidTroc(chestTroc,slot,type,price,0).accept(src);
+                callValidTroc(chestTroc,slot,type,price,0, item).accept(src);
             }
         };
     }
     
-    private Consumer<CommandSource> callValidTroc(Inventory chestTroc, int slot, EnumTransactType type, double price, int qte) {
+    private Consumer<CommandSource> callValidTroc(Inventory chestTroc, int slot, EnumTransactType type, double price, int qte, ItemStackSnapshot item) {
 	return (CommandSource src) -> {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString()); 
@@ -303,13 +300,12 @@ public class CallBackTroc {
             .title(MESSAGE("&bTROC"));
                 
             Text text = Text.builder()                
-                    .append(MESSAGE("&4Item : &1" + player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getType().getTranslation().get() + "\n"))                    
+                    .append(MESSAGE("&4Item : &1" + item.getTranslation().get() + "\n"))                    
                     .append(MESSAGE("&4type de transaction : &1" + type.toString() + "\n")) 
-                    .append(MESSAGE("&4tarif : &1" + price + "\n\n"))
                     .append(txtQte)
-                    
-                    .append(MESSAGE("&l&1Clique ici pour enregistrer"))
-                        .onClick(TextActions.executeCallback(callAddTroc(chestTroc,slot,type,price,qte)))
+                    .append(MESSAGE("&4tarif : &1" + price + "\n\n"))           
+                    .append(MESSAGE("&r&n&l&4-   [ ENREGISTRE ]   -"))
+                        .onClick(TextActions.executeCallback(callAddTroc(chestTroc,slot,type,price,qte, item)))
                         .onHover(TextActions.showText(MESSAGE("&eClique ici pour enregister")))
 
                     .build();

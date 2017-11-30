@@ -2,7 +2,7 @@ package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -35,7 +35,7 @@ public class CommandPlotListNameAllowed implements CommandExecutor {
 
             APlayer aplayer = getAPlayer(player.getIdentifier());
             
-            Optional<Plot> plot = plotManager.getPlot(player.getLocation());
+            Optional<Plot> plot = ptm.getPlot(player.getLocation());
             if (!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
                 return CommandResult.empty();

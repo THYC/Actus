@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.configInv;
 
-import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.inventory.AInventory;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -64,7 +64,7 @@ public class WorldListener {
         for (Entity entity : entities)
         {
             AWorld world = WorldManager.getWorld(entity.getWorld().getName());
-            Optional<Plot> plot = plotManager.getPlot(entity.getLocation());
+            Optional<Plot> plot = ptm.getPlot(entity.getLocation());
                     
             if(world == null) return;
             if(!world.getAnimal() && entity instanceof Animal || entity.getType().equals(EntityTypes.BAT)) { event.setCancelled(true);return;}
@@ -81,7 +81,7 @@ public class WorldListener {
     public void onExplode(ExplosionEvent.Detonate event){ 
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         if (!plot.isPresent()){
             if (event.getCause().first(PrimedTNT.class).isPresent() || event.getCause().first(TNTMinecart.class).isPresent()){
                 event.setCancelled(Config.TNT_DISABLE());
@@ -96,7 +96,7 @@ public class WorldListener {
     public void onExplosion(final ExplosionEvent.Post event){ 
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getExplosion().getWorld(),explosion.getLocation().getBlockPosition());
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         if (!plot.isPresent()){
             if ((event.getCause().first(Creeper.class).isPresent() && Config.CREEPER_DISABLE() == false) ||
                     ((event.getCause().first(PrimedTNT.class).isPresent() || event.getCause().first(TNTMinecart.class).isPresent()) && Config.TNT_DISABLE() == false)){

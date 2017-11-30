@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
@@ -30,9 +30,9 @@ public class CommandPlotOwnerset implements CommandExecutor {
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
-                plot = plotManager.getPlot(plotName);                
+                plot = ptm.getPlot(plotName);                
             } else {
-                plot = plotManager.getPlot(player.getLocation());
+                plot = ptm.getPlot(player.getLocation());
             }
 
             if (!plot.isPresent()){

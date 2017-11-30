@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.plot.Plot;
@@ -31,7 +31,7 @@ public class CommandPlotMsg implements CommandExecutor {
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
                         
             // on vérifie que le joueur se situe bien sur une parcelle sinon on sort
-            Optional<Plot> plot = plotManager.getPlot(player.getLocation());
+            Optional<Plot> plot = ptm.getPlot(player.getLocation());
             if(!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
                 return CommandResult.empty();

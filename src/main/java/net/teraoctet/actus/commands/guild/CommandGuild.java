@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.guild;
 
 import java.util.List;
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -43,7 +43,7 @@ public class CommandGuild implements CommandExecutor {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             //si le joueur est membre d'une guild
-            if(guildManager.hasAnyGuild(aplayer)) {
+            if(gdm.hasAnyGuild(aplayer)) {
                 Guild gguild = getGuild(aplayer.getID_guild());
                 PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
                 PaginationList.Builder builder = paginationService.builder();  
@@ -79,13 +79,13 @@ public class CommandGuild implements CommandExecutor {
                     }
                 //Menu affiché par défaut   
                 } else {
-                    int guildSize = guildManager.getGuildPlayers(gguild.getID()).size();
-                    String playerRank = guildManager.rankIDtoString(aplayer.getGuildRank());
-                    String guildOwner = guildManager.getOwner(gguild.getID()).getName();
-                    List listRank2 = guildManager.getGuildPlayers(gguild.getID(), 2);
-                    List listRank3 = guildManager.getGuildPlayers(gguild.getID(), 3);
-                    List listRank4 = guildManager.getGuildPlayers(gguild.getID(), 4);
-                    List listRank5 = guildManager.getGuildPlayers(gguild.getID(), 5);
+                    int guildSize = gdm.getGuildPlayers(gguild.getID()).size();
+                    String playerRank = gdm.rankIDtoString(aplayer.getGuildRank());
+                    String guildOwner = gdm.getOwner(gguild.getID()).getName();
+                    List listRank2 = gdm.getGuildPlayers(gguild.getID(), 2);
+                    List listRank3 = gdm.getGuildPlayers(gguild.getID(), 3);
+                    List listRank4 = gdm.getGuildPlayers(gguild.getID(), 4);
+                    List listRank5 = gdm.getGuildPlayers(gguild.getID(), 5);
                     
                     builder.title(Text.builder().append(MESSAGE(gguild.getName() + "&r - &2Membres: " + guildSize + " / " + GUILD_MAX_NUMBER_OF_MEMBER())).toText())
                             .contents(Text.builder().append(MESSAGE("&2Vous \352tes \"" + playerRank + "\" de " + gguild.getName()))

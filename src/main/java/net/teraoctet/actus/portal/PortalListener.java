@@ -5,16 +5,19 @@ import com.flowpowered.math.vector.Vector3i;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import static net.teraoctet.actus.Actus.plugin;
-import static net.teraoctet.actus.Actus.portalManager;
-import static net.teraoctet.actus.Actus.worldManager;
+import static net.teraoctet.actus.Actus.plm;
+import static net.teraoctet.actus.Actus.wdm;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PROTECT_PORTAL;
 import net.teraoctet.actus.world.AWorld;
+import net.teraoctet.actus.world.WorldManager;
+import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.particle.ParticleEffect;
@@ -37,33 +40,42 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.text.action.TextActions;
 
 public class PortalListener {
-          
-    private static ThreadLocalRandom random = ThreadLocalRandom.current();
-    
+              
     public PortalListener() {}
     
     @Listener
     public void onPlayerMovePortal(MoveEntityEvent event, @First Player player) {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Location locTo = event.getToTransform().getLocation();
-        Optional<Portal> optPortal = portalManager.getPortal(locTo);
+        Location locFrom = event.getFromTransform().getLocation();
+        
+        Optional<Portal> optPortal = plm.getPortal(locTo);
+        Optional<Portal> optPortalFrom = plm.getPortal(locFrom);
            
         if (optPortal.isPresent()){   
             Portal portal = optPortal.get();
+            if(optPortalFrom.isPresent()){
+                if(portal.equals(optPortalFrom.get()))return;
+            }
             if(player.hasPermission("actus.portal." + portal.getName()) || aplayer.getLevel() == 10)
             {
-                if(portal.gettoworld().equalsIgnoreCase("DISABLED")){
+                if(portal.gettoworld().equalsIgnoreCase("DISABLED") && portal.getCMD().equalsIgnoreCase("DISABLED")){
                     player.sendMessage(MESSAGE("&aPoint de spawn du portail non configur\351, aller au point d'apparition souhait\351 ")
                             .concat(MESSAGE("&aet cliquer ici : &e/portal tpfrom " + portal.getName()).toBuilder()
                                     .onClick(TextActions.runCommand("/portal tpfrom " + portal.getName())).build())); 
                     return;
                 }
+                if(!portal.getCMD().equalsIgnoreCase("DISABLED")){
+                    CommandManager cmdService = Sponge.getGame().getCommandManager();
+                    cmdService.process(player, portal.getCMD());
+                    if(portal.gettoworld().equalsIgnoreCase("DISABLED"))return;
+                }
                                 
                 aplayer.setLastposition(DeSerialize.location(event.getFromTransform().getLocation()));
                 aplayer.update();
                 
-                AWorld aworld = worldManager.getWorld(portal.gettoworld()); 
-                plugin.getLogger().info(aworld.getName());
+                AWorld aworld = WorldManager.getWorld(portal.gettoworld()); 
+                //plugin.getLogger().info(aworld.getName());
                 Optional<World> world = getGame().getServer().getWorld(portal.gettoworld());
                 Location loc = new Location(world.get(), new Vector3d(portal.gettoX(), portal.gettoY(), portal.gettoZ()));
                 player.setLocation(loc);
@@ -91,7 +103,7 @@ public class PortalListener {
     @Listener
     public void onEntityMovePortal(MoveEntityEvent event, @First Entity entity) {
         Location locTo = event.getToTransform().getLocation();
-        Optional<Portal> optPortal = portalManager.getPortal(locTo);
+        Optional<Portal> optPortal = plm.getPortal(locTo);
         
         if(entity instanceof Player == false){
             if (optPortal.isPresent()){   
@@ -119,7 +131,7 @@ public class PortalListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
     
-        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        Optional<Portal> optPortal = plm.getPortal(loc);
         if (optPortal.isPresent() && aplayer.getLevel() != 10){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
@@ -139,7 +151,7 @@ public class PortalListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         
-        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        Optional<Portal> optPortal = plm.getPortal(loc);
         if (optPortal.isPresent() && aplayer.getLevel() != 10){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
@@ -159,7 +171,7 @@ public class PortalListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         
-        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        Optional<Portal> optPortal = plm.getPortal(loc);
         if (optPortal.isPresent() && aplayer.getLevel() != 10){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
@@ -171,7 +183,7 @@ public class PortalListener {
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
         
-        Optional<Portal> optPortal = portalManager.getPortal(loc);
+        Optional<Portal> optPortal = plm.getPortal(loc);
         if (optPortal.isPresent()){event.setCancelled(true);}
     }
 }

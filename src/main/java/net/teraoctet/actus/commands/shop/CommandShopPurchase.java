@@ -3,7 +3,7 @@ package net.teraoctet.actus.commands.shop;
 import java.util.Optional;
 import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
@@ -33,15 +33,15 @@ public class CommandShopPurchase implements CommandExecutor {
             }
             action.remove(player);
             Optional<String> uuid = ctx.<String> getOne("uuid");
-            Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid.get()));
+            Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid.get()));
             if(itemShop.isPresent()){
                 ItemStack is = itemShop.get().getItemStack();
                 int price = itemShop.get().getPriceInt();
                 
                 Inventory items = player.getInventory().query(EMERALD);
                 if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-                    if(itemShopManager.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
-                        Optional<ItemStack> coin = itemShopManager.removeCoin(price,player.getItemInHand(HandTypes.MAIN_HAND).get());
+                    if(ism.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
+                        Optional<ItemStack> coin = ism.removeCoin(price,player.getItemInHand(HandTypes.MAIN_HAND).get());
                         if(coin.isPresent()){
                             player.setItemInHand(HandTypes.MAIN_HAND,coin.get());
                             player.getInventory().offer(is);

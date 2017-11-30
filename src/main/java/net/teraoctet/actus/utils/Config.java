@@ -37,7 +37,7 @@ public class Config {
                 config.getNode("server", "SUBTITLE").setValue("Serveur [FR] CRAFT.TER@OCTET");
                 config.getNode("server", "URLWEB").setValue("http://craft.teraoctet.net");
                 config.getNode("server", "COOLDOWN_TO_TP").setValue(10);
-                config.getNode("server", "UNIQUE_SPAWN_WORLD").setValue(0);
+                config.getNode("server", "UNIQUE_SPAWN_WORLD").setValue(false);
                 config.getNode("server", "SPAWN_WORLD").setValue("World");
                 config.getNode("server", "DIAMETER_MAX_TPR").setValue(2000);
                 config.getNode("server", "TNT_DISABLE").setValue(false);
@@ -48,7 +48,8 @@ public class Config {
                 config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue(true);
                 config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue(false);
                 config.getNode("troc", "ENABLE_TROC_SCOREBOARD").setValue(false);
-                config.getNode("version").setValue(1);
+                config.getNode("shop", "ENABLE_SHOP_BOOKVIEW").setValue(false);
+                config.getNode("version").setValue(2);
                 MANAGER.save(config);
             }
             config = MANAGER.load();
@@ -73,7 +74,7 @@ public class Config {
     public static int GUILD_NAME_MAX_SIZE() { return config.getNode("guild", "NAME_MAX_SIZE").getInt(); }
     public static int GUILD_NAME_MIN_SIZE() { return config.getNode("guild", "NAME_MIN_SIZE").getInt(); }
     public static int COOLDOWN_TO_TP() { return config.getNode("server", "COOLDOWN_TO_TP").getInt(); }
-    public static int UNIQUE_SPAWN_WORLD() { return config.getNode("server", "UNIQUE_SPAWN_WORLD").getInt(); }
+    public static boolean UNIQUE_SPAWN_WORLD() { return config.getNode("server", "UNIQUE_SPAWN_WORLD").getBoolean(); }
     public static int DIAMETER_MAX_TPR() { return config.getNode("server", "DIAMETER_MAX_TPR").getInt(); }
     public static String SPAWN_WORLD() { return config.getNode("server", "SPAWN_WORLD").getString(); }
     public static boolean TNT_DISABLE() { return config.getNode("server", "TNT_DISABLE").getBoolean(); }
@@ -84,6 +85,7 @@ public class Config {
     public static boolean ENABLE_SKULL_GRAVE() { return config.getNode("grave", "ENABLE_SKULL_GRAVE").getBoolean(); }
     public static boolean ENABLE_SIGN_GRAVE() { return config.getNode("grave", "ENABLE_SIGN_GRAVE").getBoolean(); }
     public static boolean ENABLE_TROC_SCOREBOARD() { return config.getNode("troc", "ENABLE_TROC_SCOREBOARD").getBoolean(); }
+    public static boolean ENABLE_SHOP_BOOKVIEW() { return config.getNode("shop", "ENABLE_SHOP_BOOKVIEW").getBoolean(); }
     
     public void setEnableSkullGrave(boolean val) {
         try {
@@ -99,6 +101,16 @@ public class Config {
         try {
             config = MANAGER.load();
             config.getNode("grave","ENABLE_SIGN_GRAVE").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void setEnableShopBookview(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("shop","ENABLE_SHOP_BOOKVIEW").setValue(val);
             MANAGER.save(config);
         } catch (IOException ex) {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);

@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
+import static net.teraoctet.actus.Actus.plugin;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,7 +20,11 @@ public class CallBackBook {
             Optional<Book> optbook;
             try {
                 optbook = configBook.load(bookName);
-                if(optbook.isPresent())player.sendBookView(optbook.get().getBookView());
+                if(optbook.isPresent()){
+                    player.sendBookView(optbook.get().getBookView());
+                }else{
+                    plugin.getLogger().error("HelpBook absent a creer : " + bookName);
+                }
             } catch (ObjectMappingException | IOException ex) {Logger.getLogger(CallBackBook.class.getName()).log(Level.SEVERE, null, ex);}         
         };
     }

@@ -1,22 +1,24 @@
 package net.teraoctet.actus.troc;
 
 import com.google.common.reflect.TypeToken;
+import com.sk89q.worldedit.blocks.BlockType;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.CB_TROC;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.sm;
-import net.teraoctet.actus.commands.troc.CommandTrocAdd;
+import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.troc.EnumTransactType.BUY;
 import static net.teraoctet.actus.troc.EnumTransactType.SALE;
 import net.teraoctet.actus.utils.Data;
+import static net.teraoctet.actus.utils.Data.getGuild;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -24,12 +26,15 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import static org.spongepowered.api.block.BlockTypes.WALL_SIGN;
+import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
+import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
-import org.spongepowered.api.data.type.HandTypes;
+import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.BARRIER;
@@ -45,6 +50,7 @@ import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.BookView;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -77,14 +83,16 @@ public class TrocManager {
     
     /**
      * Sauvegarde le troc transmis
-     * @param troc objet Troc
-     * @throws IOException
-     * @throws ObjectMappingException 
+     * @param troc objet Troc 
      */
-    public void save(Troc troc) throws IOException, ObjectMappingException{
-        trocNode = MANAGER.load();
-        trocNode.getNode(troc.getLoc(), String.valueOf(troc.getSlot())).setValue(TOKEN_CONFIG, troc);
-        MANAGER.save(trocNode);
+    public void save(Troc troc){
+        try {
+            trocNode = MANAGER.load();
+            trocNode.getNode(troc.getLoc(), String.valueOf(troc.getSlot())).setValue(TOKEN_CONFIG, troc);
+            MANAGER.save(trocNode);
+        } catch (IOException | ObjectMappingException ex) {
+            Logger.getLogger(TrocManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
@@ -210,11 +218,7 @@ public class TrocManager {
         Optional<Troc> troc = getTroc(loc,slot);
         if(troc.isPresent()){
             troc.get().setQteMax(qteMax);
-            try {
-                save(troc.get());
-            } catch (IOException | ObjectMappingException ex) {
-                Logger.getLogger(TrocManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            save(troc.get());
             
             String[] parts = chestTroc.getName().get().split(" ");
             String locTroc = parts[1];
@@ -247,63 +251,63 @@ public class TrocManager {
         
         if(!getTroc(loc,0).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,0).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,0).get().getItem().getType().getTranslation().get(Locale.FRENCH)
+                    + ": &e" + getTroc(loc,0).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,0).get().getPrice() + "  -1"));
             c.setScore(1);
         }
 
         if(!getTroc(loc,1).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,1).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,1).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,1).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,1).get().getPrice() + "  -2"));
             c.setScore(2);
         }
 
         if(!getTroc(loc,2).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,2).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,2).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,2).get().getItem().getType().getTranslation() 
                     + " - " + getTroc(loc,2).get().getPrice() + "  -3"));
             c.setScore(3);
         }
 
         if(!getTroc(loc,3).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,3).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,3).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,3).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,3).get().getPrice() + "  -4"));
             c.setScore(4);
         }
 
         if(!getTroc(loc,4).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,4).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,4).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,4).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,4).get().getPrice() + "  -5"));
             c.setScore(5);
         }
 
         if(!getTroc(loc,5).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,5).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,5).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,5).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,5).get().getPrice() + "  -6"));
             c.setScore(6);
         }
 
         if(!getTroc(loc,6).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,6).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,6).get().getItem().getType().getTranslation().get(Locale.FRENCH)  
+                    + ": &e" + getTroc(loc,6).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,6).get().getPrice() + "  -7"));
             c.setScore(7);
         }
 
         if(!getTroc(loc,7).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,7).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,7).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,7).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,7).get().getPrice() + "  -8"));
             c.setScore(8);
         }
 
         if(!getTroc(loc,8).get().getItem().getType().equals(BARRIER)){
             c = obj.getOrCreateScore(MESSAGE("&9" + getTroc(loc,8).get().getTransactType().toString()
-                    + ": &e" + getTroc(loc,8).get().getItem().getType().getTranslation().get(Locale.FRENCH) 
+                    + ": &e" + getTroc(loc,8).get().getItem().getType().getTranslation()
                     + " - " + getTroc(loc,8).get().getPrice() + "  -9"));
             c.setScore(9);
         }
@@ -317,41 +321,35 @@ public class TrocManager {
     
     /**
      * 
-     * @param player
      * @param transact
      * @param qte
      * @param price 
      * @param loc 
+     * @param item 
      * @return  
      */
-    public Optional<ItemStack> setItemTroc(Player player, EnumTransactType transact, int qte, double price, String loc){       
-        Optional<ItemStack> itemTroc = player.getItemInHand(HandTypes.MAIN_HAND);
-        if(!itemTroc.isPresent()){
-            player.sendMessage(MESSAGE("&bAucun item dans la main !?"));
-            return Optional.empty();
-        }
-        itemTroc.get().setQuantity(1);
-        LoreData itemData = itemTroc.get().getOrCreate(LoreData.class).get();
-        String displayName = "&9" + transact.toString() + " :&e" + price;
+    public Optional<ItemStack> setItemTroc(EnumTransactType transact, int qte, double price, String loc, ItemStackSnapshot item){       
+        ItemStack itemTroc = item.createStack();
+        itemTroc.setQuantity(1);
+        LoreData itemData = itemTroc.getOrCreate(LoreData.class).get();
+        String displayName = "&2" + transact.toString() + " &0:&e" + price;
         
-        itemTroc.get().offer(Keys.DISPLAY_NAME, MESSAGE(displayName));     
+        itemTroc.offer(Keys.DISPLAY_NAME, MESSAGE(displayName));     
         List<Text> itemLore = itemData.lore().get();
-        itemLore.add(MESSAGE("&eOwner : " + player.getName()));
-        itemLore.add(MESSAGE("&b" + itemTroc.get().getType().getTranslation().get()));
+        itemLore.add(MESSAGE("&b" + item.getTranslation().get()));
         if(transact.equals(EnumTransactType.BUY)){
         itemLore.add(MESSAGE("&bBesoin Qte : &9" + qte));}
-        DataTransactionResult dataTransactionResult = itemTroc.get().offer(Keys.ITEM_LORE, itemLore);
+        DataTransactionResult dataTransactionResult = itemTroc.offer(Keys.ITEM_LORE, itemLore);
 
         if (dataTransactionResult.isSuccessful()){ 
-            return Optional.of(itemTroc.get()); 
+            return Optional.of(itemTroc); 
         } else {
-            player.sendMessage(MESSAGE("&bErreur de creation du lore"));
             return Optional.empty();
         }
     }
     
     /**
-     * 
+     * Change l'info Qte dans le lore de l'itemTroc
      * @param troc
      * @param transact
      * @param qte
@@ -363,14 +361,14 @@ public class TrocManager {
         
         ItemStack itemTroc = troc.getItem().createStack();
         LoreData itemData = itemTroc.getOrCreate(LoreData.class).get();
-        String displayName = "&9" + transact.toString() + " :&e" + price;
+        String displayName = "&2" + transact.toString() + " &0:&e" + price;
         
         itemTroc.offer(Keys.DISPLAY_NAME, MESSAGE(displayName));     
         List<Text> itemLore = itemData.lore().get();
-        itemLore.add(MESSAGE("&eOwner : " + troc.getPlayerName()));
-        itemLore.add(MESSAGE("&b" + itemTroc.getType().getTranslation().get()));
+        itemLore.add(MESSAGE("&b" + itemTroc.getTranslation().get()));
         if(transact.equals(EnumTransactType.BUY)){
-        itemLore.add(MESSAGE("&bBesoin Qte : &9" + qte));}
+            itemLore.add(MESSAGE("&bBesoin Qte : &9" + qte));
+        }
         DataTransactionResult dataTransactionResult = itemTroc.offer(Keys.ITEM_LORE, itemLore);
 
         if (dataTransactionResult.isSuccessful()){ 
@@ -513,9 +511,10 @@ public class TrocManager {
      * @param type transaction achat/BUY ou vente/SALE
      * @param price prix de l'item
      * @param qte quantite maxi si achat/BUY
+     * @param item item a ajouter
      * @return boolean
      */
-    public boolean AddTroc(Player player, Inventory chestTroc, int slot, EnumTransactType type, double price, int qte) {
+    public boolean AddTroc(Player player, Inventory chestTroc, int slot, EnumTransactType type, double price, int qte, ItemStackSnapshot item) {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());      
         String[] parts = chestTroc.getName().get().split(" ");
         String locTroc = parts[1];
@@ -535,21 +534,17 @@ public class TrocManager {
         int index = 0;         
         for (Inventory inv : chestTroc.slots()) {
             if (slot == index){
-                Optional<ItemStack> is = setItemTroc(player, type, qte, price, locTroc);
+                Optional<ItemStack> is = setItemTroc(type, qte, price, locTroc, item);
                 if(!is.isPresent()){
                     player.sendMessage(MESSAGE("&4Creation de l'itemTroc impossible !"));
                     return false;
                 }
                 inv.set(is.get());
-                troc = new Troc(locTroc, index, type, qte, price, player.getItemInHand(HandTypes.MAIN_HAND).get().createSnapshot(),
+                troc = new Troc(locTroc, index, type, qte, price, item,
                 player.getName(),player.getIdentifier(),aplayer.getID_guild());
-                try {
-                    save(troc);
-                    player.sendMessage(MESSAGE("&eItem troc cr\351\351 avec succes !"));
-                    return true;
-                } catch (IOException | ObjectMappingException ex) {
-                    Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
-                }    
+                save(troc);
+                player.sendMessage(MESSAGE("&eItem troc cr\351\351 avec succes !"));
+                return true;    
             }
             index = index + 1;
             if(index == 9){
@@ -572,7 +567,8 @@ public class TrocManager {
             Location<World> locChest2;
             Optional<TileEntity> chestBlock = locChest1.get().getTileEntity();
             TileEntity tileChest = chestBlock.get();
-            String chestName = "&eTROC&b " + locTroc + " " + owner + " " + idGuild;
+            String chestName = "&l&3TROC&r " + locTroc + " " + owner + " " + idGuild;
+            if(owner.equalsIgnoreCase("LIBRE"))chestName = "&l&aTROC&r " + locTroc + " " + owner + " " + idGuild;
             tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
                 
             if(sm.locDblChest(locChest1.get()).isPresent()){
@@ -581,12 +577,15 @@ public class TrocManager {
                 TileEntity tiledblChest = dblchestBlock.get();
                 tiledblChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
             }
+            String ownerSign = owner;
+            if(idGuild != 0)ownerSign = getGuild(idGuild).getName();
+            writeToChestSign(locTroc,ownerSign,Optional.empty());
             return true;
         }
         return false;
     }
     
-    private ItemStack getIS(){
+    public ItemStack getIS(){
         ItemStack notroc = ItemStack.builder().itemType(ItemTypes.BARRIER).build();
         LoreData itemData = notroc.getOrCreate(LoreData.class).get();            
         List<Text> itemLore = itemData.lore().get();
@@ -601,12 +600,9 @@ public class TrocManager {
      * @param inv le chestTroc  
      * @param slot emplacement Slot
      * @param player joueur
+     * @param item ItemStackSnapshot
      */
-    public void sendBookSelectTransactType(Inventory inv, int slot, Player player){
-        if(!player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-            player.sendMessage(MESSAGE("&bAucun item dans la main !?"));
-            return;
-        }
+    public void sendBookSelectTransactType(Inventory inv, int slot, Player player, ItemStackSnapshot item){
         BookView.Builder bv = BookView.builder()
             .author(MESSAGE("&bADMIN"))
             .title(MESSAGE("&bTROC"));
@@ -614,19 +610,80 @@ public class TrocManager {
         Text text = 
                 Text.builder()
                 .append(MESSAGE("&l&4Clique sur le type de troc souhait\351\n\n"))
-                .append(MESSAGE("&8Item : &1" + player.getItemInHand(HandTypes.MAIN_HAND).get().getType().getType().getTranslation().get() + "\n\n"))
+                .append(MESSAGE("&8Item : &1" + item.getType().getTranslation().get() + "\n\n"))
                 .append(MESSAGE("&l&4type de transaction ? :" + "\n"))
                 .append(Text.builder()
                 .append(MESSAGE("&l&1-  " + EnumTransactType.SALE + "\n"))
-                .onClick(TextActions.executeCallback(CB_TROC.callSelectTransactType(inv,slot,SALE,0)))
+                .onClick(TextActions.executeCallback(CB_TROC.callSelectTransactType(inv,slot,SALE,0, item)))
                 .onHover(TextActions.showText(MESSAGE("&eClique ici pour un item a la vente"))).build())
                 .append(Text.builder()        
                 .append(MESSAGE("&l&1-  " + EnumTransactType.BUY + "\n"))
-                .onClick(TextActions.executeCallback(CB_TROC.callSelectTransactType(inv,slot,BUY,0)))
+                .onClick(TextActions.executeCallback(CB_TROC.callSelectTransactType(inv,slot,BUY,0, item)))
                 .onHover(TextActions.showText(MESSAGE("&eClique ici pour un item a l'achat"))).build())
      
                 .build();
         bv.addPage(text);
         player.sendBookView(bv.build());   
+    }
+    
+    /**
+     * retourne True si le chestTroc est vide
+     * @param loc position au format Location String "World:x;y;z"
+     * @return 
+     */
+    public boolean chestTrocHasEmpty(String loc){
+        
+        return (getTroc(loc,0).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,1).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,2).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,3).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,4).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,5).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,6).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,7).get().getPlayerName().equals("LIBRE") &&
+                getTroc(loc,8).get().getPlayerName().equals("LIBRE"));
+    }
+    
+    public void writeToChestSign(String locTroc, String owner, Optional<String> guild){
+        Optional<Location<World>> locChest1 = DeSerialize.getLocation(locTroc);
+        if (locChest1.isPresent()){
+            Optional<Location<World>> locChest2 = Optional.empty();
+            Optional<Location<World>> locSign;
+                            
+            if(sm.locDblChest(locChest1.get()).isPresent())locChest2 = Optional.of(sm.locDblChest(locChest1.get()).get());                
+            
+            locSign = getLocationSignTroc(locChest1.get());
+            if(!locSign.isPresent())locSign = getLocationSignTroc(locChest2.get());
+            
+            if(locSign.isPresent()){
+                Optional<TileEntity> signBlock = locSign.get().getTileEntity();
+                TileEntity tileSign = signBlock.get();
+                Sign sign=(Sign)tileSign;
+                Optional<SignData> opSign = sign.getOrCreate(SignData.class);
+                String ownerTroc = "&l&3" + owner;
+                if(guild.isPresent())ownerTroc = "&l&9" + guild.get();
+                if(owner.equalsIgnoreCase("LIBRE"))ownerTroc = "&l&4" + owner;
+                SignData signData = opSign.get();
+                List<Text> signTroc = new ArrayList<>();
+                signTroc.add(MESSAGE("&l&8[TROC]"));
+                signTroc.add(MESSAGE("&3" + ownerTroc));
+                signTroc.add(MESSAGE("&8Pour des infos :"));
+                signTroc.add(MESSAGE("&8Clique droit ici"));
+                signData.set(Keys.SIGN_LINES,signTroc );
+                sign.offer(signData);   
+            }
+        }
+        
+    }
+    
+    private Optional<Location<World>> getLocationSignTroc(Location<World> locChest){
+        Optional<Location<World>> locSign = Optional.empty();       
+            
+        if(locChest.getBlockRelative(Direction.NORTH).getBlockType().equals(WALL_SIGN))locSign = Optional.of(locChest.getBlockRelative(Direction.NORTH));
+        if(locChest.getBlockRelative(Direction.EAST).getBlockType().equals(WALL_SIGN))locSign = Optional.of(locChest.getBlockRelative(Direction.EAST));
+        if(locChest.getBlockRelative(Direction.SOUTH).getBlockType().equals(WALL_SIGN))locSign = Optional.of(locChest.getBlockRelative(Direction.SOUTH));
+        if(locChest.getBlockRelative(Direction.WEST).getBlockType().equals(WALL_SIGN))locSign = Optional.of(locChest.getBlockRelative(Direction.WEST));
+        
+        return locSign;
     }
 }

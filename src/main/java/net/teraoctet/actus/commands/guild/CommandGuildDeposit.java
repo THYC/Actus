@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -25,7 +25,7 @@ public class CommandGuildDeposit implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.deposit")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyGuild(aplayer)) {
+            if(gdm.hasAnyGuild(aplayer)) {
                 double amount = ctx.<Double> getOne("amount").get();
                 double playerMoney = aplayer.getMoney();
                 

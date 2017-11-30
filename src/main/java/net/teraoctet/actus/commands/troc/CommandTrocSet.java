@@ -1,13 +1,11 @@
 package net.teraoctet.actus.commands.troc;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.troc.Troc;
+import static net.teraoctet.actus.utils.Data.getGuild;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.block.BlockTypes;
@@ -24,11 +22,11 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
 import org.spongepowered.api.item.ItemTypes;
+import static org.spongepowered.api.item.ItemTypes.BARRIER;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -43,12 +41,10 @@ public class CommandTrocSet implements CommandExecutor {
                                 
             Optional<Location<World>> locChest1 = Optional.empty();
             BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
-            while (playerBlockRay.hasNext()) 
-            { 
+            while (playerBlockRay.hasNext())            { 
                 BlockRayHit<World> currentHitRay = playerBlockRay.next(); 
 
-                if (player.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.CHEST)) 
-                { 
+                if (player.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.CHEST))                { 
                     locChest1 = Optional.of(currentHitRay.getLocation()); 
                     break;
                 }                     
@@ -62,7 +58,10 @@ public class CommandTrocSet implements CommandExecutor {
                 Location<World> locChest2;
                 Optional<TileEntity> chestBlock = locChest1.get().getTileEntity();
                 TileEntity tileChest = chestBlock.get();
-                String chestName = "&eTROC&b " + locTroc + " " + owner + " " + idGuild;
+                String chestName = "&l&3TROC&r " + locTroc + " " + owner + " " + idGuild;
+                if(owner.equalsIgnoreCase("LIBRE")){
+                    chestName = "&l&aTROC&r " + locTroc + " " + owner + " " + idGuild;
+                }
                 tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
                 
                 if(sm.locDblChest(locChest1.get()).isPresent()){
@@ -71,6 +70,10 @@ public class CommandTrocSet implements CommandExecutor {
                     TileEntity tiledblChest = dblchestBlock.get();
                     tiledblChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
                 }
+                
+                String ownerSign = owner;
+                if(idGuild != 0)ownerSign = getGuild(idGuild).getName();
+                tm.writeToChestSign(locTroc,ownerSign,Optional.empty());
                 
                 Troc troc;
                 Optional<Chest> chest = Optional.of((Chest)chestBlock.get());
@@ -92,10 +95,11 @@ public class CommandTrocSet implements CommandExecutor {
                         if(!inv.peek().isPresent()){
                             inv.offer(getIS());
                             troc = new Troc(locTroc,index,null,0,0d,getIS().createSnapshot(),"LIBRE","LIBRE",0);
-                            try {
+                            tm.save(troc);
+                        }else{
+                            if(inv.peek().get().getType().equals(BARRIER)){
+                                troc = new Troc(locTroc,index,null,0,0d,getIS().createSnapshot(),"LIBRE","LIBRE",0);
                                 tm.save(troc);
-                            } catch (IOException | ObjectMappingException ex) {
-                                Logger.getLogger(CommandTrocAdd.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                         index = index + 1;

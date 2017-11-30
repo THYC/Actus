@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
-import static net.teraoctet.actus.Actus.itemShopManager;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ism;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.shop.ItemShop;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -79,7 +79,7 @@ public class CommandAS implements CommandExecutor {
                 return CommandResult.empty();
             }
 
-            Optional<Plot> plot = plotManager.getPlot(as.getLocation());
+            Optional<Plot> plot = ptm.getPlot(as.getLocation());
             if (plot.isPresent()){ 
                 if(!plot.get().getUuidOwner().equalsIgnoreCase(player.getIdentifier()) && aplayer.getLevel() != 10){
                     src.sendMessage(NO_PERMISSIONS());
@@ -88,10 +88,10 @@ public class CommandAS implements CommandExecutor {
             }
 
             UUID uuid = as.getUniqueId();
-            if((itemShopManager.hasShop(uuid) && aplayer.getLevel() == 10) || !itemShopManager.hasShop(uuid)){  
+            if((ism.hasShop(uuid) && aplayer.getLevel() == 10) || !ism.hasShop(uuid)){  
                 String titre = "ArmorStand";
-                if(itemShopManager.hasShop(uuid)){
-                    Optional<ItemShop> shop = itemShopManager.getItemShop(uuid);
+                if(ism.hasShop(uuid)){
+                    Optional<ItemShop> shop = ism.getItemShop(uuid);
                     if(shop.isPresent()) titre = "Shop : " + shop.get().getItemStack().getItem().getName();
                 }
 

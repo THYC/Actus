@@ -12,8 +12,8 @@ import static net.teraoctet.actus.Actus.configInv;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.mapCountDown;
-import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
+import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.inventory.AInventory;
@@ -144,33 +144,23 @@ public class PlayerListener {
         event.setMessage(EVENT_DISCONNECT_MESSAGE(player));
     }
         
-    //-Credits : 
-    //CommandLogger : https://github.com/prism/CommandLogger
-    //Author : viveleroi
     @Listener
-    public void onSendCommand(final SendCommandEvent event){
-        StringBuilder builder = new StringBuilder();
-
-        Optional<Player> optionalPlayer = event.getCause().first(Player.class);
-        if (optionalPlayer.isPresent()) {
-            builder.append(optionalPlayer.get().getName());
-
-            Location<World> loc = optionalPlayer.get().getLocation();
-            builder.append(String.format(" (%s @ %d %d %d) ", loc.getExtent().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+    public void onSendCommand(final SendCommandEvent event, @First Player player){
+        if(!event.getCommand().contains("sponge:callback")){
+            StringBuilder builder = new StringBuilder();
+            builder.append(player.getName());
+            Location<World> loc = player.getLocation();
+            builder.append(String.format(" (%s @ %d %d %d) ", loc.getExtent().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));    
+            builder.append(": /").append(event.getCommand()).append(" ").append(event.getArguments());
+            getGame().getServer().getConsole().sendMessage(Text.of(builder.toString()));
         }
-        else if(event.getCause().first(ConsoleSource.class).isPresent()) {
-            builder.append("console");
-        }else if(event.getCause().first(CommandBlockSource.class).isPresent()) {
-            builder.append("command block");
-        }
-        Optional.of(builder.append(": /").append(event.getCommand()).append(" ").append(event.getArguments()));
-        getGame().getServer().getConsole().sendMessage(Text.of(builder.toString()));
     }
     
     @Listener
     public void promptDouble(MessageChannelEvent.Chat event, @First Player player) {
         if(inputDouble.containsKey(player)){
             if(inputDouble.get(player) > 0d)return;
+            
             String smessage = event.getOriginalMessage().toPlain();
             smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
             Scanner scanner = new Scanner(smessage);
@@ -186,12 +176,14 @@ public class PlayerListener {
                 inputDouble.replace(player, d);
                 player.sendMessage(CLICK_TO_CONFIRM()
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
-                event.clearMessage();
+                //event.clearMessage();
             }else{
                 
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
                 .concat(MESSAGE("&bTapes 0 pour annuler la transaction")));
             }
+            event.clearMessage();
+            return;
         }
         if(inputShop.containsKey(player)){
             String smessage = event.getOriginalMessage().toPlain();
@@ -206,17 +198,19 @@ public class PlayerListener {
                     event.clearMessage();
                     return;
                 }
+                //inputShop.replace(player, String.valueOf(d));
                 Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
-                event.clearMessage();
+                //event.clearMessage();
             }else{                
-                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
+                player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences : ")
                 .concat(MESSAGE("&bTapes 0 pour annuler")));
+                //event.setCancelled(true);
             }
+            event.clearMessage();
+            return;
+            //event.setCancelled(true);
         }
-    }
-    
-    @Listener
-    public void onMessage(MessageChannelEvent.Chat event, @First Player player) {
+        
         String smessage = event.getMessage().toPlain();
         smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
         Text message = MESSAGE(Permissions.getPrefix(player) + "&a[" + player.getName() + "] &7" + smessage + Permissions.getSuffix(player));
@@ -224,6 +218,16 @@ public class PlayerListener {
         Text newMessage = Text.builder().append(prefixWorld).append(message).build();
         event.setMessage(newMessage);
     }
+    
+    /*@Listener
+    public void onMessage(MessageChannelEvent.Chat event, @First Player player) {
+        String smessage = event.getMessage().toPlain();
+        smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
+        Text message = MESSAGE(Permissions.getPrefix(player) + "&a[" + player.getName() + "] &7" + smessage + Permissions.getSuffix(player));
+        Text prefixWorld = MESSAGE(WorldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
+        Text newMessage = Text.builder().append(prefixWorld).append(message).build();
+        event.setMessage(newMessage);
+    }*/
                     
     @Listener
     public void onInteractChest(InteractBlockEvent event, @First Player player) {
@@ -279,7 +283,7 @@ public class PlayerListener {
                                     SignData offering = optional.get();
                                     Text txt1 = offering.lines().get(0);
                                     if (txt1.equals(MESSAGE("&1A VENDRE"))){
-                                        if(!plotManager.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
+                                        if(!ptm.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
                                             player.sendMessage(MESSAGE("&eCette parcelle n'existe plus"));
                                             event.setCancelled(true);
                                             return;
@@ -391,6 +395,13 @@ public class PlayerListener {
                                 if(args.length > 2)command = command + " " + args[2];
                                 if(args.length > 3)command = command + " " + args[3]; 
                                 cmdService.process(player, command);
+                            }
+                        }
+                        
+                        if (txt1.toPlain().contains("[TROC]")){
+                            Optional<Book> book = configBook.load("TROC");
+                            if(book.isPresent()){
+                                player.sendBookView(book.get().getBookView());
                             }
                         }
                         

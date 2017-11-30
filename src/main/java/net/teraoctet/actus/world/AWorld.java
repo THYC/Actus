@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import static net.teraoctet.actus.Actus.game;
-import static net.teraoctet.actus.Actus.worldManager;
 import static net.teraoctet.actus.world.WorldManager.addWorld;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;

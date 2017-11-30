@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.commands.plot.CallBackPlot;
@@ -68,7 +68,6 @@ import static org.spongepowered.api.item.ItemTypes.ARROW;
 import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.filter.cause.Root;
-import static org.spongepowered.api.item.ItemTypes.WOODEN_AXE;
 import org.spongepowered.api.world.LocatableBlock;
 
 public class PlotListener {
@@ -86,35 +85,43 @@ public class PlotListener {
         if(!b.getLocation().isPresent()){return;}
         Location loc = b.getLocation().get();
         Optional<ItemStack> itemInHand = player.getItemInHand(HandTypes.MAIN_HAND);
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         
         // Event click gauche -- saisie angle 1 plot
         if (event instanceof InteractBlockEvent.Primary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL) /*|| itemInHand.get().getItem().equals(WOODEN_AXE)*/){
+                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL)){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
-                            PlotManager plotPlayer = PlotManager.getSett(player);
-                            if(plotPlayer.getBorder1().isPresent()){
-                                if(plotPlayer.getBorder1().get().equals(loc)){
+                            PlotSelection plotSelect = ptm.getPlotSel(player);                      
+                            if(plotSelect.getMinPos().isPresent()){
+                                if(plotSelect.getMinPos().get().equals(loc.getBlockPosition())){
+                                    Wedit.setSelection(player, plotSelect);
                                     event.setCancelled(true);
                                     return;
                                 }        
                             }
-                            plotPlayer.setBorder(1, loc);
+                            
+                            plotSelect.setMinPos(loc.getBlockPosition());
+                            plotSelect.setWorld(player.getWorld());
+                            Wedit.setSelection(player, plotSelect);
                             player.sendMessage(MESSAGE("&aNiveau : &e" + plot.get().getLevel()));
                             player.sendMessage(Text.of(TextColors.GREEN, "Angle1 : ", TextColors.YELLOW, String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
                         }
                     } else {
-                        PlotManager plotPlayer = PlotManager.getSett(player);
-                        if(plotPlayer.getBorder1().isPresent()){
-                            if(plotPlayer.getBorder1().get().equals(loc)){
+                        PlotSelection plotSelect = ptm.getPlotSel(player);
+                        if(plotSelect.getMinPos().isPresent()){
+                            if(plotSelect.getMinPos().get().equals(loc.getBlockPosition())){
+                                Wedit.setSelection(player, plotSelect);
                                 event.setCancelled(true);
                                 return;
-                            }
+                            }        
                         }
-                        plotPlayer.setBorder(1, loc);
+                            
+                        plotSelect.setMinPos(loc.getBlockPosition());
+                        plotSelect.setWorld(player.getWorld());
+                        Wedit.setSelection(player, plotSelect);
                         player.sendMessage(Text.of(TextColors.GREEN, "Angle1 : ", TextColors.YELLOW, String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
                     }
                     event.setCancelled(true);
@@ -126,31 +133,36 @@ public class PlotListener {
         // Event click droit -- saisie angle 2 plot
 	if (event instanceof InteractBlockEvent.Secondary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL)  /*|| itemInHand.get().getItem() == WOODEN_AXE*/){
+                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL)){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
-                        if(player.hasPermission("actus.admin.plot")){
-                            PlotManager plotPlayer = PlotManager.getSett(player);
-                            if(plotPlayer.getBorder2().isPresent()){
-                                if(plotPlayer.getBorder2().get().equals(loc)){
+                        if(player.hasPermission("actus.admin.plot")){                            
+                            PlotSelection plotSelect = ptm.getPlotSel(player);
+                            if(plotSelect.getMaxPos().isPresent()){
+                                if(plotSelect.getMaxPos().get().equals(loc.getBlockPosition())){
+                                    Wedit.setSelection(player, plotSelect);
                                     event.setCancelled(true);
                                     return;
-                                    
-                                }       
+                                }        
                             }
-                            plotPlayer.setBorder(2, loc);
+                            plotSelect.setMaxPos(loc.getBlockPosition());
+                            plotSelect.setWorld(player.getWorld());
+                            Wedit.setSelection(player, plotSelect);
                             player.sendMessage(MESSAGE("&aNiveau : &e" + plot.get().getLevel()));
                             player.sendMessage(Text.of(TextColors.GREEN, "Angle2 : ", TextColors.YELLOW, String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
                         }
                     } else {
-                        PlotManager plotPlayer = PlotManager.getSett(player);
-                        if(plotPlayer.getBorder2().isPresent()){
-                            if(plotPlayer.getBorder2().get().equals(loc)){
+                        PlotSelection plotSelect = ptm.getPlotSel(player);
+                        if(plotSelect.getMaxPos().isPresent()){
+                            if(plotSelect.getMaxPos().get().equals(loc.getBlockPosition())){
+                                Wedit.setSelection(player, plotSelect);
                                 event.setCancelled(true);
                                 return;
-                            }
+                            }        
                         }
-                        plotPlayer.setBorder(2, loc);
+                        plotSelect.setMaxPos(loc.getBlockPosition());
+                        plotSelect.setWorld(player.getWorld());
+                        Wedit.setSelection(player, plotSelect);
                         player.sendMessage(Text.of(TextColors.GREEN, "Angle2 : ", TextColors.YELLOW, String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
                     }
                     event.setCancelled(true);
@@ -183,13 +195,13 @@ public class PlotListener {
                         Text txt1 = offering.lines().get(0);
                         if (txt1.equals(MESSAGE("&1A VENDRE"))){
                             int cout = Integer.valueOf(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain());
-                            if(!plotManager.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
+                            if(!ptm.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
                                 player.sendMessage(MESSAGE("&eCette parcelle n'existe plus"));
                                 b.getLocation().get().removeBlock();
                                 event.setCancelled(true);
                                 return;
                             }
-                            plot = plotManager.getPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain());
+                            plot = ptm.getPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain());
                             if(plot.isPresent()){
                                 if (aplayer.getMoney()< cout && !plot.get().getUuidOwner().contains(player.getIdentifier())){
                                     player.sendMessage(ChatTypes.CHAT,MISSING_BALANCE());
@@ -248,61 +260,9 @@ public class PlotListener {
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
             }else{
-                if(plotManager.hasTag(loc, plot.get())){
-                    plotManager.remTag(plot.get());
+                if(ptm.hasTag(loc, plot.get())){
+                    ptm.remTag(plot.get());
                 }
-            }
-        }
-    }
-    
-    @Listener
-    public void onInteractWithWoodenAxe(InteractBlockEvent  event, @First Player player){
-        //APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-        BlockSnapshot b = event.getTargetBlock();
-        if(!b.getLocation().isPresent()){return;}
-        Location loc = b.getLocation().get();
-        Optional<ItemStack> itemInHand = player.getItemInHand(HandTypes.MAIN_HAND);
-        Optional<Plot> plot = plotManager.getPlot(loc);
-        PlotManager plotPlayer = PlotManager.getSett(player);
-        
-        // Event click gauche -- saisie angle 1 plot
-        if (event instanceof InteractBlockEvent.Primary){
-            if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_AXE)){
-                    if (plot.isPresent()) {
-                        player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
-                        if(player.hasPermission("actus.admin.plot")){
-                                                        plotPlayer.setBorder(1, loc);
-                            player.sendMessage(MESSAGE("&aNiveau : &e" + plot.get().getLevel()));
-                            player.sendMessage(MESSAGE("&bAngle1 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
-                        }
-                    } else {
-                        plotPlayer.setBorder(1, loc);
-                        player.sendMessage(MESSAGE("&bAngle1 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
-                    }
-                    event.setCancelled(true);
-                    return;
-                } 
-            }
-        }
-        
-        // Event click droit -- saisie angle 2 plot
-	if (event instanceof InteractBlockEvent.Secondary){
-            if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_AXE)){
-                    if (plot.isPresent()) {
-                        player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
-                        if(player.hasPermission("actus.player.plot")){
-                            plotPlayer.setBorder(2, loc);
-                            player.sendMessage(MESSAGE("&aNiveau : &e" + plot.get().getLevel()));
-                            player.sendMessage(MESSAGE("&bAngle2 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
-                        }
-                    } else {
-                        plotPlayer.setBorder(2, loc);
-                        player.sendMessage(MESSAGE("&bAngle2 : &e" + String.format("%d %d %d", new Object[] { loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() })));
-                    }
-                    event.setCancelled(true);
-                } 
             }
         }
     }
@@ -313,9 +273,9 @@ public class PlotListener {
         Transform<World> to = event.getToTransform();
         Transform<World> from = event.getFromTransform();
         String world = player.getWorld().getName();
-        Optional<Plot> plot = plotManager.getPlot(to.getLocation());
-        Optional<Plot> jail = plotManager.getPlot(from.getLocation(),true);
-        Optional<Plot> fplot = plotManager.getPlot(from.getLocation());
+        Optional<Plot> plot = ptm.getPlot(to.getLocation());
+        Optional<Plot> jail = ptm.getPlot(from.getLocation(),true);
+        Optional<Plot> fplot = ptm.getPlot(from.getLocation());
         
         if(!fplot.isPresent()) {
             if(plot.isPresent()){
@@ -364,7 +324,7 @@ public class PlotListener {
         }
 
         if (jail.isPresent()){
-            if(!plotManager.getPlot(to.getLocation(), true).isPresent() && aplayer.getJail().equalsIgnoreCase(jail.get().getName())) {
+            if(!ptm.getPlot(to.getLocation(), true).isPresent() && aplayer.getJail().equalsIgnoreCase(jail.get().getName())) {
                 player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
                 player.sendMessage(ChatTypes.CHAT,PLOT_NO_ENTER());
             }
@@ -375,7 +335,7 @@ public class PlotListener {
     public void onPlayerSendCommand(SendCommandEvent event, @First Player player) {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Location loc = player.getLocation();
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         if (plot.isPresent()){
             if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN() && plot.get().getNoCommand()){
                 player.sendMessage(PLOT_PROTECTED());
@@ -392,16 +352,16 @@ public class PlotListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
                        
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         if (plot.isPresent()){
             if(plot.get().getNoBreak() && !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && 
                     aplayer.getLevel() != LEVEL_ADMIN()){
                 player.sendMessage(PLOT_PROTECTED());
                 event.setCancelled(true);
             }else{
-                if(plotManager.hasTag(loc, plot.get())){
+                if(ptm.hasTag(loc, plot.get())){
                     event.setCancelled(true);
-                    plotManager.remTag(plot.get());
+                    ptm.remTag(plot.get());
                 }
             }
         }
@@ -423,7 +383,7 @@ public class PlotListener {
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
         
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         if (plot.isPresent()){
             if(plot.get().getNoBuild() && !plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN()){
                 player.sendMessage(PLOT_PROTECTED());
@@ -432,14 +392,15 @@ public class PlotListener {
         }
 
         if(block.getFinal().getState().getType().equals(BEDROCK)){
- 
-            PlotManager plotPlayer = PlotManager.getSett(player);
-            plotPlayer.setBorder(1,loc.add(-20, 0, -20));
-            plotPlayer.setBorder(2,loc.add(20, 0, 20));
+            PlotSelection plotSelect = ptm.getPlotSel(player);                      
+            plotSelect.setMinPos(loc.add(-20, 0, -20).getBlockPosition());
+            plotSelect.setMaxPos(loc.add(20, 250, 20).getBlockPosition());
+            plotSelect.setWorld(player.getWorld());
+            Wedit.setSelection(player, plotSelect);
  
             int level = 0;
 
-            if(plotManager.plotNotAllow(plotPlayer.getBorder1().get(), plotPlayer.getBorder2().get())){
+            if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
                 player.sendMessage(ALREADY_OWNED_PLOT());
                 return;
             }
@@ -449,7 +410,7 @@ public class PlotListener {
     
     @Listener
     public void onLiquidFlow(ChangeBlockEvent.Pre event,@Root LocatableBlock block) {
-        Optional<Plot> plot = plotManager.getPlot(block.getLocation());
+        Optional<Plot> plot = ptm.getPlot(block.getLocation());
         if (plot.isPresent()) {                 
             Optional<MatterProperty> matter = block.getBlockState().getProperty(MatterProperty.class);
             if (matter.isPresent() && matter.get().getValue() == Matter.LIQUID) {
@@ -462,7 +423,7 @@ public class PlotListener {
     public void onExplosion(ExplosionEvent.Pre event) {
         Explosion explosion = event.getExplosion();
         Location loc = new Location(event.getTargetWorld(),explosion.getLocation().getBlockPosition());
-        Optional<Plot> plot = plotManager.getPlot(loc);
+        Optional<Plot> plot = ptm.getPlot(loc);
         if (plot.isPresent()){
             if (plot.get().getNoTNT()){ event.setCancelled(true);}
         }
@@ -476,7 +437,7 @@ public class PlotListener {
     
     @Listener
     public void onDamageEntity(DamageEntityEvent event, @Root DamageSource damage, @First EntityDamageSource entity) {
-	Optional<Plot> plot = plotManager.getPlot(event.getTargetEntity().getLocation());
+	Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
         if (plot.isPresent()) {
             if (event.getTargetEntity() instanceof Player) {
                 Entity ent = entity.getSource();
@@ -511,7 +472,7 @@ public class PlotListener {
     @Listener
     public void onDamage(DamageEntityEvent event, @Root DamageSource damage) {
 	if (event.getTargetEntity() instanceof Player) {
-            Optional<Plot> plot = plotManager.getPlot(event.getTargetEntity().getLocation());
+            Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
             if (plot.isPresent()) {
                 Player player = (Player) event.getTargetEntity();
 		if(plot.get().getNoPVPplayer())event.setCancelled(true);
@@ -522,7 +483,7 @@ public class PlotListener {
     @Listener
     public void onBurningBlock(ChangeBlockEvent.Pre event, @Root LocatableBlock block) {
         if(block.getBlockState().getType().equals(FIRE) || event.getLocations().get(0).getBlock().equals(FIRE)){
-            Optional<Plot> plot = plotManager.getPlot(event.getLocations().get(0));
+            Optional<Plot> plot = ptm.getPlot(event.getLocations().get(0));
             if (plot.isPresent()) {
                 event.setCancelled(true);
             }

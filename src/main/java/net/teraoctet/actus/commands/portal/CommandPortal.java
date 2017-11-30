@@ -42,7 +42,10 @@ public class CommandPortal implements CommandExecutor {
                     .onClick(TextActions.suggestCommand("/portal message"))    
                     .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
                 Text.builder().append(MESSAGE("&9/portal message <name> <message> : &7modifie le message d'arriv\351e du portail"))
-                    .onClick(TextActions.suggestCommand("/portal message "))    
+                    .onClick(TextActions.suggestCommand("/portal nom message "))    
+                    .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText(),
+                Text.builder().append(MESSAGE("&9/portal cmd <command> : &7Execute la commande au passage du portail"))
+                    .onClick(TextActions.suggestCommand("/portal cmd nom command"))    
                     .onHover(TextActions.showText(MESSAGE("Click lancer la commande"))).toText())
             .footer(Text.builder().append(MESSAGE("&o&9 Besoin d'aide ?"))
                             .onClick(TextActions.executeCallback(CB_BOOK.callHelpBook("help_portal")))    

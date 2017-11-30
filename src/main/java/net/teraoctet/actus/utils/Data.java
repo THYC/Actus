@@ -21,10 +21,12 @@ import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.plot.PlotManager;
+import net.teraoctet.actus.plot.PlotSelection;
 import net.teraoctet.actus.portal.Portal;
 import net.teraoctet.actus.ticket.Ticket;
 import net.teraoctet.actus.warp.Warp;
 import static net.teraoctet.actus.warp.WarpManager.addWarp;
+import org.spongepowered.api.entity.living.player.Player;
 
 import org.spongepowered.api.service.sql.SqlService;
 
@@ -206,7 +208,8 @@ public class Data {
                                 + "tox INT, "
                                 + "toy INT, "
                                 + "toz INT, "
-                                + "message TEXT)");
+                                + "message TEXT, "
+                                + "cmd TEXT)");
                 }
                 
                 if(!tables.contains("ITEMSHOP")) {
@@ -355,7 +358,8 @@ public class Data {
                         rs.getInt("tox"), 
                         rs.getInt("toy"),
                         rs.getInt("toz"),
-                        rs.getString("message"));
+                        rs.getString("message"),
+                        rs.getString("cmd"));
                     PORTALS.add(portal);  
                 }
                 
@@ -430,7 +434,7 @@ public class Data {
 	public static Guild getGuild(Integer id_guild) { return GUILDS.containsKey(id_guild) ? GUILDS.get(id_guild) : null; }
         public static HashMap<Integer, Guild> getFactions() { return GUILDS; }
         
-        public static HashMap<String, PlotManager> setts = new HashMap();
+        public static HashMap<Player, PlotSelection> plotsel = new HashMap();
         public static final ArrayList<Plot> PLOTS = new ArrayList<>();
         public static final ArrayList<Plot> PJAILS = new ArrayList<>();
         public static void addPlot(Plot plot) { if(!PLOTS.contains(plot)) PLOTS.add(plot); }

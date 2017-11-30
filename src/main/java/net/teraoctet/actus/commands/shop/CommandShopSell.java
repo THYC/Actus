@@ -4,7 +4,7 @@ import static java.lang.Math.round;
 import java.util.Optional;
 import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
@@ -35,7 +35,7 @@ public class CommandShopSell implements CommandExecutor {
             }
             action.remove(player);
             Optional<String> uuid = ctx.<String> getOne("uuid");
-            Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid.get()));
+            Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid.get()));
             if(itemShop.isPresent()){
                 ItemStack is = itemShop.get().getItemStack();
                 double price = itemShop.get().getPrice();
@@ -51,9 +51,9 @@ public class CommandShopSell implements CommandExecutor {
                         for(Inventory slotInv : player.getInventory().query(Hotbar.class).slots()){
                             Optional<ItemStack> peek = slotInv.peek();
                             if(peek.isPresent()){
-                                if(itemShopManager.hasCoinPurses(peek.get())){
+                                if(ism.hasCoinPurses(peek.get())){
                                     slotInv.clear();
-                                    slotInv.offer(itemShopManager.addCoin(coin, peek.get()).get());
+                                    slotInv.offer(ism.addCoin(coin, peek.get()).get());
                                     player.setItemInHand(HandTypes.MAIN_HAND,null);
                                     player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a votre bourse :)"));
                                     return CommandResult.success();
@@ -64,9 +64,9 @@ public class CommandShopSell implements CommandExecutor {
                         for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
                             Optional<ItemStack> peek = slotInv.peek();
                             if(peek.isPresent()){
-                                if(itemShopManager.hasCoinPurses(peek.get())){
+                                if(ism.hasCoinPurses(peek.get())){
                                     slotInv.clear();
-                                    slotInv.offer(itemShopManager.addCoin(coin, peek.get()).get());
+                                    slotInv.offer(ism.addCoin(coin, peek.get()).get());
                                     player.setItemInHand(HandTypes.MAIN_HAND,null);
                                     player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a ta bourse :)"));
                                     return CommandResult.success();
@@ -75,7 +75,7 @@ public class CommandShopSell implements CommandExecutor {
 			}
 
                         // si le joueur n'a pas de bourse, on lui en donne une
-                        player.setItemInHand(HandTypes.MAIN_HAND,itemShopManager.CoinPurses(player, coin).get());
+                        player.setItemInHand(HandTypes.MAIN_HAND,ism.CoinPurses(player, coin).get());
                         return CommandResult.success();
                     } else {
                         player.sendMessage(MESSAGE("&bTon item ne correspond pas a la demande"));

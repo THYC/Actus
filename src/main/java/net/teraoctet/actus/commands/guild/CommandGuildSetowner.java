@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -28,8 +28,8 @@ public class CommandGuildSetowner implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.setowner")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyGuild(aplayer)) {
-                if(guildManager.isOwner(aplayer)) {
+            if(gdm.hasAnyGuild(aplayer)) {
+                if(gdm.isOwner(aplayer)) {
                     Player targetPlayer = ctx.<Player> getOne("player").get();
                     APlayer target_aplayer = getAPlayer(targetPlayer.getIdentifier());
                     int target_id_guild = target_aplayer.getID_guild();

@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -31,11 +31,11 @@ public class CommandShopList implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.admin.shoplist")) {
             Player player = (Player)src;
 
-            if(!itemShopManager.getListItemShop().isEmpty()){
+            if(!ism.getListItemShop().isEmpty()){
                 src.sendMessage(MESSAGE("&e------------------------------"));
                 src.sendMessage(MESSAGE("&e     Liste des ItemShop"));
                 src.sendMessage(MESSAGE("&e------------------------------"));
-                itemShopManager.getListItemShop().stream().forEach((uuid) -> {
+                ism.getListItemShop().stream().forEach((uuid) -> {
                     Optional<Entity> frame = player.getLocation().getExtent().getEntity(UUID.fromString(uuid));
                     if(frame.isPresent()){
                         Location<World> loc = frame.get().getLocation();
@@ -43,7 +43,7 @@ public class CommandShopList implements CommandExecutor {
                         String X = String.valueOf(loc.getBlockX());
                         String Y = String.valueOf(loc.getBlockY());
                         String Z = String.valueOf(loc.getBlockZ());
-                        Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid));
+                        Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid));
                         String item = itemShop.get().getItemStack().getItem().getTranslation().get(Locale.FRENCH);
                         String transaction = itemShop.get().getTransactType();
                         Double price = itemShop.get().getPrice();
@@ -61,7 +61,7 @@ public class CommandShopList implements CommandExecutor {
                                 .onHover(TextActions.showText(MESSAGE("&4Click ici pour supprimer le shop"))).build()));
                     }else{
                         try {
-                            itemShopManager.delItemShop(UUID.fromString(uuid));
+                            ism.delItemShop(UUID.fromString(uuid));
                         } catch (IOException ex) {
                             Logger.getLogger(CommandShopList.class.getName()).log(Level.SEVERE, null, ex);
                         }

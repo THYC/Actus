@@ -1,10 +1,12 @@
 package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.plot.Plot;
+import net.teraoctet.actus.plot.PlotSelection;
+import net.teraoctet.actus.plot.Wedit;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -28,7 +30,7 @@ public class CommandPlotTag implements CommandExecutor {
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             
             Location loc = player.getLocation();
-            Optional<Plot> plot = plotManager.getPlot(loc);
+            Optional<Plot> plot = ptm.getPlot(loc);
             
             if(!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
@@ -40,17 +42,25 @@ public class CommandPlotTag implements CommandExecutor {
                 return CommandResult.empty();
             }
             
-            if(plotManager.hasTag(plot.get())){
-                plotManager.remTag(plot.get());
+            if(ptm.hasTag(plot.get())){
+                ptm.remTag(plot.get());
                 return CommandResult.empty();
             }
             
             Extent world = plot.get().getLocX1Y1Z1().getExtent();            
-            plotManager.spawnTag(new Location(world,plot.get().getX1(),plot.get().getYSpawn(plot.get().getX1(), plot.get().getZ1()),plot.get().getZ1()));
-            plotManager.spawnTag(new Location(world,plot.get().getX1(),plot.get().getYSpawn(plot.get().getX1(), plot.get().getZ2()),plot.get().getZ2()));
-            plotManager.spawnTag(new Location(world,plot.get().getX2(),plot.get().getYSpawn(plot.get().getX2(), plot.get().getZ1()),plot.get().getZ1()));
-            plotManager.spawnTag(new Location(world,plot.get().getX2(),plot.get().getYSpawn(plot.get().getX2(), plot.get().getZ2()),plot.get().getZ2()));           
+            ptm.spawnTag(new Location(world,plot.get().getX1(),plot.get().getYSpawn(plot.get().getX1(), plot.get().getZ1()),plot.get().getZ1()));
+            ptm.spawnTag(new Location(world,plot.get().getX1(),plot.get().getYSpawn(plot.get().getX1(), plot.get().getZ2()),plot.get().getZ2()));
+            ptm.spawnTag(new Location(world,plot.get().getX2(),plot.get().getYSpawn(plot.get().getX2(), plot.get().getZ1()),plot.get().getZ1()));
+            ptm.spawnTag(new Location(world,plot.get().getX2(),plot.get().getYSpawn(plot.get().getX2(), plot.get().getZ2()),plot.get().getZ2()));           
             
+            if(Wedit.WEisActive()){
+                PlotSelection plotSelect = ptm.getPlotSel(player);
+                plotSelect.setMinPos(plot.get().getLocX1Y1Z1().getBlockPosition());
+                plotSelect.setMaxPos(plot.get().getLocX2Y2Z2().getBlockPosition());
+                plotSelect.setWorld(player.getWorld());
+                Wedit.setSelection(player, plotSelect);
+            }
+                            
             player.sendMessage(MESSAGE("&eTa parcelle a \351t\351 born\351 par des bannieres sur chaque coin"));  
             return CommandResult.success();
         } 

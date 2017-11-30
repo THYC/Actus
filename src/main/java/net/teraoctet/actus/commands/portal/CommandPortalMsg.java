@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.portal;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.portalManager;
+import static net.teraoctet.actus.Actus.plm;
 import net.teraoctet.actus.portal.Portal;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
@@ -30,8 +30,8 @@ public class CommandPortalMsg implements CommandExecutor {
                 String name = ctx.<String> getOne("name").get();
                 
                 // on vérifie que le portail existe
-                if (portalManager.hasPortal(name) == true){
-                    Portal portal = portalManager.getPortal(name).get();
+                if (plm.hasPortal(name) == true){
+                    Portal portal = plm.getPortal(name).get();
                     Optional<String> arguments = ctx.<String> getOne("arguments");
 
                     // si le joueur n'a pas tapé d'arguments on affiche le message existant
@@ -44,7 +44,7 @@ public class CommandPortalMsg implements CommandExecutor {
                     } else {
                         String[] args = arguments.get().split(" ");
                         String smsg = "";
-                        for(int i = 1; i < args.length; i++){
+                        for(int i = 0; i < args.length; i++){
                             smsg = smsg + args[i] + " ";
                         }
                         Text msg = MESSAGE(smsg);

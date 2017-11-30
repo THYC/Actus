@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import net.teraoctet.actus.shop.ItemShop;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -118,7 +118,7 @@ public class CallBackEconomy {
                 return;
             }
             action.remove(player);
-            Optional<ItemShop> itemShop = itemShopManager.getItemShop(UUID.fromString(uuid));
+            Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid));
             if(itemShop.isPresent()){
                 ItemStack is = itemShop.get().getItemStack();
                 double price = itemShop.get().getPrice();
@@ -154,9 +154,9 @@ public class CallBackEconomy {
                     for(Inventory slotInv : player.getInventory().query(Hotbar.class).slots()){
                         Optional<ItemStack> peek = slotInv.peek();
                         if(peek.isPresent()){
-                            if(itemShopManager.hasCoinPurses(peek.get())){
+                            if(ism.hasCoinPurses(peek.get())){
                                 slotInv.clear();
-                                slotInv.offer(itemShopManager.addCoin(coin, peek.get()).get());
+                                slotInv.offer(ism.addCoin(coin, peek.get()).get());
                                 player.setItemInHand(HandTypes.MAIN_HAND,null);
                                 player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a votre bourse :)"));
                                 return;
@@ -167,9 +167,9 @@ public class CallBackEconomy {
                     for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
                         Optional<ItemStack> peek = slotInv.peek();
                         if(peek.isPresent()){
-                            if(itemShopManager.hasCoinPurses(peek.get())){
+                            if(ism.hasCoinPurses(peek.get())){
                                 slotInv.clear();
-                                slotInv.offer(itemShopManager.addCoin(coin, peek.get()).get());
+                                slotInv.offer(ism.addCoin(coin, peek.get()).get());
                                 player.setItemInHand(HandTypes.MAIN_HAND,null);
                                 player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a ta bourse :)"));
                                 return;
@@ -178,7 +178,7 @@ public class CallBackEconomy {
                     }
 
                     // si le joueur n'a pas de bourse, on lui en donne une
-                    player.getInventory().query(GridInventory.class).offer(itemShopManager.CoinPurses(player, coin).get());
+                    player.getInventory().query(GridInventory.class).offer(ism.CoinPurses(player, coin).get());
                 } else {
                     player.sendMessage(MESSAGE("&bAucun item ne correspond pas a la demande"));
                 }
@@ -193,7 +193,7 @@ public class CallBackEconomy {
             Optional<Entity> entity = world.getEntity(UUID.fromString(uuid));                   
             if(entity.isPresent()){
                 try {
-                    itemShopManager.delItemShop(UUID.fromString(uuid));
+                    ism.delItemShop(UUID.fromString(uuid));
                     entity.get().remove();
                     src.sendMessage(MESSAGE("&e-------------------------"));
                     src.sendMessage(MESSAGE("&4ItemShop supprim\351"));  
@@ -213,6 +213,16 @@ public class CallBackEconomy {
                 Player player = (Player)src;
                 player.setLocation(loc);
             }
+        };
+    }
+    
+    public Consumer<CommandSource> callBankCoinPurses() {
+	return (CommandSource src) -> {
+            Player player = (Player)src;
+            player.getInventory().offer(ism.CoinPurses(player, 0).get());
+            src.sendMessage(MESSAGE("&eUne bourse a \351t\351 ajout\351 a ton inventaire"));
+            src.sendMessage(MESSAGE("&eElle a un cr\351dit de O"));
+            src.sendMessage(MESSAGE("&erecharge la en faisant un retrait banquaire"));
         };
     }
 }

@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.guild;
 
 import java.util.List;
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
@@ -29,12 +29,12 @@ public class CommandGuildMemberslist implements CommandExecutor {
             //si le joueur est membre d'une guild
             if(GuildManager.hasAnyGuild(aplayer)) {
                 Guild gguild = getGuild(aplayer.getID_guild());
-                List list = guildManager.getGuildPlayers(gguild.getID());
+                List list = gdm.getGuildPlayers(gguild.getID());
                 
                 src.sendMessage(MESSAGE("&2Listes des membres de " + gguild.getName() + " : &a" + list));
                 
                 
-                //src.sendMessage(MESSAGE("&2Listes des membres de " + gguild.getName() + " : &a" + String.valueOf(guildManager.getPlayers(gguild.getID()).size())));
+                //src.sendMessage(MESSAGE("&2Listes des membres de " + gguild.getName() + " : &a" + String.valueOf(gdm.getPlayers(gguild.getID()).size())));
                 return CommandResult.success();
             }
             

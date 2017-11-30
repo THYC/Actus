@@ -3,7 +3,7 @@ package net.teraoctet.actus.trace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.traceManager;
+import static net.teraoctet.actus.Actus.tem;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -76,8 +76,8 @@ public class TraceListener {
         if(item.isPresent() && loc.isPresent()){
             if(item.get().getItem().equals(ARROW)){
                 if(tmpTrace.containsKey(player) && tmpTrace.containsValue(loc.get())) return;
-                traceManager.refresh();
-                String trace = traceManager.load(loc.get());
+                tem.refresh();
+                String trace = tem.load(loc.get());
                 player.sendMessage(MESSAGE(trace));
                 tmpTrace.remove(player);
                 tmpTrace.put(player, loc.get());

@@ -30,8 +30,8 @@ public class CommandLevel implements CommandExecutor {
             }
 
             Optional<Integer> level = ctx.<Integer> getOne("level");
-            Player player = null;
-            APlayer aplayer = null;
+            Player player;
+            APlayer aplayer;
             
             if(ctx.getOne("player").isPresent()) {
                 player = ctx.<Player> getOne("player").get();

@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.plot;
 
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import org.spongepowered.api.command.CommandResult;
@@ -31,14 +31,14 @@ public class CommandPlotList implements CommandExecutor {
                     player.sendMessage(DATA_NOT_FOUND(targetName));
                     return CommandResult.empty();
                 } else {    //lorsque <tplayer> est dans la base de donnée
-                    Text listPlot = plotManager.getListPlot(aplayer.getUUID());
+                    Text listPlot = ptm.getListPlot(aplayer.getUUID());
                     player.sendMessage(TARGET_PLOT_LIST(targetName));
                     player.sendMessage(listPlot); 
                 }
             }
             else {
                 String playerUUID = player.getUniqueId().toString();
-                Text listPlot = plotManager.getListPlot(playerUUID);
+                Text listPlot = ptm.getListPlot(playerUUID);
                 player.sendMessage(PLOT_LIST());
                 player.sendMessage(listPlot);
             }

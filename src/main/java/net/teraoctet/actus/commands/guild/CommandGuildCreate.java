@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -18,21 +18,6 @@ import static net.teraoctet.actus.utils.MessageManager.GUILD_CREATED_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
-import static net.teraoctet.actus.utils.MessageManager.ALREADY_GUILD_MEMBER;
-import static net.teraoctet.actus.utils.MessageManager.GUILD_CREATED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
-import static net.teraoctet.actus.utils.MessageManager.ALREADY_GUILD_MEMBER;
-import static net.teraoctet.actus.utils.MessageManager.GUILD_CREATED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
-import static net.teraoctet.actus.utils.MessageManager.ALREADY_GUILD_MEMBER;
-import static net.teraoctet.actus.utils.MessageManager.GUILD_CREATED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
 
 public class CommandGuildCreate implements CommandExecutor {
         
@@ -43,12 +28,12 @@ public class CommandGuildCreate implements CommandExecutor {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getIdentifier());
             
-            if(guildManager.hasAnyGuild(aplayer)) {
+            if(gdm.hasAnyGuild(aplayer)) {
                 src.sendMessage(ALREADY_GUILD_MEMBER());
             } else {
                 String guildName = ctx.<String> getOne("name").get();
                 if(guildName.length() >= GUILD_NAME_MIN_SIZE() && guildName.length() <= GUILD_NAME_MAX_SIZE()) {
-                    int key = guildManager.newKey();
+                    int key = gdm.newKey();
                     Guild gguild = new Guild(key, guildName,"N",0,0,0,0,0,0,0);
                     aplayer.setFactionRank(1);
                     aplayer.setID_guild(key);

@@ -2,7 +2,7 @@ package net.teraoctet.actus.commands.plot;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
@@ -33,7 +33,7 @@ public class CommandPlotTP implements CommandExecutor {
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
-                plot = plotManager.getPlot(plotName);                
+                plot = ptm.getPlot(plotName);                
 
                 if (!plot.isPresent()){
                     player.sendMessage(NO_PLOT());

@@ -1,9 +1,11 @@
 package net.teraoctet.actus.commands.plot;
 
 import static net.teraoctet.actus.Actus.CB_PLOT;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.plot.PlotSelection;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -32,7 +34,9 @@ public class CommandPlotCreate implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.player.plot.create")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            PlotManager plotManager = PlotManager.getSett(player);
+            //PlotManager plotManager = PlotManager.getSett(player);
+            PlotManager plotManager = new PlotManager();
+            PlotSelection plotselect = ptm.getPlotSel(player);
 
             if(!ctx.getOne("name").isPresent()) { 
                 player.sendMessage(USAGE("/plot create <name> [strict] : cr\351ation d'une parcelle"));
@@ -48,7 +52,7 @@ public class CommandPlotCreate implements CommandExecutor {
             Boolean strict = false;
 
             if (plotManager.hasPlot(name) == false){
-                if(!plotManager.getBorder1().isPresent() || !plotManager.getBorder2().isPresent()){
+                /*if(!plotManager.getBorder1().isPresent() || !plotManager.getBorder2().isPresent()){
                     player.sendMessage(UNDEFINED_PLOT_ANGLES());
                     return CommandResult.empty();
                 }
@@ -60,8 +64,21 @@ public class CommandPlotCreate implements CommandExecutor {
                         return CommandResult.empty();
                     }
                     level = plotManager.getMaxLevelPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get());
+                }*/
+                if(!plotselect.getMinPos().isPresent() || !plotselect.getMaxPos().isPresent()){
+                    player.sendMessage(UNDEFINED_PLOT_ANGLES());
+                    return CommandResult.empty();
                 }
-
+                Location[] c = {plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get()};
+                int level = 1;
+                if(plotManager.plotNotAllow(plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
+                    if(aplayer.getLevel() != LEVEL_ADMIN() && !plotManager.hasOwnerPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
+                    level = plotManager.getMaxLevelPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get());
+                }
+                
                 int X = (int) Math.round(c[0].getX()-c[1].getX());
                 int Z = (int) Math.round(c[0].getZ()-c[1].getZ());
                 if(X < 0)X = -X;

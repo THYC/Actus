@@ -23,7 +23,7 @@ public class CommandSpawn implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.player.spawn")) {
             Player player = (Player) src;
-            if(Config.UNIQUE_SPAWN_WORLD() == 0){
+            if(!Config.UNIQUE_SPAWN_WORLD()){
                 sm.teleport(player,player.getWorld().getName(),
                         player.getWorld().getSpawnLocation().getBlockX(),
                         player.getWorld().getSpawnLocation().getBlockY(),

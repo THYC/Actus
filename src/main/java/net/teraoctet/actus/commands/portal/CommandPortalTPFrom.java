@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.portal;
 
-import static net.teraoctet.actus.Actus.portalManager;
+import static net.teraoctet.actus.Actus.plm;
 import net.teraoctet.actus.portal.Portal;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
@@ -29,8 +29,8 @@ public class CommandPortalTPFrom implements CommandExecutor {
             }
 
             String name = ctx.<String> getOne("name").get();  
-            if (portalManager.hasPortal(name) == true){
-                Portal portal = portalManager.getPortal(name).get();
+            if (plm.hasPortal(name) == true){
+                Portal portal = plm.getPortal(name).get();
                 portal.settoworld(player.getWorld().getName());
                 portal.settoX(player.getLocation().getBlockX());
                 portal.settoY(player.getLocation().getBlockY());

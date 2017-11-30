@@ -2,8 +2,6 @@ package net.teraoctet.actus.portal;
 
 import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.world.Location;
 
 public class Portal {
@@ -24,9 +22,10 @@ public class Portal {
     private int toy;
     private int toz;
     private String message;
+    private String cmd;
     
     public Portal(String portalname, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
-    String toworld, int tox, int toy, int toz, String message){
+    String toworld, int tox, int toy, int toz, String message, String cmd){
         
         this.portalname = portalname;
         this.level = level;
@@ -42,6 +41,7 @@ public class Portal {
         this.toy = toy;
         this.toz = toz;
         this.message = message;
+        this.cmd = cmd;
     }
     
     public Portal(String portalname, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, String message){
@@ -60,23 +60,24 @@ public class Portal {
         this.toy = 0;
         this.toz = 0;
         this.message = message;
+        this.cmd = "DISABLED";
     }
         
     public void insert() {
 	Data.queue("INSERT INTO portal VALUES ('" + portalname + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
-        + ", " + x2 + ", " + y2 + ", " + z2 + ", '" + toworld + "', " + tox + ", " + toy + ", " + toz + ", '" + message + "')");
+        + ", " + x2 + ", " + y2 + ", " + z2 + ", '" + toworld + "', " + tox + ", " + toy + ", " + toz + ", '" + message + ", '" + cmd + "')");
     }
 	
     public void update() {
 	Data.queue("UPDATE portal SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 
         + "', x1 = " + x1 + ", y1 = " + y1 + ", z1 = " + z1 + ", x2 = " + x2 + ", y2 = " + y2 + ", z2 = " + z2 
         + ", toworld = '" + toworld + "', tox = " + tox + ", toy = " + toy + ", toz = " + toz + ", message = '" + sm.quoteToSQL(message) 
-        + "' WHERE portalname = '" + portalname + "'");
+        + "', cmd = '" + cmd + "' WHERE portalname = '" + portalname + "'");
         
-        getGame().getServer().getConsole().sendMessage(MESSAGE("UPDATE portal SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 
+        /*getGame().getServer().getConsole().sendMessage(MESSAGE("UPDATE portal SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 
         + "', x1 = " + x1 + ", y1 = " + y1 + ", z1 = " + z1 + ", x2 = " + x2 + ", y2 = " + y2 + ", z2 = " + z2 
         + ", toworld = '" + toworld + "', tox = " + tox + ", toy = " + toy + ", toz = " + toz + ", message = '" + message 
-        + "' WHERE portalname = '" + portalname + "'"));
+        + "' WHERE portalname = '" + portalname + "'"));*/
     }
 	
     public void delete() {
@@ -97,6 +98,7 @@ public class Portal {
     public void settoY(int toy){this.toy = toy;}
     public void settoZ(int toz){this.toz = toz;}
     public void setMessage(String message){this.message = message;}
+    public void setCMD(String cmd){this.cmd = cmd;}
     
     
     public Location getBorder1(){return this.border1;}
@@ -115,5 +117,6 @@ public class Portal {
     public int gettoX(){return this.tox;}
     public int gettoY(){return this.toy;}
     public int gettoZ(){return this.toz;}
-    public String getMessage(){return this.message;}    
+    public String getMessage(){return this.message;} 
+    public String getCMD(){return this.cmd;}  
 }

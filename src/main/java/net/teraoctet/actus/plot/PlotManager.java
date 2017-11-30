@@ -8,7 +8,7 @@ import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Data.PJAILS;
 import static net.teraoctet.actus.utils.Data.PLOTS;
-import static net.teraoctet.actus.utils.Data.setts;
+import static net.teraoctet.actus.utils.Data.plotsel;
 import org.spongepowered.api.block.BlockType;
 import static org.spongepowered.api.block.BlockTypes.AIR;
 import static org.spongepowered.api.block.BlockTypes.STANDING_BANNER;
@@ -17,34 +17,26 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.extent.Extent;
 
 public class PlotManager {   
-    private Location<World> border1;
-    private Location<World> border2;
-    private Player player;
     
     public PlotManager() {}
     
-    public PlotManager(Player player, Location border1, Location border2){
-        this.player = player;
-        this.border1 = border1;
-        this.border2 = border2;
-    }
-    
-    public static PlotManager getSett(Player player){
-        if (!setts.containsKey(player.getName())){
-            PlotManager sett = new PlotManager(player, null, null);
-            setts.put(player.getName(), sett);
-            return sett;
+    /**
+     * Retourne l'objet PlotSelection(coordonnée saisie avec la pelle) du joueur 
+     * @param player
+     * @return 
+     */
+    public PlotSelection getPlotSel(Player player){
+        if (!plotsel.containsKey(player)){
+            PlotSelection plotSelect = new PlotSelection();
+            plotsel.put(player, plotSelect);
+            return plotSelect;
         }
         
-        PlotManager sett = (PlotManager)setts.get(player.getName());
-        sett.setPlayer(player);
-        return sett;
+        PlotSelection plotSelect = plotsel.get(player);
+        return plotSelect;
     }
-
-    public void setPlayer(Player player){this.player = player;}
   
     private Optional<Plot> plotContainsVector(Location loc, boolean flagJail){
         if (flagJail == true){
@@ -182,42 +174,6 @@ public class PlotManager {
         }
         return null;
     }
-                
-    public void setBorder(int a, Location b){
-        if (a == 1){
-            this.border1 = b;
-        } else if (a == 2) {
-            this.border2 = b;
-        }
-    }
-    
-    public Optional<Location> getBorder1(){
-        if (this.border1 != null){
-            int x = this.border1.getBlockX();
-            int y = this.border1.getBlockY();
-            int z = this.border1.getBlockZ();
-
-            Extent extent = this.border1.getExtent();
-            Location loc = new Location(extent, x, y, z);
-            return Optional.of(loc);
-        }
-        return Optional.empty();
-    }
-    
-    public Optional<Location> getBorder2()
-    {
-        if (this.border2 != null)
-        {
-            int x = this.border2.getBlockX();
-            int y = this.border2.getBlockY();
-            int z = this.border2.getBlockZ();
-            
-            Extent extent = this.border2.getExtent();
-            Location loc = new Location(extent,x, y, z);
-            return Optional.of(loc);
-        }
-        return Optional.empty();
-    }
     
     /**
      * Si TRUE retourne la list des JAILS enregistré
@@ -294,7 +250,7 @@ public class PlotManager {
         Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
                 
         for(Plot plot : PLOTS){
-            //if(!plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return true;
+            if(!plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return true;
             if(foundPlot(plot.getLocX1Y1Z1(),newPlot) || foundPlot(plot.getLocX2Y2Z2(),newPlot) ||
                 foundPlot(plot.getLocX1Y1Z2(),newPlot) || foundPlot(plot.getLocX2Y2Z1(),newPlot) ||
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
@@ -401,6 +357,12 @@ public class PlotManager {
         }
     }
     
+    /**
+     * Retourne True 
+     * @param loc
+     * @param plot
+     * @return 
+     */
     public Boolean hasTag(Location loc, Plot plot){
         BlockType block = loc.getBlockType();
         if(loc.getBlockX() == plot.getX1() || loc.getBlockX() == plot.getX2()){
@@ -414,6 +376,11 @@ public class PlotManager {
         return false;
     }
     
+    /**
+     * Retourne True si les angles du Plot/Parcelle ont été tagué
+     * @param plot parcelle a controler
+     * @return boolean
+     */
     public Boolean hasTag(Plot plot){
         Location loc = new Location(plot.getWorld().get(),plot.getX1(),plot.getYSpawn(plot.getX1(), plot.getZ1())-1,plot.getZ1());
         BlockType block = loc.getBlockType();

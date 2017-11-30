@@ -2,7 +2,7 @@ package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.CB_PLOT;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
@@ -39,9 +39,9 @@ public class CommandPlotFlag implements CommandExecutor {
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
-                plot = plotManager.getPlot(plotName);                
+                plot = ptm.getPlot(plotName);                
             } else {
-                plot = plotManager.getPlot(player.getLocation());
+                plot = ptm.getPlot(player.getLocation());
             }
 
             if (!plot.isPresent()){
@@ -62,37 +62,37 @@ public class CommandPlotFlag implements CommandExecutor {
                 player.sendMessage(MESSAGE("&\n\n\n\n\n\n"));
                 builder.title(formatText("&ePlot " + plot.get().getName() ))
                     .contents(  
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "noenter", getValue(plot.get().getNoEnter()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoFly()) + " ] &7Fly interdit sur la parcelle"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoFly()) + " ] &7Fly interdit sur la parcelle"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nofly", getValue(plot.get().getNoFly()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoBuild()) + " ] &7Interdiction de construire"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoBuild()) + " ] &7Interdiction de construire"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nobuild", getValue(plot.get().getNoBuild()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoBreak()) + " ] &7Interdiction de casser"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoBreak()) + " ] &7Interdiction de casser"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nobreak", getValue(plot.get().getNoBreak()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                               
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoInteract()) + " ] &7Interdiction d'ouvrir portes,coffres..."))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoInteract()) + " ] &7Interdiction d'ouvrir portes,coffres..."))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nointeract", getValue(plot.get().getNoInteract()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                             
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoTeleport()) + " ] &7Interdiction de se t\351l\351porter"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoTeleport()) + " ] &7Interdiction de se t\351l\351porter"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "noteleport", getValue(plot.get().getNoTeleport()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                                
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoFire()) + " ] &7Interdiction de mettre le feu"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoFire()) + " ] &7Interdiction de mettre le feu"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nofire", getValue(plot.get().getNoFire()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                                
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoMob()) + " ] &7Les mob ne spawnerons pas"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoMob()) + " ] &7Les mob ne spawnerons pas"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nomob", getValue(plot.get().getNoMob()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                              
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoTNT()) + " ] &7TNT d\351sactiv\351 sur la parcelle"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoTNT()) + " ] &7TNT d\351sactiv\351 sur la parcelle"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "notnt", getValue(plot.get().getNoTNT()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),                              
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getNoCommand()) + " ] &7Interdiction de taper des commandes"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoCommand()) + " ] &7Interdiction de taper des commandes"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nocommand", getValue(plot.get().getNoCommand()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                Text.builder().append(MESSAGE("&9[ " + plotManager.ValueOf(plot.get().getSpawnGrave()) + " ] &7Une tombe apparait a la mort d'un joueur"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getSpawnGrave()) + " ] &7Une tombe apparait a la mort d'un joueur"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "spawngrave", getValue(plot.get().getSpawnGrave()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText())
   

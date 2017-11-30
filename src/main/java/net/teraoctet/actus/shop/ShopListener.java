@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import net.teraoctet.actus.commands.shop.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -39,7 +39,7 @@ import org.spongepowered.api.item.ItemTypes;
 
 public class ShopListener {
     
-    private static final CallBackEconomy  cb  = new CallBackEconomy();  
+    private static final CallBackEconomy  CB  = new CallBackEconomy();  
     public ShopListener() {}
 
     @Listener
@@ -55,7 +55,7 @@ public class ShopListener {
         if(entity.getType().equals(ITEM_FRAME) || entity.getType().equals(ARMOR_STAND)){
             
             //Si aucum ItemShop est enregistré a cette coordonnée on propose d'en creer un
-            if(!itemShopManager.hasShop(uuid) && aplayer.getLevel()==10){ 
+            if(!ism.hasShop(uuid) && aplayer.getLevel()==10){ 
                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                 if(is.isPresent()){
                     player.sendMessage(MESSAGE("\n\n"));
@@ -66,8 +66,8 @@ public class ShopListener {
                     event.setCancelled(true);
                 }
             }else{
-                if(itemShopManager.hasShop(uuid) && aplayer.getLevel()!=10){
-                    Optional<ItemShop> is = itemShopManager.getItemShop(uuid);
+                if(ism.hasShop(uuid) && aplayer.getLevel()!=10){
+                    Optional<ItemShop> is = ism.getItemShop(uuid);
                     if(is.isPresent()){
                         ItemStack itemStack = is.get().getItemStack();
                         String name = "";
@@ -104,7 +104,7 @@ public class ShopListener {
                                 Text.builder()  .append(MESSAGE("&b - Clique ici pour vendre les items de ta main seulemeent\n"))
                                                 .onClick(TextActions.runCommand("/shopsell " + uuid)).build()).concat(  
                                 Text.builder()  .append(MESSAGE("&b - ici pour vendre tous les items present dans ton stuff\n\n"))
-                                                .onClick(TextActions.executeCallback(cb.callShopSellAll(uuid.toString()))).build());
+                                                .onClick(TextActions.executeCallback(CB.callShopSellAll(uuid.toString()))).build());
                         
                         //--------
                         //  VENTE 
@@ -140,10 +140,10 @@ public class ShopListener {
         UUID uuid = entity.getUniqueId();
         
         if(entity.getType().getName().contains("itemframe") || entity.getType().getName().contains("armorstand")){
-            if(itemShopManager.hasShop(uuid)){
+            if(ism.hasShop(uuid)){
                 if(aplayer.getLevel() == 10){ 
                     entity.remove();
-                    itemShopManager.delItemShop(uuid);
+                    ism.delItemShop(uuid);
                     player.sendMessage(MESSAGE("&e-------------------------"));
                     player.sendMessage(MESSAGE("&4ItemShop supprim\351"));
                     player.sendMessage(MESSAGE("&e-------------------------")); 
@@ -198,21 +198,13 @@ public class ShopListener {
                                             int coinInt = coin.get().intValue();
                                             if(aplayer.getMoney()> coinInt){
                                                 aplayer.debitMoney(coinInt);
-                                                
+                                                                                                
                                                 //on verifie si le joueur a une bourse, si oui on la credite
-                                                if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-                                                    if(itemShopManager.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
-                                                        Optional<ItemStack> coinPurse = itemShopManager.addCoin(coin.get(),player.getItemInHand(HandTypes.MAIN_HAND).get());
-                                                        if(coinPurse.isPresent()){
-                                                            player.setItemInHand(HandTypes.MAIN_HAND,coinPurse.get());
-                                                            return;
-                                                        }
-                                                    }
+                                                if(!ism.addCoin(player.getInventory(), coinInt)){   
+                                                    //sinon si le joueur n'a pas de bourse, on lui verse des emeraudes
+                                                    ItemStack is = ItemStack.of(ItemTypes.EMERALD, coinInt);
+                                                    player.getInventory().offer(is);
                                                 }
-                                                
-                                                //si le joueur n'avait pas de bourse, on lui verse des emeraudes
-                                                ItemStack is = ItemStack.of(ItemTypes.EMERALD, coinInt);
-                                                player.getInventory().offer(is);
                                                 inputDouble.remove(player);
                                                 player.sendMessages(WITHDRAW_SUCCESS(String.valueOf(coinInt)));
                                                 return;
@@ -229,15 +221,17 @@ public class ShopListener {
                                                         .append(MESSAGE("&l&b   -----------------\n"))
                                                         .append(MESSAGE("&l&b     RETRAIT \n"))
                                                         .append(MESSAGE("&l&b   -----------------\n\n"))
-                                                        .append(MESSAGE("&b&oClique sur un des 4 choix\n")).build().concat(
+                                                        .append(MESSAGE("&b&oClique sur un des 5 choix\n")).build().concat(
                                         Text.builder()  .append(MESSAGE("&e[1] Retrait de 10 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(1,10.0))).build()).concat(
+                                                        .onClick(TextActions.executeCallback(CB.callBankRetrait(1,10.0))).build()).concat(
                                         Text.builder()  .append(MESSAGE("&e[2] Retrait de 20 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(1,20.0))).build()).concat(
+                                                        .onClick(TextActions.executeCallback(CB.callBankRetrait(1,20.0))).build()).concat(
                                         Text.builder()  .append(MESSAGE("&e[3] Retrait de 30 \351meraude(s)\n"))
-                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(1,30.0))).build()).concat(
-                                        Text.builder()  .append(MESSAGE("&e[4] &bje veux saisir la somme\n\n"))
-                                                        .onClick(TextActions.executeCallback(cb.callBankRetrait(2,0.0))).build());
+                                                        .onClick(TextActions.executeCallback(CB.callBankRetrait(1,30.0))).build()).concat(
+                                        Text.builder()  .append(MESSAGE("&e[4] &bje veux saisir la somme\n"))
+                                                        .onClick(TextActions.executeCallback(CB.callBankRetrait(2,0.0))).build()).concat(
+                                        Text.builder()  .append(MESSAGE("&e[5] &bje veux une bourse a recharger\n\n"))
+                                                        .onClick(TextActions.executeCallback(CB.callBankCoinPurses())).build());
                                 player.sendMessage(text);
                             }
                         }
@@ -247,8 +241,8 @@ public class ShopListener {
                             
                             //on verifie si le joueur a une bourse en main
                             if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-                                if(itemShopManager.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
-                                    Double depot = itemShopManager.getQteCoin(player.getItemInHand(HandTypes.MAIN_HAND).get());
+                                if(ism.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
+                                    Double depot = ism.getQteCoin(player.getItemInHand(HandTypes.MAIN_HAND).get());
                                     aplayer.creditMoney(depot);
                                     player.sendMessages(DEPOSIT_SUCCESS(String.valueOf(depot)));
                                     player.setItemInHand(HandTypes.MAIN_HAND,null);
@@ -264,9 +258,9 @@ public class ShopListener {
                                                         .append(MESSAGE("&l&b   -----------------\n\n"))
                                                         .append(MESSAGE("&b&oClique sur un des 2 choix\n")).build().concat(
                                         Text.builder()  .append(MESSAGE("&e[1] Depot des \351meraude(s) situ\351 dans ma main\n"))
-                                                        .onClick(TextActions.executeCallback(cb.callBankDepot(1))).build()).concat(
+                                                        .onClick(TextActions.executeCallback(CB.callBankDepot(1))).build()).concat(
                                         Text.builder()  .append(MESSAGE("&e[2] Depot de toutes les \351meraude(s) situ\351s dans mon stuff\n"))
-                                                        .onClick(TextActions.executeCallback(cb.callBankDepot(2))).build());
+                                                        .onClick(TextActions.executeCallback(CB.callBankDepot(2))).build());
                             player.sendMessage(text);
                             
                         }

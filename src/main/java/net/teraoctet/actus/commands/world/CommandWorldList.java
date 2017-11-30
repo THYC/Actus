@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.worldManager;
+import static net.teraoctet.actus.Actus.wdm;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.Sponge;
@@ -33,7 +33,7 @@ public class CommandWorldList implements CommandExecutor {
             PaginationList.Builder builder = paginationService.builder();
             builder.title(MESSAGE("&eWORLDS"));
             
-            worldManager.getListAWorld().stream().forEach((worldName) -> {
+            wdm.getListAWorld().stream().forEach((worldName) -> {
                 Optional<World> optWorld = Sponge.getServer().getWorld(worldName);
                 if(optWorld.isPresent()) {
                     World world = optWorld.get();

@@ -2,8 +2,8 @@ package net.teraoctet.actus.commands;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.Random;
-import static net.teraoctet.actus.Actus.plotManager;
 import static net.teraoctet.actus.Actus.plugin;
+import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.utils.Config.DIAMETER_MAX_TPR;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -78,7 +78,7 @@ public class CommandTPR implements CommandExecutor {
             bt.equals(BlockTypes.LAVA) ||
             bt.equals(BlockTypes.FLOWING_WATER) ||
             bt.equals(BlockTypes.FLOWING_LAVA) || 
-            plotManager.getPlot(location).isPresent());
+            ptm.getPlot(location).isPresent());
     }
     
     private Location getFinalLocation(Location location){                

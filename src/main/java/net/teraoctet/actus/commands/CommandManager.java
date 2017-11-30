@@ -57,6 +57,7 @@ import net.teraoctet.actus.commands.plot.CommandPlotClaim;
 import net.teraoctet.actus.commands.plot.CommandPlotListNameAllowed;
 import net.teraoctet.actus.commands.plot.CommandPlotSetLevel;
 import net.teraoctet.actus.commands.plot.CommandPlotTag;
+import net.teraoctet.actus.commands.portal.CommandPortalCMD;
 import net.teraoctet.actus.commands.shop.CommandBankVerse;
 import net.teraoctet.actus.commands.troc.CommandTrocAdd;
 import net.teraoctet.actus.commands.world.CommandWorld;
@@ -541,9 +542,9 @@ public class CommandManager {
         public CommandSpec CommandPortalMsg = CommandSpec.builder()
                 .description(MESSAGE("/portal msg <name> [message]"))
                 .permission("actus.admin.portal")
-                .arguments(GenericArguments.firstParsing(
+                .arguments(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("name"))),
-                    GenericArguments.remainingJoinedStrings(MESSAGE("arguments"))))
+                    GenericArguments.optional(GenericArguments.remainingJoinedStrings(MESSAGE("arguments"))))
                 .executor(new CommandPortalMsg())
                 .build();
         
@@ -553,6 +554,15 @@ public class CommandManager {
                 .arguments(GenericArguments.seq(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPortalTPFrom()) 
+                .build(); 
+        
+        public CommandSpec CommandPortalCMD = CommandSpec.builder() 
+                .description(MESSAGE("&9D\351finit une commande a executer au passage du portail")) 
+                .permission("actus.admin.portal") 
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("name"))),
+                    GenericArguments.optional(GenericArguments.remainingJoinedStrings(MESSAGE("cmd"))))
+                .executor(new CommandPortalCMD()) 
                 .build(); 
         
         public CommandSpec CommandPortalList = CommandSpec.builder() 
@@ -585,6 +595,7 @@ public class CommandManager {
                 .child(CommandPortalList, "list")
                 .child(CommandPortalTPFrom, "tpfrom", "tpf")
                 .child(CommandPortalMsg, "msg")
+                .child(CommandPortalCMD, "cmd")
                 .executor(new CommandPortal())
                 .build();
                
@@ -693,21 +704,21 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandVanish = CommandSpec.builder()
-                .description(MESSAGE("/vanish [player]"))
+                .description(MESSAGE("&9Rend invisible"))
                 .permission("actus.modo.vanish")
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("target")))))
                 .executor(new CommandVanish())
                 .build();
         
         public CommandSpec CommandInvisible = CommandSpec.builder()
-                .description(MESSAGE("/invisible [player]"))
+                .description(MESSAGE("&9Rend invisible"))
                 .permission("actus.modo.invisible")
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("target")))))
                 .executor(new CommandInvisible())
                 .build();
         
         public CommandSpec CommandEnchant = CommandSpec.builder()
-                .description(MESSAGE("/enchant <enchantement> <level> [player]"))
+                .description(MESSAGE("&9Enchantment de l'item en main"))
                 .permission("actus.admin.enchant")
                 .arguments(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("enchantment"))),
@@ -717,13 +728,13 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandRule = CommandSpec.builder()
-                .description(MESSAGE("/rule"))
+                .description(MESSAGE("&9Affiche le r\351glement du serveur"))
                 .permission("actus.player.rule")
                 .executor(new CommandRule())
                 .build();
         
         public CommandSpec CommandBankVerse = CommandSpec.builder()
-                .description(MESSAGE("&eVerse une somme sur la banque du joueur"))
+                .description(MESSAGE("&9Verse une somme sur la banque du joueur"))
                 .extendedDescription(MESSAGE("&9coin = &esomme a verser \n&9player = &enom du joueur"))
                 .permission("actus.admin.bank.verse")
                 .arguments(
@@ -733,19 +744,19 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandBank = CommandSpec.builder()
-                .description(MESSAGE("&eAffiche le solde de ton compte en banque"))
+                .description(MESSAGE("&9Affiche le solde de ton compte en banque"))
                 .permission("actus.player.bank")
                 .executor(new CommandBank())
                 .build();
         
         public CommandSpec CommandShopList = CommandSpec.builder()
-                .description(MESSAGE("/shoplist"))
+                .description(MESSAGE("&9Affiche la liste des SHOP actifs"))
                 .permission("actus.admin.shoplist")
                 .executor(new CommandShopList())
                 .build();
         
         public CommandSpec CommandChestAdd = CommandSpec.builder()
-                .description(MESSAGE("&eAjoute un droit sur le coffre en visuel"))
+                .description(MESSAGE("&9Ajoute un droit sur le coffre en visuel"))
                 .permission("actus.player.chest.add")
                 .arguments(GenericArguments.seq(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("target")))))
@@ -753,7 +764,7 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandChestRemove = CommandSpec.builder()
-                .description(MESSAGE("&eRetire les droits d'un joueur sur le coffre en visuel"))
+                .description(MESSAGE("&9Retire les droits d'un joueur sur le coffre en visuel"))
                 .extendedDescription(MESSAGE("&9Si le parametre [target] est omis le coffre devient public"))
                 .permission("actus.player.chest.remove")
                 .arguments(GenericArguments.seq(
@@ -762,13 +773,13 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandChestInfo = CommandSpec.builder()
-                .description(MESSAGE("&eAffiche les droits d'utilisations du coffre en visuel"))
+                .description(MESSAGE("&9Affiche les droits d'utilisations du coffre en visuel"))
                 .permission("actus.player.chest.info")
                 .executor(new CommandChestInfo())
                 .build();
         
         public CommandSpec CommandChest = CommandSpec.builder()
-                .description(MESSAGE("&9/chest &eGestion des s\351curit\351s du coffre")) 
+                .description(MESSAGE("&9Gestion des s\351curit\351s du coffre")) 
                 .permission("actus.player.chest") 
                 .child(CommandChestAdd, "add", "lock")
                 .child(CommandChestRemove, "remove", "sup", "del")
@@ -777,7 +788,8 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandNPC = CommandSpec.builder()
-                .description(MESSAGE("/npc [skin] [name]"))
+                .description(MESSAGE("&9Ajoute un NPC"))
+                .extendedDescription(MESSAGE("&9-s &8D\351finit le skin\n&9-n &8D\351finit un nom"))
                 .permission("actus.admin.npc")
                 .arguments(
                     GenericArguments.flags()
@@ -788,26 +800,26 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandSetSpawn = CommandSpec.builder()
-                .description(MESSAGE("&eDefinit le spawn sur la position du joueur"))
+                .description(MESSAGE("&9Definit le spawn sur la position du joueur"))
                 .permission("actus.admin.setspawn")
                 .executor(new CommandSetspawn())
                 .build();
         
         public CommandSpec CommandSpawn = CommandSpec.builder()
-                .description(MESSAGE("&eTeleporte sur le Spawn du monde actif")) 
+                .description(MESSAGE("&9Teleporte sur le Spawn du monde actif")) 
                 .permission("actus.player.spawn") 
                 .child(CommandSetSpawn, "set")
                 .executor(new CommandSpawn())
                 .build();
         
         public CommandSpec CommandSetspawn = CommandSpec.builder()
-                .description(MESSAGE("&eDefinit le spawn sur la position du joueur"))
+                .description(MESSAGE("&9Definit le spawn sur la position du joueur"))
                 .permission("actus.admin.setspawn")
                 .executor(new CommandSetspawn())
                 .build();
         
         public CommandSpec CommandButcher = CommandSpec.builder()
-                .description(MESSAGE("&eSupprime toutes les entités du monde nomm\351"))
+                .description(MESSAGE("&9Supprime toutes les entités du monde nomm\351"))
                 .extendedDescription(MESSAGE("&9Prend le monde actif, si le parametre [worldName] est omis"))
                 .permission("actus.admin.butcher")
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("worldName")))))
@@ -815,31 +827,31 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandTPR = CommandSpec.builder()
-                .description(MESSAGE("&eT\351l\351porte sur un point al\351atoire de la carte")) 
+                .description(MESSAGE("&9T\351l\351porte sur un point al\351atoire de la carte")) 
                 .permission("actus.player.tpr") 
                 .executor(new CommandTPR())
                 .build();
         
         public CommandSpec CommandTPThru = CommandSpec.builder()
-                .description(MESSAGE("&eT\351l\351porte sur le point en visuel")) 
+                .description(MESSAGE("&9T\351l\351porte sur le point en visuel")) 
                 .permission("actus.admin.tpthru") 
                 .executor(new CommandTPThru())
                 .build();
         
         public CommandSpec CommandDataSave = CommandSpec.builder()
-                .description(MESSAGE("/data save")) 
+                .description(MESSAGE("&9Sauvegarde data")) 
                 .permission("actus.admin.data") 
                 .executor(new CommandDataSave()) 
                 .build(); 
         
         public CommandSpec CommandDataReload = CommandSpec.builder()
-                .description(MESSAGE("/data reload")) 
+                .description(MESSAGE("&9Reload data")) 
                 .permission("actus.admin.data") 
                 .executor(new CommandDataReload()) 
                 .build(); 
         
         public CommandSpec CommandData = CommandSpec.builder()
-                .description(MESSAGE("&eGestion des donn\351e du plugin &bACTUS")) 
+                .description(MESSAGE("&9Gestion des donn\351e du plugin &bACTUS")) 
                 .permission("actus.admin.data") 
                 .child(CommandDataSave, "save", "sauve", "s")
                 .child(CommandDataReload, "reload", "load")
@@ -847,41 +859,41 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandAS = CommandSpec.builder()
-                .description(MESSAGE("&eAffiche les propri\351t\351 de l'armorStand en visuel")) 
+                .description(MESSAGE("&9Affiche les propri\351t\351 de l'armorStand en visuel")) 
                 .permission("actus.fun.as") 
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("uuid")))))
                 .executor(new CommandAS())
                 .build();
         
         public CommandSpec CommandMailBox = CommandSpec.builder()
-                .description(MESSAGE("&9/mailbox &econsulte la boite aux lettres")) 
+                .description(MESSAGE("&9Consulte ta boite aux lettres")) 
                 .executor(new CommandMailBox())
                 .build();
         
         public CommandSpec CommandPlotClaim = CommandSpec.builder() 
-                .description(MESSAGE("&eRevendique le chunk sur ta position")) 
+                .description(MESSAGE("&9Revendique le chunk sur ta position")) 
                 .executor(new CommandPlotClaim()) 
                 .build(); 
         
         public CommandSpec CommandGraveList = CommandSpec.builder()
-                .description(MESSAGE("/grave list")) 
+                .description(MESSAGE("&9Liste des tombes actives")) 
                 .executor(new CommandGraveList()) 
                 .build();
         
         public CommandSpec CommandGraveTp = CommandSpec.builder()
-                .description(MESSAGE("&eT\351l\351porte sur la tombe")) 
+                .description(MESSAGE("&9T\351l\351porte sur la tombe")) 
                 .permission("actus.admin.grave")
                 .executor(new CommandGraveTp()) 
                 .build();
         
         public CommandSpec CommandGraveInfo = CommandSpec.builder()
-                .description(MESSAGE("&eAffiche les infos de la tombe a proximit\351"))
+                .description(MESSAGE("&9Affiche les infos de la tombe a proximit\351"))
                 .permission("actus.player.grave")
                 .executor(new CommandGraveInfo()) 
                 .build();
         
         public CommandSpec CommandGrave = CommandSpec.builder()
-                .description(MESSAGE("&9/grave &eGestion des tombes"))
+                .description(MESSAGE("&9Gestion des tombes"))
                 .permission("actus.admin.grave")
                 .child(CommandGraveList, "list")
                 .child(CommandGraveTp, "tp")
@@ -895,12 +907,12 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandGraveyardCreate = CommandSpec.builder()
-                .description(MESSAGE("&9/graveyard create &eCr\351ation d'une tombe de crypte/cimetiere")) 
+                .description(MESSAGE("&9Cr\351ation d'une tombe de crypte/cimetiere")) 
                 .executor(new CommandGraveyardCreate()) 
                 .build();
         
         public CommandSpec CommandGraveyard = CommandSpec.builder()
-                .description(MESSAGE("&9/graveyard &eGestion des cryptes/cimetieres")) 
+                .description(MESSAGE("&9Gestion des cryptes/cimetieres")) 
                 .permission("actus.admin.grave") 
                 //.child(CommandGraveyardList, "list")
                 //.child(CommandGraveTp, "tp")
@@ -911,7 +923,7 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandTrocSet = CommandSpec.builder()
-                .description(MESSAGE("&9/troc set &eD\351clare le coffre en visuel comme coffre Troc")) 
+                .description(MESSAGE("&9/D\351clare le coffre en visuel comme coffre Troc")) 
                 .permission("actus.admin.troc.set")
                 .arguments(
                     GenericArguments.flags()
@@ -922,17 +934,22 @@ public class CommandManager {
                 .build();
         
         public CommandSpec CommandTrocAdd = CommandSpec.builder()
-                .description(MESSAGE("&9/troc add <type> <price> [qte] &eAjoute un itemTroc dans le coffre Troc en visuel"))
+                .description(MESSAGE("&9Ajoute un itemTroc dans le coffre Troc en visuel"))
                 .permission("actus.player.troc.add")
                 .arguments(
                     GenericArguments.onlyOne(GenericArguments.enumValue(MESSAGE("type"), EnumTransactType.class)),
                     GenericArguments.onlyOne(GenericArguments.doubleNum(MESSAGE("price"))),
-                    GenericArguments.optional(GenericArguments.integer(MESSAGE("qte"))))
+                    GenericArguments.optional(GenericArguments.integer(MESSAGE("qte"))),
+                    GenericArguments.flags()
+                        .valueFlag(GenericArguments.string(MESSAGE("player")),"p")
+                        .buildWith(GenericArguments.none()))
                 .executor(new CommandTrocAdd()) 
                 .build();
         
         public CommandSpec CommandTroc = CommandSpec.builder()
                 .description(MESSAGE("&9/troc &eGestion des trocs"))
+                .extendedDescription(MESSAGE("&8/troc set [PlayerName] &9D\351finit un troc sur le coffre en visuel\n"
+                    +   "&8/troc add <sale|buy> <price> [qte] [-p PlayerName] &9Ajoute in itemTroc dans le troc en visuel"))
                 //.permission("actus.admin.troc")
                 //.child(CommandTrocList, "list")
                 //.child(CommandTrocTp, "tp")
@@ -945,5 +962,13 @@ public class CommandManager {
                         //.valueFlag(GenericArguments.bool(MESSAGE("skull")),"k")
                         //.buildWith(GenericArguments.none()))
                 //.executor(new CommandTroc())
+                .build();
+        
+        public CommandSpec CommandBookAdd = CommandSpec.builder()
+                .description(MESSAGE("&9Sauvegarde le livre a \351crire, indiquer le titre du livre"))
+                .permission("actus.admin.book.add")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("title"))))
+                .executor(new CommandBookAdd())
                 .build();
 }

@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Config.GUILD_MAX_NUMBER_OF_MEMBER;
 import static net.teraoctet.actus.utils.Data.getFactions;
@@ -17,18 +17,6 @@ import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LIST_LVL10;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LIST_LVL10;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LIST_LVL10;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LIST_LVL10;
 
 public class CommandGuildList implements CommandExecutor {
         
@@ -40,8 +28,8 @@ public class CommandGuildList implements CommandExecutor {
             
             for (Integer id_guild : getFactions().keySet()) {
                 String guildName = getFactions().get(id_guild).getName();
-                String ownerName = guildManager.getOwner(id_guild).getName();
-                int guildSize = guildManager.getGuildPlayers(id_guild).size();
+                String ownerName = gdm.getOwner(id_guild).getName();
+                int guildSize = gdm.getGuildPlayers(id_guild).size();
                 APlayer aplayer = getAPlayer(src.getIdentifier());
                 int level = aplayer.getLevel();
                 

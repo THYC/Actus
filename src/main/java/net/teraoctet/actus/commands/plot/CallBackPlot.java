@@ -6,12 +6,14 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.plm;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.plot.PlotManager;
+import net.teraoctet.actus.plot.PlotSelection;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.BEDROCK2SKY_PROTECT_PLOT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -37,47 +39,47 @@ public class CallBackPlot {
             switch (flag.toLowerCase()){
                 case "noenter":
                     plot.setNoEnter(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoEnter = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoEnter = " + ptm.ValueOf(value)));
                     break;
                 case "nofly":
                     plot.setNoFly(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoFly = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoFly = " + ptm.ValueOf(value)));
                     break;
                 case "nobuild":
                     plot.setNoBuild(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoBuild = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoBuild = " + ptm.ValueOf(value)));
                     break;
                 case "nobreak":
                     plot.setNoBreak(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoBreak = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoBreak = " + ptm.ValueOf(value)));
                     break;
                 case "nointeract":
                     plot.setNoInteract(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoInteract = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoInteract = " + ptm.ValueOf(value)));
                     break;
                 case "noteleport":
                     plot.setNoTeleport(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoTeleport = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoTeleport = " + ptm.ValueOf(value)));
                     break;
                 case "nofire":
                     plot.setNoFire(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoFire = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoFire = " + ptm.ValueOf(value)));
                     break;
                 case "nomob":
                     plot.setNoMob(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoMob = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoMob = " + ptm.ValueOf(value)));
                     break;
                 case "notnt":
                     plot.setNoTNT(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoTNT = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoTNT = " + ptm.ValueOf(value)));
                     break;
                 case "nocommand":
                     plot.setNoCommand(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoCommand = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoCommand = " + ptm.ValueOf(value)));
                     break;
                 case "spawngrave":
                     plot.setSpawnGrave(value);
-                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &espawnGrave = " + plotManager.ValueOf(value)));
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &espawnGrave = " + ptm.ValueOf(value)));
                     break;
             }
             plot.update();
@@ -104,8 +106,10 @@ public class CallBackPlot {
 	return (CommandSource src) -> {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            PlotManager plotManager = PlotManager.getSett(player);
-            Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
+            //PlotManager plm = PlotManager.getSett(player);
+            //Location[] c = {plm.getBorder1().get(), plm.getBorder2().get()};
+            PlotSelection plotselect = ptm.getPlotSel(player);
+            Location[] c = {plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get()};
 
             String playerUUID = player.getUniqueId().toString();
             if(aplayer.getLevel() == 10){ playerUUID = "ADMIN";} else { aplayer.debitMoney(amount);}

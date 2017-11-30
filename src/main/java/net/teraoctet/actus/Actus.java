@@ -1,6 +1,5 @@
 package net.teraoctet.actus;
 
-import com.flowpowered.math.vector.Vector3i;
 import net.teraoctet.actus.plot.PlotListener;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.portal.PortalListener;
@@ -19,7 +18,6 @@ import net.teraoctet.actus.utils.ServerManager;
 import net.teraoctet.actus.utils.TPAH;
 
 import com.google.inject.Inject;
-import com.sk89q.worldedit.IncompleteRegionException;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -38,7 +36,6 @@ import net.teraoctet.actus.grave.GraveListener;
 import net.teraoctet.actus.player.PlayerListener;
 import net.teraoctet.actus.player.PlayerManager;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
-import net.teraoctet.actus.plot.PlotSelection;
 import net.teraoctet.actus.trace.TraceListener;
 import net.teraoctet.actus.trace.TraceManager;
 import net.teraoctet.actus.troc.TrocListener;
@@ -63,16 +60,10 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.channel.MessageChannel;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionSelector;
-import com.sk89q.worldedit.session.SessionManager;
 import net.teraoctet.actus.commands.troc.CallBackTroc;
+import net.teraoctet.actus.plot.Wedit;
 import net.teraoctet.actus.troc.ItemTransact;
 import net.teraoctet.actus.troc.TrocManager;
-import org.spongepowered.api.world.World;
 
 @Plugin(
     id = "actus", 
@@ -91,14 +82,14 @@ public class Actus {
     @Inject private Logger logger;
     
     public static ServerManager sm = new ServerManager();
-    public static PlotManager plotManager = new PlotManager();
-    public static PortalManager portalManager = new PortalManager();
-    public static GuildManager guildManager = new GuildManager();
-    public static ItemShopManager itemShopManager = new ItemShopManager();
-    public static PlayerManager playerManager = new PlayerManager();
-    public static WarpManager warpManager = new WarpManager();
-    public static TraceManager traceManager = new TraceManager();
-    public static WorldManager worldManager = new WorldManager();
+    public static PlotManager ptm = new PlotManager();
+    public static PortalManager plm = new PortalManager();
+    public static GuildManager gdm = new GuildManager();
+    public static ItemShopManager ism = new ItemShopManager();
+    public static PlayerManager prm = new PlayerManager();
+    public static WarpManager wpm = new WarpManager();
+    public static TraceManager tem = new TraceManager();
+    public static WorldManager wdm = new WorldManager();
     public static TrocManager tm = new TrocManager(); 
     public Logger getLogger(){return logger;}  
     public static Game game;
@@ -119,8 +110,8 @@ public class Actus {
     public static final CallBackGrave CB_GRAVE = new CallBackGrave();
     public static final CallBackTroc CB_TROC = new CallBackTroc();
     public static EconomyService economyService;
-    private static WorldEdit WEdit;
-    
+    public static Wedit wedit;
+        
     @Inject
     @DefaultConfig(sharedRoot = false)
     private Path defaultConfig;
@@ -201,7 +192,10 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandGrave, "grave", "tombe");
         getGame().getCommandManager().register(this, new CommandManager().CommandGraveyard, "graveyard", "crypte", "caveau", "cav", "cim");
         getGame().getCommandManager().register(this, new CommandManager().CommandTroc, "troc");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTrocSet, "trocset","settroc");
         getGame().getCommandManager().register(this, new CommandManager().CommandBankVerse, "bankverse", "verse");
+        getGame().getCommandManager().register(this, new CommandManager().CommandBookAdd, "bookadd", "book+", "b+");
+        getGame().getCommandManager().register(this, new CommandManager().CommandPlotCreate, "plot+", "p+");
     }
         
     @Listener
@@ -241,6 +235,11 @@ public class Actus {
 	}else{
             getLogger().error("aucun plugin economy detecte !");
 	}
+        if (Sponge.getPluginManager().getPlugin("worldedit").isPresent()) {
+            this.wedit = new Wedit();
+        }else{
+            getLogger().info("WorldEdit n'a pas ete detecte !");
+	}
     }
     
     @Listener
@@ -262,51 +261,5 @@ public class Actus {
         GraveyardManager.init();
         TrocManager.init();
         return true;
-    }
-    
-    /**
-     * retourne True si WorldEdit est actif
-     * @return Boolean
-     */
-    public boolean WEisActive() {
-	return Sponge.getPluginManager().getPlugin("worldedit").isPresent();
-    }
-    
-    /**
-     * Retourne la region selectionné par le joueur sur WorldEdit
-     * @param player
-     * @return PlotSelection
-     */
-    public static Optional<PlotSelection> getWESelection(Player player)
-    {
-        PlotSelection plotSelect;
-        LocalSession localSession = getLocalSession(player);
-        com.sk89q.worldedit.world.World w = localSession.getSelectionWorld();
-        if (w == null) return Optional.empty();
-        RegionSelector regionSelector = localSession.getRegionSelector(w);
-        Region sel;
-        if (!regionSelector.isDefined()) return Optional.empty();
-        try {
-            sel = regionSelector.getRegion();
-            com.sk89q.worldedit.world.World weWorld = sel.getWorld();
-            if (weWorld==null) return Optional.empty();
-            Optional<World> world = Sponge.getGame().getServer().getWorld(weWorld.getName());
-            if(!world.isPresent())return Optional.empty();
-            plotSelect = new PlotSelection(VectorWEToSponge(sel.getMinimumPoint()),VectorWEToSponge(sel.getMaximumPoint()),world.get());
-        } catch (IncompleteRegionException e) {
-            return Optional.empty();
-        }
-        return Optional.of(plotSelect);
-    }
-    
-    private static LocalSession getLocalSession(Player player){
-        if (WEdit == null) WEdit = WorldEdit.getInstance();
-        SessionManager sessionManager = WEdit.getSessionManager();
-        LocalSession localSession = sessionManager.findByName(player.getName());
-        return localSession;
-    }
-    
-    private static Vector3i VectorWEToSponge(Vector v){
-        return new Vector3i(v.getX(), v.getY(), v.getZ());
     }
 }

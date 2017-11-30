@@ -5,10 +5,11 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configGraveyard;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.grave.Graveyard;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
-import net.teraoctet.actus.plot.PlotManager;
+import net.teraoctet.actus.plot.PlotSelection;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
@@ -33,20 +34,20 @@ public class CommandGraveyardCreate implements CommandExecutor {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             if(player.hasPermission("actus.admin.grave") || aplayer.getLevel() == LEVEL_ADMIN()){
-                PlotManager plotManager = PlotManager.getSett(player);
+                PlotSelection plotSelect = ptm.getPlotSel(player);
                             
-                if(!plotManager.getBorder1().isPresent() || !plotManager.getBorder2().isPresent()){
+                if(!plotSelect.getMinPos().isPresent() || !plotSelect.getMaxPos().isPresent()){
                     player.sendMessage(MESSAGE("&7Faite d'abord un Click gauche avec la pelle sur le coffre"));
                     player.sendMessage(MESSAGE("&7Puis faite un Click droit avec la pelle sur le panneau"));
                     return CommandResult.empty();
                 }
                 String id = String.valueOf(configGraveyard.getmaxID());
-                Graveyard graveyard = new Graveyard(id, plotManager.getBorder1().get(),plotManager.getBorder1().get(),plotManager.getBorder2().get());
+                Graveyard graveyard = new Graveyard(id, plotSelect.getMinPosLoc().get(),plotSelect.getMinPosLoc().get(),plotSelect.getMaxPosLoc().get());
                 try {
                     configGraveyard.save(graveyard);
                     player.sendMessages(MESSAGE("&eCaveau enregistr\351 !"));
                     
-                    Optional<TileEntity> signBlock = plotManager.getBorder2().get().getTileEntity();
+                    Optional<TileEntity> signBlock = plotSelect.getMaxPosLoc().get().getTileEntity();
                     TileEntity tileSign = signBlock.get();
                     Sign sign=(Sign)tileSign;
                     Optional<SignData> opSign = sign.getOrCreate(SignData.class);

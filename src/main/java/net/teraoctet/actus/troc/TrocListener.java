@@ -7,29 +7,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static net.teraoctet.actus.Actus.CB_TROC;
 import static net.teraoctet.actus.Actus.TROC;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.Actus.tm;
+import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.troc.EnumTransactType.BUY;
 import static net.teraoctet.actus.troc.EnumTransactType.SALE;
 import static net.teraoctet.actus.utils.Config.ENABLE_TROC_SCOREBOARD;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
+import static net.teraoctet.actus.utils.Data.getGuild;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import static org.spongepowered.api.item.ItemTypes.AIR;
 import org.spongepowered.api.item.inventory.Container;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 import org.spongepowered.api.util.blockray.BlockRay;
@@ -148,8 +152,8 @@ public class TrocListener {
                 ticket = ticket + "&3---------------\nTotal = &l&e" + total;
                 if(total != 0){
                     player.sendMessage(MESSAGE(ticket));
-                    if(!itemShopManager.addCoin(player.getInventory(),total)){
-                        player.getInventory().offer(itemShopManager.CoinPurses(player, total).get());
+                    if(!ism.addCoin(player.getInventory(),total)){
+                        player.getInventory().offer(ism.CoinPurses(player, total).get());
                     }
                 }
             }
@@ -221,18 +225,32 @@ public class TrocListener {
             String locTroc = parts[1];
             String ownerTroc = parts[2];
             int idGuild = Integer.valueOf(parts[3]);
-            final String loc = locTroc;
-                        
+            final String loc = locTroc;            
+            APlayer aplayer = getAPlayer(player.getIdentifier());
+            
             List<SlotTransaction> slots = event.getTransactions();
             
             slots.stream().forEach((SlotTransaction slot) -> {
                 Integer affectedSlot = slot.getSlot().getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
                 
                 if(affectedSlot < 9){
-                    if(ownerTroc.equalsIgnoreCase("LIBRE") || ownerTroc.equalsIgnoreCase(player.getName())){
-                        event.getCursorTransaction().setCustom(ItemStackSnapshot.NONE);
-                        tm.sendBookSelectTransactType(event.getTargetInventory(), affectedSlot, player);
-                        tm.setChestTroc(locTroc, player.getName(), 0);
+                    if(ownerTroc.contains("LIBRE") || ownerTroc.equalsIgnoreCase(player.getName()) || aplayer.getLevel() == LEVEL_ADMIN()){
+                        if(event.getCursorTransaction().getOriginal().getType().equals(AIR)){
+                            Troc troc = new Troc(locTroc,affectedSlot,null,0,0d,tm.getIS().createSnapshot(),"LIBRE","LIBRE",0);
+                            tm.save(troc);
+                            slot.setCustom(tm.getIS());
+                            event.getCursorTransaction().setCustom(ItemStackSnapshot.NONE);
+                            if(tm.chestTrocHasEmpty(locTroc))tm.setChestTroc(locTroc, "LIBRE", 0);                     
+                        }else{
+                            String owner = player.getName();
+                            int idGuildPlayer = aplayer.getID_guild();
+                            if(ownerTroc.contains("LIBRE") && aplayer.getID_guild() != 0){
+                                owner = getGuild(aplayer.getID_guild()).getName();
+                            }
+                            tm.sendBookSelectTransactType(event.getTargetInventory(), affectedSlot, player,event.getCursorTransaction().getOriginal());
+                            event.getCursorTransaction().setCustom(event.getCursorTransaction().getOriginal());
+                            tm.setChestTroc(locTroc, owner, idGuildPlayer);
+                        }
                     }else{
                         player.sendMessage(MESSAGE("&eEmplacement reserve !"));
                         event.setCancelled(true);
@@ -246,7 +264,7 @@ public class TrocListener {
                 if(ownerTroc.equalsIgnoreCase(player.getName())){
                     return;
                 }
-                if(ownerTroc.equalsIgnoreCase("LIBRE") && idGuild == 0){
+                if(ownerTroc.equalsIgnoreCase("LIBRE") && idGuild == 0 && affectedSlot < 54){
                     player.sendMessage(MESSAGE("&eCe TROC n'est pas ouvert, si tu souhaites l'ouvrir, "));
                     player.sendMessage(MESSAGE("&eClique avec l'item que tu souahites vendre ou acheter"));
                     player.sendMessage(MESSAGE("&esur une case de la première rangée."));
@@ -280,7 +298,7 @@ public class TrocListener {
                             }
                         }    
                         total = total - (qteO - qteF);
-                        if(itemShopManager.getQteCoin(player.getInventory()) < total){
+                        if(ism.getQteCoin(player.getInventory()) < total){
                             player.sendMessage(MESSAGE("&eTu n'as pas assez de cr\351dit sur toi !"));
                             player.sendMessage(MESSAGE("&eTu dois avoir dans ton inventaire une bourse avec au moins " + total + "e"));
                             player.sendMessage(MESSAGE("&ePour retirer une bourse ou la recharger, rends toi a la banque"));
@@ -348,7 +366,7 @@ public class TrocListener {
                             }
                         }    
                         total = total - qteO;
-                        if(itemShopManager.getQteCoin(player.getInventory()) < total){
+                        if(ism.getQteCoin(player.getInventory()) < total){
                             player.sendMessage(MESSAGE("&eTu n'as pas assez de cr\351dit sur toi !"));
                             player.sendMessage(MESSAGE("&eTu dois avoir dans ton inventaire une bourse avec au moins " + total + "e"));
                             player.sendMessage(MESSAGE("&ePour retirer une bourse ou la recharger, rends toi a la banque"));

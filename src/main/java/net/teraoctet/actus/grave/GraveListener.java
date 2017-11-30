@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configGrave;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -82,7 +82,7 @@ public class GraveListener {
             final Location<World> locgrave1;
             final Location<World> locgrave2;
                     
-            Optional<Plot> plot = plotManager.getPlot(player.getLocation());
+            Optional<Plot> plot = ptm.getPlot(player.getLocation());
             if(plot.isPresent()){
                 if(plot.get().getSpawnGrave()) {
                     return;

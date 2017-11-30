@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.plot;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
@@ -34,9 +34,9 @@ public class CommandPlotFlaglist implements CommandExecutor {
             
             if(ctx.getOne("name").isPresent()){
                 plotName = ctx.<String> getOne("name").get();
-                plot = plotManager.getPlot(plotName);                
+                plot = ptm.getPlot(plotName);                
             } else {
-                plot = plotManager.getPlot(player.getLocation());
+                plot = ptm.getPlot(player.getLocation());
             }
 
             if (!plot.isPresent()){
@@ -53,16 +53,16 @@ public class CommandPlotFlaglist implements CommandExecutor {
             Builder builder = paginationService.builder();
 
             builder.title(formatText("&ePlot " + plot.get().getName()))
-                .contents(  formatText("&b[ " + plotManager.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoFly()) + " ] &7Fly interdit sur la parcelle"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoBuild()) + " ] &7Interdiction de construire"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoBreak()) + " ] &7Interdiction de casser"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoInteract()) + " ] &7Interdiction d'ouvrir portes,coffres..."),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoTeleport()) + " ] &7Interdiction de se t\351l\351porter"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoFire()) + " ] &7Interdiction de mettre le feu"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoMob()) + " ] &7Les mob ne spawnerons pas"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoTNT()) + " ] &7TNT d\351sactiv\351 sur la parcelle"),
-                            formatText("&b[ " + plotManager.ValueOf(plot.get().getNoCommand()) + " ] &7Interdiction de taper des commandes"))
+                .contents(  formatText("&b[ " + ptm.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoFly()) + " ] &7Fly interdit sur la parcelle"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoBuild()) + " ] &7Interdiction de construire"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoBreak()) + " ] &7Interdiction de casser"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoInteract()) + " ] &7Interdiction d'ouvrir portes,coffres..."),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoTeleport()) + " ] &7Interdiction de se t\351l\351porter"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoFire()) + " ] &7Interdiction de mettre le feu"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoMob()) + " ] &7Les mob ne spawnerons pas"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoTNT()) + " ] &7TNT d\351sactiv\351 sur la parcelle"),
+                            formatText("&b[ " + ptm.ValueOf(plot.get().getNoCommand()) + " ] &7Interdiction de taper des commandes"))
                 .header(formatText("&7Liste des droits accord\351s aux autres joueurs :"))
                 .padding(MESSAGE("&b-"))
                 .sendTo(src);  

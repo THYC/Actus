@@ -3,7 +3,7 @@ package net.teraoctet.actus.commands.plot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -47,12 +47,12 @@ public class CommandPlotSale implements CommandExecutor {
                 return CommandResult.empty();  
             }
 
-            Optional<Plot> plot = plotManager.getPlot(player.getLocation());
+            Optional<Plot> plot = ptm.getPlot(player.getLocation());
 
             if(ctx.getOne("name").isPresent()){
                 String plotName = ctx.<String> getOne("name").get();
-                if (plotManager.hasPlot(plotName)){  
-                    plot = plotManager.getPlot(plotName); 
+                if (ptm.hasPlot(plotName)){  
+                    plot = ptm.getPlot(plotName); 
                 } else {
                     player.sendMessage(MESSAGE("&7parcelle &e" + plotName + " &7introuvable"));
                     player.sendMessage(USAGE("/plot sale <price> [plotName]"));

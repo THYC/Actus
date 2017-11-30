@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.inputShop;
-import static net.teraoctet.actus.Actus.itemShopManager;
+import static net.teraoctet.actus.Actus.ism;
 import net.teraoctet.actus.commands.CommandTest;
 import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
@@ -117,8 +117,8 @@ public class CommandShopCreate implements CommandExecutor {
                 ItemStack is = player.getItemInHand(HandTypes.MAIN_HAND).get(); 
                 ItemShop itemShop = new ItemShop(is,transactType.get(),price.get(),-1);
                 try {
-                    if(itemShopManager.saveShop(UUID.fromString(uuid.get()), itemShop)){
-                        Text transact = Text.EMPTY;
+                    if(ism.saveShop(UUID.fromString(uuid.get()), itemShop)){
+                        Text transact;
                         if(transactType.get().equalsIgnoreCase("sale")){
                             transact = SHOP_SALE();
                         }else{

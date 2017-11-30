@@ -3,9 +3,12 @@ package net.teraoctet.actus.commands.plot;
 import com.flowpowered.math.vector.Vector3i;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.CB_PLOT;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.plot.PlotSelection;
+import net.teraoctet.actus.plot.Wedit;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -31,9 +34,8 @@ public class CommandPlotClaim implements CommandExecutor {
         
         if(src instanceof Player && src.hasPermission("actus.player.plot.create")) { 
             Player player = (Player) src;
-            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            PlotManager plotManager = PlotManager.getSett(player);
-            
+            APlayer aplayer = getAPlayer(player.getUniqueId().toString());                   
+                        
             if(aplayer.getID_guild() == 0) { 
                 player.sendMessage(MESSAGE("&eVous devez faire partie d'une Guild pour utiliser cette commande"));
                 return CommandResult.empty();
@@ -50,7 +52,7 @@ public class CommandPlotClaim implements CommandExecutor {
                 Location[] c = {loc1, loc2};
                 int level = 1;
 
-                if(plotManager.plotNotAllow(loc1, loc2)){
+                if(ptm.plotNotAllow(loc1, loc2)){
                     player.sendMessage(ALREADY_OWNED_PLOT());
                     return CommandResult.empty();
                 }

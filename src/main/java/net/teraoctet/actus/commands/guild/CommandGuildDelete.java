@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -29,7 +29,7 @@ public class CommandGuildDelete implements CommandExecutor {
             if(aplayer.getID_guild() != 0){
                 if(aplayer.getGuildRank() == 1){
                     Guild guild = getGuild(aplayer.getID_guild());
-                    guildManager.delGuild(aplayer.getID_guild());
+                    gdm.delGuild(aplayer.getID_guild());
                     src.sendMessage(GUILD_DELETED_SUCCESS(guild.getName()));
                     getGame().getServer().getBroadcastChannel().send(GUILD_DELETED_NOTIFICATION(guild.getName()));
                     return CommandResult.success();

@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.world;
 
-import static net.teraoctet.actus.Actus.worldManager;
+import static net.teraoctet.actus.Actus.wdm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.utils.DeSerialize;
@@ -40,7 +40,7 @@ public class CommandWorldTP implements CommandExecutor {
             //quand la commande est correctement renseignée par la source
             else {
                 String worldName = ctx.<String> getOne("worldName").get();
-                AWorld aworld = worldManager.getWorld(worldName);
+                AWorld aworld = wdm.getWorld(worldName);
             
                 //monde introuvable
                 if(!getGame().getServer().getWorld(worldName).isPresent()) { 

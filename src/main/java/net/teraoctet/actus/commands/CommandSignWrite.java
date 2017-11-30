@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.plotManager;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
@@ -53,7 +53,7 @@ public class CommandSignWrite implements CommandExecutor {
                 }                     
             } 
 
-            Optional<Plot> plot = plotManager.getPlot(location);
+            Optional<Plot> plot = ptm.getPlot(location);
             if (plot.isPresent()){ 
                 if(!plot.get().getUuidOwner().equalsIgnoreCase(player.getIdentifier()) && aplayer.getLevel() != LEVEL_ADMIN()){
                     src.sendMessage(NO_PERMISSIONS());

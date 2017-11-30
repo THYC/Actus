@@ -1,6 +1,6 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.guildManager;
+import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Config.GUILD_NAME_MAX_SIZE;
@@ -19,24 +19,6 @@ import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
-import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
-import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
-import static net.teraoctet.actus.utils.MessageManager.GUILD_RENAMED_SUCCESS;
-import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
-import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
-import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_CHARACTERS_NUMBER;
-import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 
 public class CommandGuildRename implements CommandExecutor {
         
@@ -46,7 +28,7 @@ public class CommandGuildRename implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.rename")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(guildManager.hasAnyGuild(aplayer)) {
+            if(gdm.hasAnyGuild(aplayer)) {
                 if(aplayer.getGuildRank() <= 2){
                     String newName = ctx.<String> getOne("name").get();
                     if(newName.length() >= GUILD_NAME_MIN_SIZE() && newName.length() <= GUILD_NAME_MAX_SIZE()) {

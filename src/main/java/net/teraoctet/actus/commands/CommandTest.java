@@ -1,16 +1,13 @@
 package net.teraoctet.actus.commands;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import com.sk89q.worldedit.WorldVector;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,52 +16,20 @@ import org.spongepowered.api.entity.living.player.Player;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.teraoctet.actus.Actus;
+import static net.teraoctet.actus.Actus.ptm;
+import net.teraoctet.actus.plot.PlotSelection;
+import net.teraoctet.actus.plot.Wedit;
 //import static jdk.nashorn.internal.codegen.ObjectClassGenerator.pack;
-import static net.teraoctet.actus.Actus.getWESelection;
-import static net.teraoctet.actus.Actus.plotManager;
-import static net.teraoctet.actus.Actus.plugin;
-import static net.teraoctet.actus.Actus.sm;
-import static net.teraoctet.actus.Actus.tm;
-import net.teraoctet.actus.troc.EnumTransactType;
-import net.teraoctet.actus.troc.Troc;
-import net.teraoctet.actus.troc.TrocManager;
-import net.teraoctet.actus.utils.Data;
-import net.teraoctet.actus.utils.DeSerialize;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
-import static net.teraoctet.actus.world.WorldManager.spawnParticles;
-import org.spongepowered.api.Sponge;
-import static org.spongepowered.api.Sponge.getGame;
-import static org.spongepowered.api.Sponge.getServer;
-import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.block.tileentity.carrier.Beacon;
 
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.BodyPart;
 import org.spongepowered.api.data.type.BodyParts;
-import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.effect.particle.ParticleEffect;
-import org.spongepowered.api.effect.particle.ParticleTypes;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.ArmorStand;
-import org.spongepowered.api.event.cause.entity.health.HealthModifier;
-import org.spongepowered.api.item.ItemTypes;
-import static org.spongepowered.api.item.ItemTypes.COMPASS;
-import org.spongepowered.api.item.inventory.ItemStack;
-import static org.spongepowered.api.item.inventory.ItemStackBuilderPopulators.data;
-import org.spongepowered.api.item.merchant.TradeOffer;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.resourcepack.ResourcePacks;
-import org.spongepowered.api.service.context.Context;
-import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.service.permission.SubjectData;
-import org.spongepowered.api.util.Tristate;
-import org.spongepowered.api.util.blockray.BlockRay;
-import org.spongepowered.api.util.blockray.BlockRayHit;
-import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.Extent;
@@ -78,30 +43,23 @@ import org.spongepowered.api.world.extent.Extent;
 public class CommandTest implements CommandExecutor {
     
     //private SpongeWorldEdit worldedit;
-    
+    Wedit w = new Wedit();
     @Override
     @SuppressWarnings("null")
     public CommandResult execute(CommandSource src, CommandContext ctx) {    
-        try {
-            //Data.commit();
-            Player player = (Player) src;
-            //spawnEntity(player.getLocation(),src);
+        //Data.commit();
+        Player player = (Player) src;
+        
+        //spawnEntity(player.getLocation(),src);
 //Set<Context> context;
 
 //player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "sponge", Tristate.TRUE);
 //player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "luckperms", Tristate.TRUE);
 //player.getSubjectData().setOption(SubjectData.GLOBAL_CONTEXT,"prefix","&9-TEST-");
 //player.sendMessage(MESSAGE("xx " + player.getSubjectData().getPermissions(SubjectData.GLOBAL_CONTEXT).getAllPermissions().));
-URL url = new URL("Equanimity.zip"); //Some instantiated URL object
-URI uri = url.toURI();
-ResourcePack pack = ResourcePacks.fromUriUnchecked(uri);
-player.sendResourcePack(pack);
+
 //Subject subject = player.getContainingCollection().getDefaults();
 //player.sendMessage(MESSAGE("xx " + subjectgetOption("prefix").orElse("");
-
-
-
-
 //Optional<Chunk> c = player.getLocation().getExtent().getChunk(player.getLocation().getBlockPosition());
 
 //c.get().unloadChunk();
@@ -198,11 +156,8 @@ player.openInventory(inv,Cause.source(inv).build());*/
 .build();*/
 
 
-return CommandResult.success();
-        } catch (MalformedURLException | URISyntaxException ex) {
-            Logger.getLogger(CommandTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return CommandResult.success();
+
     }
     
     public void spawnEntity(Location<World> location, CommandSource src)
