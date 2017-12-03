@@ -236,7 +236,7 @@ public class Actus {
             getLogger().error("aucun plugin economy detecte !");
 	}
         if (Sponge.getPluginManager().getPlugin("worldedit").isPresent()) {
-            this.wedit = new Wedit();
+            Actus.wedit = new Wedit();
         }else{
             getLogger().info("WorldEdit n'a pas ete detecte !");
 	}

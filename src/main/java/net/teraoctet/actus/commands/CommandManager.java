@@ -1,5 +1,10 @@
 package net.teraoctet.actus.commands;
 
+import net.teraoctet.actus.commands.tp.CommandTPA;
+import net.teraoctet.actus.commands.tp.CommandTPR;
+import net.teraoctet.actus.commands.tp.CommandTPaccept;
+import net.teraoctet.actus.commands.tp.CommandTPThru;
+import net.teraoctet.actus.commands.tp.CommandTPhere;
 import net.teraoctet.actus.commands.troc.CommandTrocSet;
 import net.teraoctet.actus.commands.world.CommandWorldTP;
 import net.teraoctet.actus.commands.world.CommandWorldLoad;

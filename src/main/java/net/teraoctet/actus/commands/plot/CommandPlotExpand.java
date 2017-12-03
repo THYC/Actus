@@ -16,7 +16,10 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import static java.lang.Math.abs;
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.PlayerManager;
+import net.teraoctet.actus.plot.PlotSelection;
+import net.teraoctet.actus.plot.Wedit;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.BUYING_COST_PLOT;
@@ -144,7 +147,32 @@ public class CommandPlotExpand implements CommandExecutor {
                 nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                 
             }
-                        
+            
+            if(Wedit.WEisActive()){
+                PlotSelection plotSelect = ptm.getPlotSel(player); 
+                Plot plottmp = plot.get();
+                
+                switch(axe){ 
+                    case "Z1": 
+                        plottmp.setZ1(point);
+                        break;
+                    case "Z2":
+                        plottmp.setZ2(point);
+                        break; 
+                    case "X1":
+                        plottmp.setX1(point);
+                        break;     
+                    case "X2":
+                        plottmp.setX2(point);
+                        break;
+                }
+                
+                plotSelect.setMinPos(plottmp.getLocX1Y1Z1().getBlockPosition());
+                plotSelect.setMaxPos(plottmp.getLocX2Y2Z2().getBlockPosition());
+                plotSelect.setWorld(player.getWorld());
+                Wedit.setSelection(player, plotSelect);                
+            }
+            
             if(nbBlock < 51){ amount = 1;}
             else if(nbBlock < 101){ amount = 2;}
             else if(nbBlock < 201){ amount = 3;}

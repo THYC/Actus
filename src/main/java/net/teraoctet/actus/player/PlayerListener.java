@@ -33,8 +33,6 @@ import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.command.source.CommandBlockSource;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.living.player.Player;
@@ -76,12 +74,15 @@ import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
 import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
+import org.spongepowered.api.service.ProviderRegistration;
+import org.spongepowered.api.service.user.UserStorageService;
 
 public class PlayerListener {
     
@@ -464,11 +465,19 @@ public class PlayerListener {
                                             if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
                                                 book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
                                                 dest = is.get().get(Keys.DISPLAY_NAME).get().toPlain();
-                                                aplayer = getAPlayerName(dest);
-                                                if(!aplayer.isPresent()){
-                                                    dest = player.getName();
-                                                    player.sendMessage(MESSAGE("&dErreur sur le nom du destinataire"));
-                                                    player.sendMessage(MESSAGE("&dTu recevra le courrier dans ta boite"));
+                                                
+                                                Optional<ProviderRegistration<UserStorageService>> optprov = Sponge.getServiceManager().getRegistration(UserStorageService.class);
+
+                                                if(optprov.isPresent()) {
+                                                    ProviderRegistration<UserStorageService> provreg = optprov.get();
+                                                    UserStorageService uss = provreg.getProvider();
+
+                                                    Optional<User> usr = uss.get(dest);
+                                                    if(!usr.isPresent()) {
+                                                        dest = player.getName();
+                                                        player.sendMessage(MESSAGE("&dErreur sur le nom du destinataire"));
+                                                        player.sendMessage(MESSAGE("&dTu recevra le courrier dans ta boite"));
+                                                    }
                                                 }
                                             }else{
                                                 player.sendMessage(MESSAGE("&dEnvoi impossible !\n" +
@@ -594,4 +603,11 @@ public class PlayerListener {
             DataTransactionResult result = player.offer(data);
         });
     }
+    
+    //@Listener
+    //public void onPlayerAchievement(GrantAchievementEvent .TargetPlayer e){
+        //plugin.getLogger().info("DEBUG");
+    //}
+    
+    
 }

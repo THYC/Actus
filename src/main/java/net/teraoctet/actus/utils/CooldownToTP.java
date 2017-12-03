@@ -14,6 +14,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
+import org.spongepowered.api.entity.Entity;
 
 public class CooldownToTP {
     
@@ -23,6 +24,7 @@ public class CooldownToTP {
     private final int X;
     private final int Y;
     private final int Z;
+    private Optional<Entity> entity = Optional.empty();
     private Optional<Text> msg = Optional.empty();
     private boolean result;
     
@@ -33,6 +35,16 @@ public class CooldownToTP {
         this.X = X;
         this.Y = Y;
         this.Z = Z;
+    }
+    
+    public CooldownToTP(Player player, Optional<Entity> entity, String world, int X, int Y, int Z){
+        this.result = false;
+        this.player = player;
+        this.world = world;
+        this.X = X;
+        this.Y = Y;
+        this.Z = Z;
+        this.entity = entity;
     }
     
     public CooldownToTP(Player player, String world, int X, int Y, int Z, Optional<Text> msg){
@@ -49,14 +61,15 @@ public class CooldownToTP {
     public void run(){
         taskCountdown = Sponge.getScheduler().createTaskBuilder().execute(() -> {
             try{
-            Location lastLocation = player.getLocation();
-            player.transferToWorld(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z));
-            mapCountDown.remove(player);
-            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            aplayer.setLastposition(DeSerialize.location(lastLocation));
-            aplayer.update();
-            this.result = true;
-            if(msg.isPresent())player.sendMessage(msg.get());
+                Location lastLocation = player.getLocation();
+                player.setLocation(new Location(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z)));
+                if(entity.isPresent())entity.get().setLocation(new Location(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z)));
+                mapCountDown.remove(player);
+                APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+                aplayer.setLastposition(DeSerialize.location(lastLocation));
+                aplayer.update();
+                this.result = true;
+                if(msg.isPresent())player.sendMessage(msg.get());
             }catch(Exception ex){
                 player.sendMessage(ERROR());
                 this.result = false;
@@ -68,8 +81,7 @@ public class CooldownToTP {
         return this.result;
     }
 
-    public void stopTP()
-    {
+    public void stopTP(){
         taskCountdown.cancel();
     }
 }

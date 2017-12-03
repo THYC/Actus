@@ -3,10 +3,7 @@ package net.teraoctet.actus.portal;
 import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.plm;
-import static net.teraoctet.actus.Actus.wdm;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
@@ -75,7 +72,6 @@ public class PortalListener {
                 aplayer.update();
                 
                 AWorld aworld = WorldManager.getWorld(portal.gettoworld()); 
-                //plugin.getLogger().info(aworld.getName());
                 Optional<World> world = getGame().getServer().getWorld(portal.gettoworld());
                 Location loc = new Location(world.get(), new Vector3d(portal.gettoX(), portal.gettoY(), portal.gettoZ()));
                 player.setLocation(loc);

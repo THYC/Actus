@@ -18,6 +18,7 @@ import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -292,12 +293,13 @@ public class ServerManager {
      * @param X coordonnée X
      * @param Y coordonnée Y
      * @param Z coordonnée Z
+     * @param entity
      * @return Boolean TRUE si le joueur a bien été téléporté
      */
-    public boolean teleport(Player player, String worldS, int X, int Y, int Z){
+    public boolean teleport(Player player, String worldS, int X, int Y, int Z, Optional<Entity> entity){
                  
         if(Config.COOLDOWN_TO_TP()>0){
-            CooldownToTP tp = new CooldownToTP(player,worldS, X, Y, Z);
+            CooldownToTP tp = new CooldownToTP(player,entity,worldS, X, Y, Z);
             tp.run();
             mapCountDown.put(player, tp);
             return tp.getResult();
@@ -316,7 +318,7 @@ public class ServerManager {
   
         }
     }
-    
+        
     /**
      * Téléporte un joueur sur un autre joueur et enregistre ces prédentes coordonnées dans le param LastLocation 
      * @param player nom du joueur a téléporter

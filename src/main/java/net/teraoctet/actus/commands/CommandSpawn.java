@@ -13,6 +13,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
@@ -23,12 +24,16 @@ public class CommandSpawn implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.player.spawn")) {
             Player player = (Player) src;
+            Entity ent = player.getBaseVehicle();
+            Optional<Entity> entity = Optional.empty();
+            if(ent != null)entity = Optional.of(ent);
             if(!Config.UNIQUE_SPAWN_WORLD()){
                 sm.teleport(player,player.getWorld().getName(),
                         player.getWorld().getSpawnLocation().getBlockX(),
                         player.getWorld().getSpawnLocation().getBlockY(),
-                        player.getWorld().getSpawnLocation().getBlockZ());
-                player.sendMessage(MESSAGE("command.world.spawn.success"));
+                        player.getWorld().getSpawnLocation().getBlockZ(),
+                        entity);
+                src.sendMessage(MESSAGE("&eVous serez TP dans environ " + Config.COOLDOWN_TO_TP()));
             }else{
                 String worldName = Config.SPAWN_WORLD();
                 Optional<World> world = game.getServer().getWorld(worldName);
@@ -36,8 +41,9 @@ public class CommandSpawn implements CommandExecutor {
                     sm.teleport(player,world.get().getName(),
                         world.get().getSpawnLocation().getBlockX(),
                         world.get().getSpawnLocation().getBlockY(),
-                        world.get().getSpawnLocation().getBlockZ());
-                    player.sendMessage(MESSAGE("command.world.spawn.success"));
+                        world.get().getSpawnLocation().getBlockZ(),
+                        entity);
+                    src.sendMessage(MESSAGE("&eVous serez TP dans environ " + Config.COOLDOWN_TO_TP()));
                 }else{
                     plugin.getLogger().error("la valeur 'SPAWN_WORLD' dans le fichier Config est incorrect, la map '" + worldName + "' n'est pas present sur ce serveur ");
                 }

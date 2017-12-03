@@ -23,6 +23,7 @@ import net.teraoctet.actus.utils.ServerManager;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
+import org.spongepowered.api.statistic.Statistics;
 
 public class CommandPlayerinfo implements CommandExecutor {
         
@@ -79,49 +80,48 @@ public class CommandPlayerinfo implements CommandExecutor {
                             .build());
                 }
 
-                src.sendMessage(MESSAGE("&8--------------------"));
-                /*src.sendMessage(Text.builder("Home (default): World= " + aplayer.getHome("default").getWorld() + " X=" + aplayer.getHome("default").getX() + " Y=" + aplayer.getHome("default").getY() + " Z=" + aplayer.getHome("default").getZ())
-                            //.onClick(TextActions.runCommand("/"))
-                            .onHover(TextActions.showText(TP_AT_COORDS()))
-                            .color(TextColors.DARK_GRAY)
-                            .build());*/
-                src.sendMessage(MESSAGE("&8Nb de Home(s) : " + aplayer.getHomes().size()));
-                src.sendMessage(MESSAGE("&8Bank: " + aplayer.getMoney() + " \351meraudes"));
+                src.sendMessage(MESSAGE("&9--------------------"));
+                
+                src.sendMessage(MESSAGE("&eNb de Home(s) : " + aplayer.getHomes().size()));
+                src.sendMessage(MESSAGE("&eBank: " + aplayer.getMoney() + " \351meraudes"));
                 src.sendMessage(Text.builder("Droits suppl\351mentaires accordés : ")
                             .onHover(TextActions.showText(Text.builder("Points accumul\351s : ").build()))
                             .color(TextColors.DARK_GRAY)
                             .build());
-                src.sendMessage(MESSAGE("&8--------------------"));
+                src.sendMessage(MESSAGE("&9--------------------"));
                 src.sendMessage(Text.builder("> Statistiques minage <")
                             //.onClick(TextActions.runCommand("/"))
                             .onHover(TextActions.showText(Text.builder("Affiche les statistiques des blocs min\351s").build()))
                             .color(TextColors.DARK_GRAY)
                             .build());
-                src.sendMessage(MESSAGE("&8--------------------"));
+                src.sendMessage(MESSAGE("&9--------------------"));
                 return CommandResult.success();
             }
         } 
         
         //si la source est un joueur qui n'a pas rempli l'argument <player>, affiche les infos de la source
-        else if (src instanceof Player && src.hasPermission("actus.playerinfo")) {
+        else if (src instanceof Player && src.hasPermission("actus.player.playerinfo")) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getIdentifier());
             long seconds = (long)aplayer.getOnlinetime()/1000;
             long hours = seconds / 3600;
-            //if(hours > 0){
-                
-            //}
-            //long minutes = seconds / 60;
+
             
-            //String time = 
-            
-            src.sendMessage(MESSAGE("&8--------------------"));
-            src.sendMessage(MESSAGE("&7Mes infos : " + player.getName()));
-            src.sendMessage(MESSAGE("&8--------------------"));
-            src.sendMessage(MESSAGE("&8Temps de connexion : " + sm.longToTime((long)aplayer.getOnlinetime()-(3600*1000))));
-            src.sendMessage(MESSAGE("&8Nombre de points accumulés : "));
-            src.sendMessage(MESSAGE("&8Droits suppl\351mentaires accordés : "));
-            src.sendMessage(MESSAGE("&8--------------------"));
+            src.sendMessage(MESSAGE("&9--------------------"));
+            src.sendMessage(MESSAGE("&3Mes infos : " + player.getName()));
+            src.sendMessage(MESSAGE("&9--------------------"));
+            src.sendMessage(MESSAGE("&3Temps de connexion : " + sm.longToTime((long)aplayer.getOnlinetime()-(3600*1000))));
+            src.sendMessage(MESSAGE("&3Nombre de points accumulés : "));
+            src.sendMessage(MESSAGE("&3Droits suppl\351mentaires accordés : "));
+            src.sendMessage(MESSAGE("&9--------------------"));
+            src.sendMessage(MESSAGE("&3Nb Desces : " + player.getStatisticData().get(Statistics.DEATHS).get()));
+            src.sendMessage(MESSAGE("&3Nb Mobs tu\351s : " + player.getStatisticData().get(Statistics.MOB_KILLS).get()));
+            src.sendMessage(MESSAGE("&3Nb Kills : " + player.getStatisticData().get(Statistics.PLAYER_KILLS).get()));
+            src.sendMessage(MESSAGE("&9--------------------"));
+            src.sendMessage(MESSAGE("&3Nb Troc villageois : " + player.getStatisticData().get(Statistics.TRADED_WITH_VILLAGER).get()));
+            src.sendMessage(MESSAGE("&3Nb disque jou\351 : " + player.getStatisticData().get(Statistics.RECORD_PLAYED).get()));
+            src.sendMessage(MESSAGE("&3Nb disque jou\351 : " + player.getStatisticData().get(Statistics.RECORD_PLAYED).get()));
+            Long dead = player.getStatisticData().get(Statistics.DEATHS).get();
             //playerPlots(player.getIdentifier());
             return CommandResult.success();
         }

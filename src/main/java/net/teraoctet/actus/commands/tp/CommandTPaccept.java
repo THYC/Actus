@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands;
+package net.teraoctet.actus.commands.tp;
 
 import static net.teraoctet.actus.Actus.ATPA;
 import static net.teraoctet.actus.Actus.sm;

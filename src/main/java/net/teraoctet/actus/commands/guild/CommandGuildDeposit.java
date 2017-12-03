@@ -1,7 +1,7 @@
 package net.teraoctet.actus.commands.guild;
 
-import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
+import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
@@ -25,18 +25,18 @@ public class CommandGuildDeposit implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.deposit")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(gdm.hasAnyGuild(aplayer)) {
+            if(GuildManager.hasAnyGuild(aplayer)) {
                 double amount = ctx.<Double> getOne("amount").get();
                 double playerMoney = aplayer.getMoney();
                 
                 if(playerMoney >= amount){
-                    Guild gguild = getGuild(aplayer.getID_guild());
+                    Guild guild = getGuild(aplayer.getID_guild());
                     
                     playerMoney = playerMoney - amount;
                     aplayer.setMoney(playerMoney);
-                    gguild.setMoney(gguild.getMoney() + amount);
+                    guild.setMoney(guild.getMoney() + amount);
                     aplayer.update();
-                    gguild.update();
+                    guild.update();
                     
                     src.sendMessage(DEPOSIT_SUCCESS(Double.toString(amount)));
                     return CommandResult.success();

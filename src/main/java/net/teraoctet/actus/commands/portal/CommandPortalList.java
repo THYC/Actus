@@ -1,6 +1,8 @@
 package net.teraoctet.actus.commands.portal;
 
+import java.util.List;
 import static net.teraoctet.actus.Actus.plm;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -18,8 +20,14 @@ public class CommandPortalList implements CommandExecutor {
         
         if(src instanceof Player && src.hasPermission("actus.admin.portal")) { 
             Player player = (Player) src;
-            Text list = plm.listPortal();
-            player.sendMessage(list); 
+            List<Text> list = plm.listPortal();
+            if(list.isEmpty()){
+                player.sendMessage(MESSAGE("&bAucun portail enregistr\351"));
+            }else{
+                list.forEach((msg) -> {
+                    player.sendMessage(msg);
+                });
+            }
             return CommandResult.success();	
         } 
         

@@ -2,28 +2,30 @@ package net.teraoctet.actus.troc;
 
 import java.io.IOException;
 import static java.lang.Math.abs;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static net.teraoctet.actus.Actus.CB_TROC;
 import static net.teraoctet.actus.Actus.TROC;
+import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.ism;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.Actus.tm;
+import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.troc.EnumTransactType.BUY;
 import static net.teraoctet.actus.troc.EnumTransactType.SALE;
 import static net.teraoctet.actus.utils.Config.ENABLE_TROC_SCOREBOARD;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
+import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -36,6 +38,7 @@ import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
@@ -50,6 +53,8 @@ public class TrocListener {
         if(b.getName().get().contains("TROC")){
             String[] parts = event.getTargetInventory().getName().get().split(" ");
             String locTroc = parts[1];
+            String owner = parts[2];
+            int idGuild = Integer.valueOf(parts[3]);
             final String loc = locTroc;
             player.setScoreboard(null);
 
@@ -154,6 +159,24 @@ public class TrocListener {
                     player.sendMessage(MESSAGE(ticket));
                     if(!ism.addCoin(player.getInventory(),total)){
                         player.getInventory().offer(ism.CoinPurses(player, total).get());
+                        if(idGuild == 0){
+                            Optional<Player> target = Sponge.getGame().getServer().getPlayer(owner);
+                            if(target.isPresent()){
+                                if(target.get().isOnline()){
+                                    target.get().sendMessage(MESSAGE("&b" + player.getName() + " a effectu\351 des achats/ventes dans votre TROC"));
+                                    target.get().sendMessage(MESSAGE("&bVous avez reçu : &e" + total + "&b Emeraude(s)"));       
+                                }else{
+                                    List<Text> msg = new ArrayList();
+                                    msg.add(MESSAGE("&b" + player.getName() + " a effectu\351 des achats/ventes dans votre TROC\n" 
+                                                + "&bVous avez reçu : &e" + total + "&b Emeraude(s)")); 
+                                    msg.add(MESSAGE(ticket));
+                                    configBook.SendBookMessage(target.get(), msg);
+                                }
+                            }
+                        }else{
+                            Guild guild = Data.getGuild(idGuild);
+                            guild.setMoney(total);
+                        }
                     }
                 }
             }

@@ -52,19 +52,6 @@ public class CommandPlotCreate implements CommandExecutor {
             Boolean strict = false;
 
             if (plotManager.hasPlot(name) == false){
-                /*if(!plotManager.getBorder1().isPresent() || !plotManager.getBorder2().isPresent()){
-                    player.sendMessage(UNDEFINED_PLOT_ANGLES());
-                    return CommandResult.empty();
-                }
-                Location[] c = {plotManager.getBorder1().get(), plotManager.getBorder2().get()};
-                int level = 1;
-                if(plotManager.plotNotAllow(plotManager.getBorder1().get(), plotManager.getBorder2().get())){
-                    if(aplayer.getLevel() != LEVEL_ADMIN() && !plotManager.hasOwnerPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get())){
-                        player.sendMessage(ALREADY_OWNED_PLOT());
-                        return CommandResult.empty();
-                    }
-                    level = plotManager.getMaxLevelPlotParent(player, plotManager.getBorder1().get(), plotManager.getBorder2().get());
-                }*/
                 if(!plotselect.getMinPos().isPresent() || !plotselect.getMaxPos().isPresent()){
                     player.sendMessage(UNDEFINED_PLOT_ANGLES());
                     return CommandResult.empty();

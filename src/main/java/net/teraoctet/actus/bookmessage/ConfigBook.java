@@ -4,11 +4,14 @@ import com.google.common.reflect.TypeToken;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
+import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -48,7 +51,7 @@ public class ConfigBook {
         String [] files = rep.list(); 
         int count = 0;
         for (String file : files){ 
-            if(file.contains(player.getName() + "_")){
+            if(file.startsWith(player.getName() + "_")){
                 count ++;
             }
         } 
@@ -61,7 +64,7 @@ public class ConfigBook {
         Text fileList = Text.builder().append(MESSAGE("&1   ++ Messagerie ++\n\n")).toText();
         Text tmp;
         for (String file : files){ 
-            if(file.contains(player.getName() + "_")){
+            if(file.startsWith(player.getName() + "_")){
                 String[] arg = file.split("_");
                 tmp = 
                         Text.builder().append(MESSAGE("&4 [ X ]"))
@@ -126,5 +129,25 @@ public class ConfigBook {
                         .title(MESSAGE("MAIL"))
                         .addPage(configBook.getMailBook(player));
             player.sendBookView(bv.build());
+    }
+    
+    public void SendBookMessage(Player player, Text message){
+        try {
+            List<Text> pages = new ArrayList<>();
+            pages.add(message);
+            Book bookMsg = new Book(MESSAGE(player.getName() + "SERVER" + "_" + sm.dateShortToString()),MESSAGE("MAIL"),pages);
+            configBook.saveBook(bookMsg);
+        } catch (IOException | ObjectMappingException ex) {
+            Logger.getLogger(ConfigBook.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void SendBookMessage(Player player, List<Text> pages){
+        try {
+            Book bookMsg = new Book(MESSAGE(player.getName() + "SERVER" + "_" + sm.dateShortToString()),MESSAGE("MAIL"),pages);
+            configBook.saveBook(bookMsg);
+        } catch (IOException | ObjectMappingException ex) {
+            Logger.getLogger(ConfigBook.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

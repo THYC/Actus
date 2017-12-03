@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands;
+package net.teraoctet.actus.commands.tp;
 
 import java.util.Optional;
 import org.spongepowered.api.block.BlockTypes;

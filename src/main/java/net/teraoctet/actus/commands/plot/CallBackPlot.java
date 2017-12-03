@@ -6,13 +6,11 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
-import static net.teraoctet.actus.Actus.plm;
 import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.bookmessage.Book;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
-import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.plot.PlotSelection;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.MessageManager.BEDROCK2SKY_PROTECT_PLOT_SUCCESS;
@@ -106,8 +104,6 @@ public class CallBackPlot {
 	return (CommandSource src) -> {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            //PlotManager plm = PlotManager.getSett(player);
-            //Location[] c = {plm.getBorder1().get(), plm.getBorder2().get()};
             PlotSelection plotselect = ptm.getPlotSel(player);
             Location[] c = {plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get()};
 

@@ -1,4 +1,4 @@
-package net.teraoctet.actus.commands;
+package net.teraoctet.actus.commands.tp;
 
 import static net.teraoctet.actus.Actus.ATPA;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
@@ -8,7 +8,6 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.utils.TPAH;
 import net.teraoctet.actus.utils.TaskTP;
-
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -16,7 +15,7 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class CommandTPA implements CommandExecutor {
+public class CommandTPhere implements CommandExecutor {
         
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
@@ -30,12 +29,12 @@ public class CommandTPA implements CommandExecutor {
                     return CommandResult.empty();
                 }
             
-                TPAH tpa = new TPAH(player, target,"tpa");
+                TPAH tpa = new TPAH(target, player,"tphere");
                 ATPA.add(tpa);
                 final int index = ATPA.indexOf(tpa);
 
                 player.sendMessage(MESSAGE("&eVeuillez patienter, demande envoy\351 ..."));
-                target.sendMessage(MESSAGE("&eAcceptez vous que %player% se t\351l\351porte sur vous ?",target));
+                target.sendMessage(MESSAGE("&eAcceptez vous que %player% vous t\351l\351porte sur lui ?",target));
                 target.sendMessage(MESSAGE("&eVous avez 30s pour accepter cette demande en tapant : /tpaccept"));
                 
                 TaskTP tp = new TaskTP(player,index);
@@ -44,7 +43,7 @@ public class CommandTPA implements CommandExecutor {
                 return CommandResult.success();
                 
             }else{
-                player.sendMessage(USAGE("/tpa <player>"));
+                player.sendMessage(USAGE("/tphere <player>"));
                 return CommandResult.empty();
             } 
         } 
@@ -60,3 +59,4 @@ public class CommandTPA implements CommandExecutor {
         return CommandResult.empty();
     }
 }
+

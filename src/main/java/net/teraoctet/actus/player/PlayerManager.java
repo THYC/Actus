@@ -28,4 +28,5 @@ public class PlayerManager {
     public static void addFirstTime(String uuid, Long time) { FIRST_TIME.put(uuid, time); }
     public static void removeFirstTime(String uuid) { if(FIRST_TIME.containsKey(uuid)) FIRST_TIME.remove(uuid); }
     public static long getFirstTime(String uuid) { return FIRST_TIME.containsKey(uuid) ? FIRST_TIME.get(uuid) : 0; }
+    
 }

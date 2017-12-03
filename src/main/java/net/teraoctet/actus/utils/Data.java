@@ -20,7 +20,6 @@ import static net.teraoctet.actus.player.PlayerManager.addUUID;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
 import net.teraoctet.actus.plot.Plot;
-import net.teraoctet.actus.plot.PlotManager;
 import net.teraoctet.actus.plot.PlotSelection;
 import net.teraoctet.actus.portal.Portal;
 import net.teraoctet.actus.ticket.Ticket;
