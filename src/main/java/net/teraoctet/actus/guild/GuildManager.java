@@ -88,13 +88,15 @@ public class GuildManager {
     }*/
     
     public void delGuild(int id_guild){
-        for(Map.Entry<String,APlayer> p : getPlayers().entrySet()){
-            if(p.getValue().getID_guild() == id_guild){
-                p.getValue().setFactionRank(0);
-                p.getValue().setID_guild(0);
-                p.getValue().update();
-            }
-        }
+        getPlayers().entrySet().stream().filter((p) -> (p.getValue().getID_guild() == id_guild)).map((p) -> {
+            p.getValue().setFactionRank(0);
+            return p;
+        }).map((p) -> {
+            p.getValue().setID_guild(0);
+            return p;
+        }).forEachOrdered((p) -> {
+            p.getValue().update();
+        });
         Guild guild = getGuild(id_guild);
         guild.delete();
         removeGuild(id_guild);

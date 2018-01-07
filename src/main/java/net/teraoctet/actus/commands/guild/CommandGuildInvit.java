@@ -18,7 +18,7 @@ public class CommandGuildInvit implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.guild.addplayer")) {
+        if(src instanceof Player && src.hasPermission("actus.player.guild.addplayer")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             if(GuildManager.hasAnyGuild(aplayer)) {

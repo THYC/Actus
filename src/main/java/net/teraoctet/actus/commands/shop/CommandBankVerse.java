@@ -26,7 +26,7 @@ public class CommandBankVerse implements CommandExecutor {
                 if(src instanceof Player) {
                     src.sendMessage(USAGE("/verse <coin> [player]"));
                 } else {
-                    src.sendMessage(USAGE("/level <coin> <player>"));
+                    src.sendMessage(USAGE("/verse <coin> <player>"));
                 }
                 return CommandResult.empty();
             }

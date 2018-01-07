@@ -4,9 +4,11 @@ import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.plm;
+import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PROTECT_PORTAL;
 import net.teraoctet.actus.world.AWorld;
@@ -53,8 +55,9 @@ public class PortalListener {
             Portal portal = optPortal.get();
             if(optPortalFrom.isPresent()){
                 if(portal.equals(optPortalFrom.get()))return;
+                plugin.getLogger().info("OK1");
             }
-            if(player.hasPermission("actus.portal." + portal.getName()) || aplayer.getLevel() == 10)
+            if(player.hasPermission("actus.portal." + portal.getName()) || aplayer.getLevel() == LEVEL_ADMIN())
             {
                 if(portal.gettoworld().equalsIgnoreCase("DISABLED") && portal.getCMD().equalsIgnoreCase("DISABLED")){
                     player.sendMessage(MESSAGE("&aPoint de spawn du portail non configur\351, aller au point d'apparition souhait\351 ")
@@ -77,7 +80,7 @@ public class PortalListener {
                 player.setLocation(loc);
 
                 player.sendTitle(Title.of(Text.of(TextColors.DARK_GREEN, aworld.getName()),MESSAGE(portal.getMessage(),player))); 
-                if (aplayer.getLevel() == 10){
+                if (aplayer.getLevel() == LEVEL_ADMIN()){
                     player.sendMessage(ChatTypes.CHAT,MESSAGE("&o&7" + portal.getName()));
                 }
                 
@@ -99,48 +102,47 @@ public class PortalListener {
     @Listener
     public void onEntityMovePortal(MoveEntityEvent event, @First Entity entity) {
         Location locTo = event.getToTransform().getLocation();
+        Location locFrom = event.getFromTransform().getLocation();
+        
         Optional<Portal> optPortal = plm.getPortal(locTo);
+        Optional<Portal> optPortalFrom = plm.getPortal(locFrom);
         
         if(entity instanceof Player == false){
             if (optPortal.isPresent()){   
-                Portal portal = optPortal.get();  
+                Portal portal = optPortal.get(); 
+                if(optPortalFrom.isPresent()){
+                    if(portal.equals(optPortalFrom.get()))return;
+                    //plugin.getLogger().info("OK2");
+                }
                 if(!portal.gettoworld().equalsIgnoreCase("DISABLED")){
                     Optional<World> world = getGame().getServer().getWorld(portal.gettoworld());                    
                     Location<World> loc = new Location(world.get(), new Vector3d(portal.gettoX(), portal.gettoY(), portal.gettoZ()));
-                    Vector3i chunkPos = loc.getChunkPosition();                    
+                    //Vector3i chunkPos = loc.getChunkPosition();                    
                     entity.setLocation(loc);
-                    loc.getExtent().loadChunk(chunkPos, true);
+                    //loc.getExtent().loadChunk(chunkPos, true);
                 }
             }
         }
     }
         
     @Listener
-    public void onBreakBlock(ChangeBlockEvent.Break event) {
-        Optional<Player> optPlayer = event.getCause().first(Player.class);
-        if (!optPlayer.isPresent()) {
-            return;
-        }
-        Player player = optPlayer.get();
+    public void onBreakBlock(ChangeBlockEvent.Break event, @First Player player){
+        
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
         Location loc = optLoc.get();
     
         Optional<Portal> optPortal = plm.getPortal(loc);
-        if (optPortal.isPresent() && aplayer.getLevel() != 10){
+        if (optPortal.isPresent() && aplayer.getLevel() != LEVEL_ADMIN()){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
         }
     }
     
     @Listener
-    public void onPlaceBlock(ChangeBlockEvent.Place event) {
-        Optional<Player> optPlayer = event.getCause().first(Player.class);
-        if (!optPlayer.isPresent()) {
-            return;
-        }
-        Player player = optPlayer.get();
+    public void onPlaceBlock(ChangeBlockEvent.Place event, @First Player player){
+        
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         
@@ -148,19 +150,15 @@ public class PortalListener {
         Location loc = optLoc.get();
         
         Optional<Portal> optPortal = plm.getPortal(loc);
-        if (optPortal.isPresent() && aplayer.getLevel() != 10){
+        if (optPortal.isPresent() && aplayer.getLevel() != LEVEL_ADMIN()){
             player.sendMessage(ChatTypes.CHAT,PROTECT_PORTAL());
             event.setCancelled(true);
         }
     }
     
     @Listener
-    public void onFluidBlock(ChangeBlockEvent.Modify event) {
-        Optional<Player> optPlayer = event.getCause().first(Player.class);
-        if (!optPlayer.isPresent()) {
-            return;
-        }
-        Player player = optPlayer.get();
+    public void onFluidBlock(ChangeBlockEvent.Modify event, @First Player player){
+
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         

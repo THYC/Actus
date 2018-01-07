@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static net.teraoctet.actus.Actus.configGrave;
 import static net.teraoctet.actus.Actus.configGraveyard;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.sm;
@@ -232,8 +233,8 @@ public class GraveManager {
         Grave grave;
         int nb = 0;
         for(String loc : getListGrave()){            
-            if(sm.addDate(load(loc).get().getGraveTime()) < sm.dateToLong()){
-                grave = load(loc).get();
+            if(sm.addDate(configGrave.load(loc).get().getGraveTime()) < sm.dateToLong()){
+                grave = configGrave.load(loc).get();
                 moveGrave(grave);
                 plugin.getLogger().info("Grave : " + grave.getName());
                 nb = nb+1;

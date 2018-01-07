@@ -107,10 +107,10 @@ public class WorldManager {
         }
     }
     
-    public void loadChunk(Player p){
+    /*public void loadChunk(Player p){
         Optional<Chunk> chunk = p.getWorld().getChunk(p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ());
         chunk.get().loadChunk(true);
-    }
+    }*/
 		
     public static void save(AWorld aworld) {	
         try { 

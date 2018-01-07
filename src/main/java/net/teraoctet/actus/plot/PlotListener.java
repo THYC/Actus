@@ -1,11 +1,8 @@
 package net.teraoctet.actus.plot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
@@ -52,7 +49,6 @@ import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_ENTER;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_NO_FLY;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import static org.spongepowered.api.block.BlockTypes.BEDROCK;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
 import static org.spongepowered.api.block.BlockTypes.FIRE;
@@ -220,11 +216,7 @@ public class PlotListener {
                                     textList.add(Text.builder().append(MESSAGE("Votre parcelle a \351t\351 vendu a " + player.getName() + ",\n" + 
                                             String.valueOf(cout) + " \351meraudes ont \351t\351 ajout\351 a votre compte")).build());
                                     book.setPages(textList);
-                                    try {
-                                        configBook.saveBook(book);
-                                    } catch (IOException | ObjectMappingException ex) {
-                                        Logger.getLogger(PlotListener.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
+                                    configBook.saveBook(book);
                                 }
                                 plot.get().delSale();
                                 if(!plot.get().getUuidOwner().contains(player.getIdentifier())){
@@ -392,19 +384,54 @@ public class PlotListener {
         }
 
         if(block.getFinal().getState().getType().equals(BEDROCK)){
-            PlotSelection plotSelect = ptm.getPlotSel(player);                      
-            plotSelect.setMinPos(loc.add(-20, 0, -20).getBlockPosition());
-            plotSelect.setMaxPos(loc.add(20, 250, 20).getBlockPosition());
-            plotSelect.setWorld(player.getWorld());
-            Wedit.setSelection(player, plotSelect);
- 
-            int level = 0;
+            if(block.getOriginal().get(Keys.DISPLAY_NAME).isPresent()){
+                if(block.getOriginal().get(Keys.DISPLAY_NAME).get().equals(MESSAGE("&ePARCELLE 20X20"))){
+                    PlotSelection plotSelect = ptm.getPlotSel(player);                      
+                    plotSelect.setMinPos(loc.add(-10, 0, -10).getBlockPosition());
+                    plotSelect.setMaxPos(loc.add(10, 250, 10).getBlockPosition());
+                    plotSelect.setWorld(player.getWorld());
+                    Wedit.setSelection(player, plotSelect);
 
-            if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
-                player.sendMessage(ALREADY_OWNED_PLOT());
-                return;
+                    int level = 1;
+
+                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return;
+                    }
+                    CB.callCreate(player.getName() + sm.dateShortToString(),false,0,level).accept(player);
+                }
+                if(block.getFinal().get(Keys.DISPLAY_NAME).get().equals(MESSAGE("&eParcelle &b40x40"))){
+                    PlotSelection plotSelect = ptm.getPlotSel(player);                      
+                    plotSelect.setMinPos(loc.add(-20, 0, -20).getBlockPosition());
+                    plotSelect.setMaxPos(loc.add(20, 250, 20).getBlockPosition());
+                    plotSelect.setWorld(player.getWorld());
+                    Wedit.setSelection(player, plotSelect);
+
+                    int level = 1;
+
+                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return;
+                    }
+                    CB.callCreate(player.getName() + sm.dateShortToString(),false,0,level).accept(player);
+                }
+                if(block.getFinal().get(Keys.DISPLAY_NAME).get().equals(MESSAGE("&eParcelle &b60x60"))){
+                    PlotSelection plotSelect = ptm.getPlotSel(player);                      
+                    plotSelect.setMinPos(loc.add(-30, 0, -30).getBlockPosition());
+                    plotSelect.setMaxPos(loc.add(30, 250, 30).getBlockPosition());
+                    plotSelect.setWorld(player.getWorld());
+                    Wedit.setSelection(player, plotSelect);
+
+                    int level = 1;
+
+                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return;
+                    }
+                    CB.callCreate(player.getName() + sm.dateShortToString(),false,0,level).accept(player);
+                }
+                block.setCustom(BlockSnapshot.NONE);
             }
-            CB.callCreate(player.getName() + sm.dateShortToString(),false,0,level).accept(player);
         }
     }
     
@@ -429,11 +456,11 @@ public class PlotListener {
         }
     }
     
-    @Listener
-    public void onPVP(DamageEntityEvent event, @First EntityDamageSource source){
-        getGame().getServer().getConsole().sendMessage(MESSAGE(source.getSource().getType().getName())); //attaquant
-        getGame().getServer().getConsole().sendMessage(MESSAGE(event.getTargetEntity().getType().getName())); //victime
-    }
+    //@Listener
+    //public void onPVP(DamageEntityEvent event, @First EntityDamageSource source){
+        //getGame().getServer().getConsole().sendMessage(MESSAGE(source.getSource().getType().getName())); //attaquant
+        //getGame().getServer().getConsole().sendMessage(MESSAGE(event.getTargetEntity().getType().getName())); //victime
+    //}
     
     @Listener
     public void onDamageEntity(DamageEntityEvent event, @Root DamageSource damage, @First EntityDamageSource entity) {
@@ -464,7 +491,12 @@ public class PlotListener {
             } else if(event.getTargetEntity() instanceof Monster) {
 		if(plot.get().getNoPVPmonster())event.setCancelled(true);
             } else if(event.getTargetEntity() instanceof Animal) {
-		if(plot.get().getNoMob())event.setCancelled(true);
+		//if(plot.get().getNoMob())event.setCancelled(true);
+                //event.getTargetEntity().offer(Keys.TAMED_OWNER, entity.getSource().getUniqueId());
+                event.getTargetEntity().offer(Keys.ANGRY,true);
+                event.getTargetEntity().offer(Keys.ANGER,1000);
+                //event.getTargetEntity().offer(Keys.CAN_BREED,true);
+                //event.getTargetEntity().getScale().
             } 
 	}
     }
@@ -474,7 +506,6 @@ public class PlotListener {
 	if (event.getTargetEntity() instanceof Player) {
             Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
             if (plot.isPresent()) {
-                Player player = (Player) event.getTargetEntity();
 		if(plot.get().getNoPVPplayer())event.setCancelled(true);
             }
 	}

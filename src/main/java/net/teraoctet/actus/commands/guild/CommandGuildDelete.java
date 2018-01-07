@@ -24,7 +24,7 @@ public class CommandGuildDelete implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.guild.delete")) {
+        if(src instanceof Player && src.hasPermission("actus.player.guild.delete")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             if(aplayer.getID_guild() != 0){
                 if(aplayer.getGuildRank() == 1){

@@ -46,8 +46,8 @@ public class CommandPlotFlag implements CommandExecutor {
 
             if (!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
-                player.sendMessage(USAGE("/plot flag <flag> <0|1> : modifie la valeur Oui = 1 Non = 0, vous devez \352tre sur la parcelle"));
-                player.sendMessage(USAGE("/plot flag <flag> <0|1> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
+                player.sendMessage(USAGE("/plot flag <flag> <false|true> : modifie la valeur Oui = true Non = false, vous devez \352tre sur la parcelle"));
+                player.sendMessage(USAGE("/plot flag <flag> <false|true> [NomParcelle]: modifie la valeur d'un flag Oui = true Non = false"));
                 player.sendMessage(USAGE("/plot flag> : liste les flags de la parcelle, vous devez \352tre sur la parcelle"));
                 player.sendMessage(USAGE("/plot flaglist <NomParcelle> : liste les flags de la parcelle nomm\351e"));
                 return CommandResult.empty();
@@ -59,7 +59,7 @@ public class CommandPlotFlag implements CommandExecutor {
             if(!ctx.getOne("flag").isPresent()){
                 PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
                 Builder builder = paginationService.builder();
-                player.sendMessage(MESSAGE("&\n\n\n\n\n\n"));
+                player.sendMessage(MESSAGE("\n\n\n\n"));
                 builder.title(formatText("&ePlot " + plot.get().getName() ))
                     .contents(  
                                 Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"))
@@ -92,8 +92,11 @@ public class CommandPlotFlag implements CommandExecutor {
                                 Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoCommand()) + " ] &7Interdiction de taper des commandes"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "nocommand", getValue(plot.get().getNoCommand()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
-                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getSpawnGrave()) + " ] &7Une tombe apparait a la mort d'un joueur"))
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getSpawnGrave()) + " ] &7Une tombe apparait à la mort d'un joueur "))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "spawngrave", getValue(plot.get().getSpawnGrave()))))    
+                                    .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText(),
+                                Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getAutoForest()) + " ] &7Les racines d'arbres se replantes"))
+                                    .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "autoforest", getValue(plot.get().getAutoForest()))))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText())
   
                     .header(formatText("&o&eListe des droits accord\351s aux autres joueurs :"))
@@ -105,7 +108,7 @@ public class CommandPlotFlag implements CommandExecutor {
 	
             } else {
                 if(!ctx.getOne("value").isPresent()){
-                    player.sendMessage(USAGE("/plot flag <flag> <false|true> [NomParcelle]: modifie la valeur d'un flag Oui = 1 Non = 0"));
+                    player.sendMessage(USAGE("/plot flag <flag> <false|true> [NomParcelle]: modifie la valeur d'un flag Oui = true Non = false"));
                     return CommandResult.empty();
                 }
 
@@ -145,6 +148,10 @@ public class CommandPlotFlag implements CommandExecutor {
                         plot.get().setNoMob(value);
                         player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoMob = " + value));
                         break;
+                    case "noanimal":
+                        plot.get().setNoAnimal(value);
+                        player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoAnimal = " + value));
+                        break;
                     case "notnt":
                         plot.get().setNoTNT(value);
                         player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoTNT = " + value));
@@ -157,6 +164,34 @@ public class CommandPlotFlag implements CommandExecutor {
                         plot.get().setSpawnGrave(value);
                         player.sendMessage(MESSAGE("&7Flag enregistr\351 : &espawnGrave = " + value));
                         break;
+                    case "nopvpplayer":
+                        if(player.hasPermission("actus.admin.plot.flag")){
+                            plot.get().setNoPVPplayer(value);
+                            player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoPVPplayer = " + value));
+                        }
+                        break; 
+                    case "nopvpmonster":
+                        if(player.hasPermission("actus.admin.plot.flag")){
+                            plot.get().setNoPVPmonster(value);
+                            player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoPVPmonster = " + value));
+                        }
+                        break; 
+                    case "noprojectile":
+                        if(player.hasPermission("actus.admin.plot.flag")){
+                            plot.get().setNoProjectile(value);
+                            player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoProjectile = " + value));
+                        }
+                        break; 
+                    case "noliquidflow":
+                        if(player.hasPermission("actus.admin.plot.flag")){
+                            plot.get().setNoLiquidFlow(value);
+                            player.sendMessage(MESSAGE("&7Flag enregistr\351 : &enoLiquidFlow = " + value));
+                        }
+                        break; 
+                    case "autoforest":
+                        plot.get().setAutoForest(value);
+                        player.sendMessage(MESSAGE("&7Flag enregistr\351 : &eAutoForest = " + value));
+                        break; 
                 }
                 plot.get().update();
                 Data.commit();

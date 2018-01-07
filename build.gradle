@@ -17,14 +17,9 @@ repositories {
     maven {
     	url "http://maven.sk89q.com/repo/"
     }
-    maven {
-        name "luck-repo"
-        url "https://repo.lucko.me/"
-    }
 }
 
 dependencies {
     compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
     compile 'com.sk89q.worldedit:worldedit-core:6.1'
-    compile 'me.lucko.luckperms:luckperms-api:3.3'
 }

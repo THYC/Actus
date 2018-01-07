@@ -63,7 +63,7 @@ public class CommandSetHome implements CommandExecutor {
                 src.sendMessage(HOME_SET_SUCCESS(player,name));
             }
 
-            if(!player.hasPermission("actus.home.unlimited")) src.sendMessage(NB_HOME(player,String.valueOf(homes.size()),"illimité"));
+            if(player.hasPermission("actus.home.unlimited")) src.sendMessage(NB_HOME(player,String.valueOf(homes.size()),"illimité"));
             else src.sendMessage(NB_HOME(player,String.valueOf(homes.size()),String.valueOf(nbHomes)));  
             
             return CommandResult.success();

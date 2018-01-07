@@ -2,6 +2,7 @@ package net.teraoctet.actus.plot;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import net.teraoctet.actus.player.APlayer;
@@ -201,27 +202,50 @@ public class PlotManager {
      * @param playerUUID UUID du joueur 
      * @return  Text
      */
-    public Text getListPlot(String playerUUID){
-        String listplot = "&6Total : " + PLOTS.size();
+    public Optional<Text> getListPlot(String playerUUID){
+        String listplot = "";
+        int nb = 0;
         for (Plot plot : PLOTS) {
             if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
                 listplot = listplot + "\n" + plot.getName();
+                nb++;
             }
         }
+        if(nb == 0)return Optional.empty();
         Text text = Text.builder().append(TextSerializers.formattingCode('&').deserialize(listplot)).toText();
-        return text;
+        return Optional.of(text);
     }
     
     /**
-     * Retourne un Array comprenant les parcelles du joueur
+     * Retourne le nombre de parcelle du joueur en fonction du parametre level
      * @param playerUUID UUID du joueur
-     * @return  ArrayList
+     * @param level 0 = nb de parcelle Owner / 1 = nb de parcelle allowed   
+     * @return le nombre de parcelle
      */
-    public static final ArrayList<Plot> playerPlots (String playerUUID)
-    {
-        ArrayList<Plot> playerPlots = new ArrayList<>();
-        PLOTS.stream().filter((plot) -> (plot.getUuidOwner().equalsIgnoreCase(playerUUID))).forEach((plot) -> {playerPlots.add(plot);});
-        return playerPlots;        
+    public Integer getNbPlot(String playerUUID, Integer level){
+        int nbo = 0;
+        int nba = 0;
+        for (Plot plot : PLOTS) {
+            if(plot.getUuidOwner().equalsIgnoreCase(playerUUID))nbo++;
+            if(plot.getUuidAllowed().contains(playerUUID))nba++;
+        }
+        if(level == 0)return  nbo;
+        if(level == 1)return  nba;
+        return 0;
+    }
+        
+    /**
+     * Retourne la premiere parcelle du joueur
+     * @param playerUUID UUID du joueur
+     * @return 
+     */
+    public Plot fistplayerPlot (String playerUUID){
+        for (Plot plot : PLOTS) {
+            if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
+                return plot;
+            }
+        }
+        return null;        
     }
     
     /**
@@ -229,8 +253,7 @@ public class PlotManager {
      * @param player
      * @return  ArrayList
      */
-    public static final ArrayList<Plot> guildPlots (Player player)
-    {
+    public static final ArrayList<Plot> guildPlots (Player player){
         APlayer aplayer = getAPlayer(player.getIdentifier());
         ArrayList<Plot> guildPlots = new ArrayList<>();
         PLOTS.stream().filter((plot) -> (plot.getIdGuild()==aplayer.getID_guild())).forEach((plot) -> {guildPlots.add(plot);});

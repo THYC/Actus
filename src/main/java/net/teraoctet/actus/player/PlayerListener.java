@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.configInv;
 
@@ -25,6 +27,7 @@ import static net.teraoctet.actus.utils.Data.commit;
 import static net.teraoctet.actus.player.PlayerManager.getUUID;
 import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.removeUUID;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.CHEST_LOCK;
 import static net.teraoctet.actus.utils.MessageManager.CLICK_TO_CONFIRM;
 import net.teraoctet.actus.utils.SettingCompass;
@@ -40,7 +43,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
-import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -67,22 +69,27 @@ import net.teraoctet.actus.world.WorldManager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
+import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.effect.potion.PotionEffectTypes;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.entity.InteractEntityEvent;
+import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.event.filter.type.Exclude;
+import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
 import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
+import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.service.ProviderRegistration;
+import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.service.user.UserStorageService;
+import org.spongepowered.api.util.Tristate;
 
 public class PlayerListener {
     
@@ -113,6 +120,7 @@ public class PlayerListener {
             aplayer.insert();
             commit();
             player.sendMessage(FIRSTJOIN_MESSAGE(player)); 
+            player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "group.default", Tristate.TRUE);
         } else {
             addAPlayer(aplayer.getUUID(), aplayer);
             player.sendMessage(JOIN_MESSAGE(player));
@@ -130,6 +138,12 @@ public class PlayerListener {
             commit();
         }
         if(configBook.getCountMessageBook(player) > 0)configBook.OpenListBookMessage(player);
+        
+        if(ptm.getListPlot(player.getIdentifier()).isPresent()){
+            if(!player.hasPermission(SubjectData.GLOBAL_CONTEXT, "group.citoyen")){
+                player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "group.citoyen", Tristate.TRUE);
+            }
+        }
     }
     
     @Listener
@@ -177,7 +191,6 @@ public class PlayerListener {
                 inputDouble.replace(player, d);
                 player.sendMessage(CLICK_TO_CONFIRM()
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
-                //event.clearMessage();
             }else{
                 
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences :")
@@ -199,109 +212,90 @@ public class PlayerListener {
                     event.clearMessage();
                     return;
                 }
-                //inputShop.replace(player, String.valueOf(d));
                 Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
-                //event.clearMessage();
             }else{                
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences : ")
                 .concat(MESSAGE("&bTapes 0 pour annuler")));
-                //event.setCancelled(true);
             }
             event.clearMessage();
             return;
-            //event.setCancelled(true);
         }
         
         String smessage = event.getMessage().toPlain();
         smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
-        Text message = MESSAGE(Permissions.getPrefix(player) + "&a[" + player.getName() + "] &7" + smessage + Permissions.getSuffix(player));
+        Text message = MESSAGE(Permissions.getPrefix(player) + " &l&7" + player.getName() + ": &r&7" + smessage + Permissions.getSuffix(player));
         Text prefixWorld = MESSAGE(WorldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
         Text newMessage = Text.builder().append(prefixWorld).append(message).build();
         event.setMessage(newMessage);
     }
     
-    /*@Listener
-    public void onMessage(MessageChannelEvent.Chat event, @First Player player) {
-        String smessage = event.getMessage().toPlain();
-        smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
-        Text message = MESSAGE(Permissions.getPrefix(player) + "&a[" + player.getName() + "] &7" + smessage + Permissions.getSuffix(player));
-        Text prefixWorld = MESSAGE(WorldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
-        Text newMessage = Text.builder().append(prefixWorld).append(message).build();
-        event.setMessage(newMessage);
-    }*/
-                    
     @Listener
-    public void onInteractChest(InteractBlockEvent event, @First Player player) {
-        BlockSnapshot b = event.getTargetBlock();                   
-        if(b.get(Keys.DISPLAY_NAME).isPresent()){
-            Optional<Text> displayName = b.get(Keys.DISPLAY_NAME);
-            APlayer aplayer = getAPlayer(player.getIdentifier());
-            if(!displayName.get().toPlain().contains(player.getName()) && !displayName.get().toPlain().contains("[+]") && aplayer.getLevel() != 10){
-                player.sendMessage(CHEST_LOCK());
-                event.setCancelled(true);
+    public void onInteractChest(InteractInventoryEvent.Open event, @First Player player){
+        APlayer aplayer = getAPlayer(player.getIdentifier());
+        
+        if(!event.getTargetInventory().getName().get().contains(player.getName()) && !event.getTargetInventory().getName().get().contains("[+]") && aplayer.getLevel() != LEVEL_ADMIN()){
+            player.sendMessage(CHEST_LOCK());
+            event.setCancelled(true);     
+        }
+    } 
+    
+    @Listener
+    public void onBreakChest(ChangeBlockEvent.Break event, @First Player player) {
+        Transaction<BlockSnapshot> block = event.getTransactions().get(0);
+        Optional<Location<World>> optLoc = block.getOriginal().getLocation();
+        Location<World> loc = optLoc.get();
+        if(loc.getTileEntity().isPresent()){
+            TileEntity chest = loc.getTileEntity().get();
+            
+            if(chest.get(Keys.DISPLAY_NAME).isPresent()){
+                String name = chest.get(Keys.DISPLAY_NAME).get().toPlain();         
+                if(!name.contains(player.getName()) && !name.contains("[+]")){
+                    player.sendMessage(CHEST_LOCK());
+                    event.setCancelled(true);  
+                }
             }
         }
     }
     
     @Listener
-    public void onEntityInteract(InteractEntityEvent.Secondary event) {
-        Entity entity = event.getTargetEntity();
-        if(entity.get(Keys.REPRESENTED_ITEM).isPresent()) {
-            plugin.getLogger().info(entity.get(Keys.REPRESENTED_ITEM).get().getType().getName());
-        }
-    }
-                    
-    
-    @Listener
+    @Exclude(InteractBlockEvent.Primary.class)
     public void onCompassInteract(InteractBlockEvent event, @First Player player) {
         Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
-        SettingCompass sc = new SettingCompass();
-        
-        if (is.isPresent()) {
-            // Event click droit
-            if (event instanceof InteractBlockEvent.Secondary){
-                if(is.get().getItem().equals(COMPASS)){  
-                    
-                    if(is.get().get(Keys.DISPLAY_NAME).isPresent()){
-                        if(is.get().get(Keys.ITEM_LORE).isPresent()){
-                            Optional<Text> displayName = is.get().get(Keys.DISPLAY_NAME);
-                            Optional<List<Text>> ist = is.get().get(Keys.ITEM_LORE);
-                            player.sendMessage(displayName.get());
-                            player.sendMessage(ist.get().get(0));
-                        }
-                    }
-                        
-                    // si interact sur sign "Parcelle a vendre"
-                    Optional<Location<World>> loc = event.getTargetBlock().getLocation();
-                    if(loc.isPresent()){
-                        Optional<TileEntity> block = loc.get().getTileEntity();
-                        if (block.isPresent()) {
-                            TileEntity tile=block.get();
-                            if (tile instanceof Sign) {
-                                Sign sign=(Sign)tile;
-                                Optional<SignData> optional=sign.getOrCreate(SignData.class);
-                                if (optional.isPresent()) {
-                                    SignData offering = optional.get();
-                                    Text txt1 = offering.lines().get(0);
-                                    if (txt1.equals(MESSAGE("&1A VENDRE"))){
-                                        if(!ptm.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
-                                            player.sendMessage(MESSAGE("&eCette parcelle n'existe plus"));
-                                            event.setCancelled(true);
-                                            return;
-                                        }else{
-                                            String name = offering.getValue(Keys.SIGN_LINES).get().get(1).toPlain();
-                                            is = sc.MagicCompass(player,"PLOT:" + name);
-                                            player.setItemInHand(HandTypes.MAIN_HAND,is.get());
-                                            player.sendMessage(MESSAGE("&2MagicComapss : &eCoordonn\351e enregistr\351e sur votre boussole"));
-                                        }
+                
+        if (is.isPresent()) {          
+            if(is.get().getItem().equals(COMPASS)){   
+                SettingCompass sc = new SettingCompass();
+                                        
+                // si interact sur sign "Parcelle a vendre"
+                Optional<Location<World>> loc = event.getTargetBlock().getLocation();
+                if(loc.isPresent()){
+                    Optional<TileEntity> block = loc.get().getTileEntity();
+                    if (block.isPresent()) {
+                        TileEntity tile=block.get();
+                        if (tile instanceof Sign) {
+                            Sign sign=(Sign)tile;
+                            Optional<SignData> optional=sign.getOrCreate(SignData.class);
+                            if (optional.isPresent()) {
+                                SignData offering = optional.get();
+                                Text txt1 = offering.lines().get(0);
+                                if (txt1.equals(MESSAGE("&1A VENDRE"))){
+                                    if(!ptm.hasPlot(Text.of(offering.getValue(Keys.SIGN_LINES).get().get(1)).toPlain())){
+                                        player.sendMessage(MESSAGE("&eCette parcelle n'existe plus"));
+                                        event.setCancelled(true);
+                                        return;
+                                    }else{
+                                        String name = offering.getValue(Keys.SIGN_LINES).get().get(1).toPlain();
+                                        is = sc.MagicCompass(player,"PLOT:" + name);
+                                        player.setItemInHand(HandTypes.MAIN_HAND,is.get());
+                                        player.sendMessage(MESSAGE("&2MagicComapss : &eCoordonn\351e enregistr\351e sur votre boussole"));
                                     }
                                 }
                             }
                         }
                     }
-                    Optional<Vector3d> v3d = sc.getLookLocation(is.get());
-                    if(v3d.isPresent())player.lookAt(v3d.get()); 
                 }
+                Optional<Vector3d> v3d = sc.getLookLocation(is.get());
+                if(v3d.isPresent())player.lookAt(v3d.get()); 
             }
         }
     }
@@ -350,20 +344,15 @@ public class PlayerListener {
                 }
             }
             
-            if(victim.get(Keys.HEALTH).get() == 0d){
-                victim.sendMessage(ChatTypes.ACTION_BAR,MESSAGE("&l&e*** T mort ***"));
-            }
+            //if(victim.get(Keys.HEALTH).get() == 0d){
+                //victim.sendMessage(ChatTypes.ACTION_BAR,MESSAGE("&l&e*** T mort ***"));
+            //}
         }
     }
     
     @Listener
-    public void onInteractSign(InteractBlockEvent event) throws ObjectMappingException, IOException{ 
-        Optional<Player> optPlayer = event.getCause().first(Player.class);
-        if (!optPlayer.isPresent()) {
-            return;
-        }
-        Player player = optPlayer.get();
-
+    @Exclude(InteractBlockEvent.Primary.class)
+    public void onInteractSign(InteractBlockEvent event, @First Player player){     
         BlockSnapshot b = event.getTargetBlock();
         if(!b.getLocation().isPresent()){return;}
         Location loc = b.getLocation().get();              
@@ -371,60 +360,130 @@ public class PlayerListener {
         if (block.isPresent()) {
             TileEntity tile=block.get();
             if (tile instanceof Sign) {
-                if (event instanceof InteractBlockEvent.Secondary){
-                    Sign sign=(Sign)tile;
-                    Optional<SignData> optional=sign.getOrCreate(SignData.class);
-                    if (optional.isPresent()) {
-                        SignData offering = optional.get();
-                        Text txt1 = offering.lines().get(0);
-                        
-                        if (txt1.equals(MESSAGE("&l&1[?]"))){
+                Sign sign=(Sign)tile;
+                Optional<SignData> optional=sign.getOrCreate(SignData.class);
+                if (optional.isPresent()) {
+                    SignData offering = optional.get();
+                    Text txt1 = offering.lines().get(0);
+
+                    if (txt1.equals(MESSAGE("&l&1[?]"))){
+                        try {
                             String tag = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
                             Optional<Book> book = configBook.load(tag);
                             if(book.isPresent()){
                                 player.sendBookView(book.get().getBookView());
+                                return;
                             }
+                        } catch (ObjectMappingException | IOException ex) {
+                            Logger.getLogger(PlayerListener.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
                         
-                        if (txt1.equals(MESSAGE("&l&1[CMD]"))){
-                            String tag = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
-                            CommandManager cmdService = Sponge.getGame().getCommandManager();
-                            String[] args = tag.split(" ");                          
-                            if (player.hasPermission("actus.use.commandsign")){
-                                String command = args[0];
-                                if(args.length > 1)command = command + " " + args[1];
-                                if(args.length > 2)command = command + " " + args[2];
-                                if(args.length > 3)command = command + " " + args[3]; 
-                                cmdService.process(player, command);
-                            }
+                    if (txt1.equals(MESSAGE("&l&1[CMD]"))){
+                        String tag = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
+                        CommandManager cmdService = Sponge.getGame().getCommandManager();
+                        String[] args = tag.split(" ");                          
+                        if (player.hasPermission("actus.use.commandsign")){
+                            String command = args[0];
+                            if(args.length > 1)command = command + " " + args[1];
+                            if(args.length > 2)command = command + " " + args[2];
+                            if(args.length > 3)command = command + " " + args[3]; 
+                            cmdService.process(player, command);
+                            return;
                         }
+                    }
                         
-                        if (txt1.toPlain().contains("[TROC]")){
+                    if (txt1.toPlain().contains("[TROC]")){
+                        try {
                             Optional<Book> book = configBook.load("TROC");
                             if(book.isPresent()){
                                 player.sendBookView(book.get().getBookView());
+                                return;
                             }
+                        } catch (ObjectMappingException | IOException ex) {
+                            Logger.getLogger(PlayerListener.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
                         
-                        if (txt1.equals(MESSAGE("&l&8[POST]"))){
-                            String dest = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
-                            Optional<APlayer> aplayer = getAPlayerName(dest);
-                            ItemStack writableBook = ItemStack.builder().itemType(ItemTypes.WRITABLE_BOOK).build();
-                            if(aplayer.isPresent()){
-                                Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
-                                if(is.isPresent()){
-                                    if(dest.equalsIgnoreCase(player.getName())){
-                                        configBook.OpenListBookMessage(player);
+                    if (txt1.equals(MESSAGE("&l&8[POST]"))){
+                        String dest = Text.of(offering.getValue(Keys.SIGN_LINES).get().get(2)).toPlain();
+                        Optional<APlayer> aplayer = getAPlayerName(dest);
+                        ItemStack writableBook = ItemStack.builder().itemType(ItemTypes.WRITABLE_BOOK).build();
+                        if(aplayer.isPresent()){
+                            Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
+                            if(is.isPresent()){
+                                if(dest.equalsIgnoreCase(player.getName())){
+                                    configBook.OpenListBookMessage(player);
+                                    return;
+                                }
+                                if(is.get().getItem().equals(WRITTEN_BOOK) || is.get().getItem().equals(WRITABLE_BOOK)){
+                                    Book book = new Book();
+                                    if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
+                                        book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
+                                    }else{
+                                        book.setAuthor(MESSAGE(player.getName()));
+                                    }
+
+                                    book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + sm.dateShortToString()));
+                                    String tmp;
+                                    List<Text> pages = new ArrayList();
+                                    if(!is.get().get(Keys.BOOK_PAGES).isPresent()){
+                                        player.sendMessage(MESSAGE("&dEnvoi impossible, ton livre ne contient aucun message !"));
                                         return;
                                     }
-                                    if(is.get().getItem().equals(WRITTEN_BOOK) || is.get().getItem().equals(WRITABLE_BOOK)){
+                                    for(Text text : is.get().get(Keys.BOOK_PAGES).get()){
+                                        tmp = text.toString();
+                                        tmp = tmp.replace("\\\\", "\\");
+                                        tmp = tmp.replace("Text{{", "");
+                                        tmp = tmp.replace("Text{", "");
+                                        tmp = tmp.replace("}}", "");
+                                        tmp = tmp.replace("}", "");
+                                        tmp = tmp.replace("\"", "");
+                                        tmp = tmp.replace("text:", "");
+                                        tmp = tmp.replace("\\n", "\n");
+                                        pages.add(MESSAGE(tmp));
+                                    }
+                                    book.setPages(pages);
+                                    configBook.saveBook(book);
+                                    player.sendMessage(MESSAGE("&dTa lettre a bien ete poste !"));
+                                    player.setItemInHand(HandTypes.MAIN_HAND, writableBook);
+                                }else{
+                                    player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et le tenir dans ta main"));                                  
+                                }
+                            }else{
+                                if(dest.equalsIgnoreCase(player.getName())){
+                                    configBook.OpenListBookMessage(player);
+                                }
+                            }
+                        }else{
+                            if(dest.equalsIgnoreCase("[======]")){
+                                Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
+                                if(is.isPresent()){
+                                    if(is.get().getItem().equals(WRITTEN_BOOK)){
                                         Book book = new Book();
                                         if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
                                             book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
+                                            dest = is.get().get(Keys.DISPLAY_NAME).get().toPlain();
+
+                                            Optional<ProviderRegistration<UserStorageService>> optprov = Sponge.getServiceManager().getRegistration(UserStorageService.class);
+
+                                            if(optprov.isPresent()) {
+                                                ProviderRegistration<UserStorageService> provreg = optprov.get();
+                                                UserStorageService uss = provreg.getProvider();
+
+                                                Optional<User> usr = uss.get(dest);
+                                                if(!usr.isPresent()) {
+                                                    dest = player.getName();
+                                                    player.sendMessage(MESSAGE("&dErreur sur le nom du destinataire"));
+                                                    player.sendMessage(MESSAGE("&dTu recevra le courrier dans ta boite"));
+                                                }
+                                            }
                                         }else{
-                                            book.setAuthor(MESSAGE(player.getName()));
+                                            player.sendMessage(MESSAGE("&dEnvoi impossible !\n" +
+                                                    "tu dois signer ton livre en mettant le &lnom&r \n" +
+                                                    "du destinataire sur &lle titre du livre !"));
                                         }
-         
+
                                         book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + sm.dateShortToString()));
                                         String tmp;
                                         List<Text> pages = new ArrayList();
@@ -446,10 +505,12 @@ public class PlayerListener {
                                         }
                                         book.setPages(pages);
                                         configBook.saveBook(book);
-                                        player.sendMessage(MESSAGE("&dTa lettre a bien ete poste !"));
+                                        player.sendMessage(MESSAGE("&eTa lettre a bien ete poste !"));
                                         player.setItemInHand(HandTypes.MAIN_HAND, writableBook);
                                     }else{
-                                        player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et le tenir dans ta main"));
+                                        player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et\n" +
+                                                "le tenir dans ta main, puis le signer en mettant dans le titre\n" +
+                                                "le nom du destinataire"));
                                     }
                                 }else{
                                     if(dest.equalsIgnoreCase(player.getName())){
@@ -457,78 +518,15 @@ public class PlayerListener {
                                     }
                                 }
                             }else{
-                                if(dest.equalsIgnoreCase("[======]")){
-                                    Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
-                                    if(is.isPresent()){
-                                        if(is.get().getItem().equals(WRITTEN_BOOK)){
-                                            Book book = new Book();
-                                            if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
-                                                book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
-                                                dest = is.get().get(Keys.DISPLAY_NAME).get().toPlain();
-                                                
-                                                Optional<ProviderRegistration<UserStorageService>> optprov = Sponge.getServiceManager().getRegistration(UserStorageService.class);
+                                List<Text> help = new ArrayList<>();
+                                help.add(MESSAGE("&l&8[POST]"));
+                                help.add(MESSAGE("&o&8Boite aux lettres de :"));
+                                help.add(MESSAGE("&l&4" + player.getName()));
+                                help.add(MESSAGE("&8Clique droit ici"));
+                                offering.set(Keys.SIGN_LINES,help );
+                                sign.offer(offering);
+                                player.sendMessage(MESSAGE("&eCette boite aux lettres est maintenant à ton nom"));
 
-                                                if(optprov.isPresent()) {
-                                                    ProviderRegistration<UserStorageService> provreg = optprov.get();
-                                                    UserStorageService uss = provreg.getProvider();
-
-                                                    Optional<User> usr = uss.get(dest);
-                                                    if(!usr.isPresent()) {
-                                                        dest = player.getName();
-                                                        player.sendMessage(MESSAGE("&dErreur sur le nom du destinataire"));
-                                                        player.sendMessage(MESSAGE("&dTu recevra le courrier dans ta boite"));
-                                                    }
-                                                }
-                                            }else{
-                                                player.sendMessage(MESSAGE("&dEnvoi impossible !\n" +
-                                                        "tu dois signer ton livre en mettant le &lnom&r \n" +
-                                                        "du destinataire sur &lle titre du livre !"));
-                                            }
-                                            
-                                            book.setTitle(MESSAGE(dest + "_" + player.getName() + "_" + sm.dateShortToString()));
-                                            String tmp;
-                                            List<Text> pages = new ArrayList();
-                                            if(!is.get().get(Keys.BOOK_PAGES).isPresent()){
-                                                player.sendMessage(MESSAGE("&dEnvoi impossible, ton livre ne contient aucun message !"));
-                                                return;
-                                            }
-                                            for(Text text : is.get().get(Keys.BOOK_PAGES).get()){
-                                                tmp = text.toString();
-                                                tmp = tmp.replace("\\\\", "\\");
-                                                tmp = tmp.replace("Text{{", "");
-                                                tmp = tmp.replace("Text{", "");
-                                                tmp = tmp.replace("}}", "");
-                                                tmp = tmp.replace("}", "");
-                                                tmp = tmp.replace("\"", "");
-                                                tmp = tmp.replace("text:", "");
-                                                tmp = tmp.replace("\\n", "\n");
-                                                pages.add(MESSAGE(tmp));
-                                            }
-                                            book.setPages(pages);
-                                            configBook.saveBook(book);
-                                            player.sendMessage(MESSAGE("&eTa lettre a bien ete poste !"));
-                                            player.setItemInHand(HandTypes.MAIN_HAND, writableBook);
-                                        }else{
-                                            player.sendMessage(MESSAGE("&dTu dois ecrire ton message sur un livre a ecrire et\n" +
-                                                    "le tenir dans ta main, puis le signer en mettant dans le titre\n" +
-                                                    "le nom du destinataire"));
-                                        }
-                                    }else{
-                                        if(dest.equalsIgnoreCase(player.getName())){
-                                            configBook.OpenListBookMessage(player);
-                                        }
-                                    }
-                                }else{
-                                    List<Text> help = new ArrayList<>();
-                                    help.add(MESSAGE("&l&8[POST]"));
-                                    help.add(MESSAGE("&o&8Boite aux lettres de :"));
-                                    help.add(MESSAGE("&l&4" + player.getName()));
-                                    help.add(MESSAGE("&8Clique droit ici"));
-                                    offering.set(Keys.SIGN_LINES,help );
-                                    sign.offer(offering);
-                                    player.sendMessage(MESSAGE("&eCette boite aux lettres est maintenant à ton nom"));
-                            
-                                }
                             }
                         }
                     }
@@ -550,12 +548,7 @@ public class PlayerListener {
     }
                     
     @Listener
-    public void onPlaceChest(ChangeBlockEvent.Place event) {
-        Optional<Player> optPlayer = event.getCause().first(Player.class);
-        if (!optPlayer.isPresent()) {
-            return;
-        }
-        Player player = optPlayer.get();
+    public void onPlaceChest(ChangeBlockEvent.Place event, @First Player player){
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
@@ -590,7 +583,7 @@ public class PlayerListener {
     public void onRespawnPlayer(RespawnPlayerEvent event, @First Player player) {
         
         AInventory invFrom = new AInventory(player, event.getFromTransform().getExtent().getName());
-        AInventory invTO;//= new AInventory(player, event.getToTransform().getExtent().getName());
+        AInventory invTO;
         configInv.save(invFrom);
         
         if(configInv.load(player, event.getToTransform().getExtent().getName()).isPresent()){
@@ -605,9 +598,17 @@ public class PlayerListener {
     }
     
     //@Listener
-    //public void onPlayerAchievement(GrantAchievementEvent .TargetPlayer e){
+    //public void onPlayerAchievement(ChangeStatisticEvent.TargetPlayer event, @First Player player){
+        //plugin.getLogger().info(event.getTargetEntity().getName() + " : " + event.getStatistic().getType().getId());
+        //if(event.getStatistic().getType().equals(StatisticTypes.ITEMS_CRAFTED)){
+            //player.sendMessage(MESSAGE("&3 : " + player.getStatisticData().get(Statistics.ITEMS_CRAFTED)));
+        //}
+        //player.sendMessage(MESSAGE("&3appel villageois : " + player.getStatisticData().get(StatisticTypes.ITEMS_DROPPED)));
+    //}
+        
+    //@Listener
+    //public void onPlayerAchievement(GrantAchievementEvent.TargetPlayer e){
         //plugin.getLogger().info("DEBUG");
     //}
-    
     
 }

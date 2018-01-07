@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.CB_TROC;
 import static net.teraoctet.actus.Actus.TROC;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.ism;
@@ -21,7 +22,6 @@ import static net.teraoctet.actus.troc.EnumTransactType.SALE;
 import static net.teraoctet.actus.utils.Config.ENABLE_TROC_SCOREBOARD;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import net.teraoctet.actus.utils.Data;
-import static net.teraoctet.actus.utils.Data.getGuild;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -203,7 +203,7 @@ public class TrocListener {
         }
     }
     
-    @Listener
+    /*@Listener
     public void onPlayerLookTroc(MoveEntityEvent event , @First Player player) {        
         if(ENABLE_TROC_SCOREBOARD()){
             Optional<Location<World>> loc1 = Optional.empty();
@@ -238,7 +238,7 @@ public class TrocListener {
                 player.setScoreboard(null);
             }
         }
-    }
+    }*/
     
     @Listener
     public void onClick(ClickInventoryEvent event, @First Player player) {
@@ -255,24 +255,31 @@ public class TrocListener {
             
             slots.stream().forEach((SlotTransaction slot) -> {
                 Integer affectedSlot = slot.getSlot().getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
-                
+                if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : Slot " + affectedSlot));
                 if(affectedSlot < 9){
-                    if(ownerTroc.contains("LIBRE") || ownerTroc.equalsIgnoreCase(player.getName()) || aplayer.getLevel() == LEVEL_ADMIN()){
+                    if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : phase ctrl 1"));
+                    if(ownerTroc.contains("LIBRE") || (idGuild == aplayer.getID_guild() && idGuild != 0) || ownerTroc.equalsIgnoreCase(player.getName()) || aplayer.getLevel() == LEVEL_ADMIN()){
+                        if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : phase ctrl 2"));
                         if(event.getCursorTransaction().getOriginal().getType().equals(AIR)){
+                            if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : suppr ItemTroc"));
                             Troc troc = new Troc(locTroc,affectedSlot,null,0,0d,tm.getIS().createSnapshot(),"LIBRE","LIBRE",0);
                             tm.save(troc);
                             slot.setCustom(tm.getIS());
                             event.getCursorTransaction().setCustom(ItemStackSnapshot.NONE);
                             if(tm.chestTrocHasEmpty(locTroc))tm.setChestTroc(locTroc, "LIBRE", 0);                     
                         }else{
+                            if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : phase ctrl 3"));
                             String owner = player.getName();
                             int idGuildPlayer = aplayer.getID_guild();
                             if(ownerTroc.contains("LIBRE") && aplayer.getID_guild() != 0){
-                                owner = getGuild(aplayer.getID_guild()).getName();
+                                if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : process ajout mode Guild"));
+                                CB_TROC.callSelectOwner(event.getTargetInventory(), affectedSlot, event.getCursorTransaction().getOriginal(),locTroc, idGuildPlayer).accept(player);
+                            }else{
+                                if(aplayer.getLevel() == LEVEL_ADMIN())player.sendMessage(MESSAGE("&7Debug : process ajout mode joueur"));
+                                CB_TROC.callSelectTransactType(event.getTargetInventory(), affectedSlot, event.getCursorTransaction().getOriginal()).accept(player);
+                                event.getCursorTransaction().setCustom(event.getCursorTransaction().getOriginal());
+                                tm.setChestTroc(locTroc, owner, idGuildPlayer);
                             }
-                            tm.sendBookSelectTransactType(event.getTargetInventory(), affectedSlot, player,event.getCursorTransaction().getOriginal());
-                            event.getCursorTransaction().setCustom(event.getCursorTransaction().getOriginal());
-                            tm.setChestTroc(locTroc, owner, idGuildPlayer);
                         }
                     }else{
                         player.sendMessage(MESSAGE("&eEmplacement reserve !"));
@@ -284,7 +291,7 @@ public class TrocListener {
                 ItemStackSnapshot isav = slot.getOriginal();
                 ItemStackSnapshot isap = slot.getFinal();
                 
-                if(ownerTroc.equalsIgnoreCase(player.getName())){
+                if(ownerTroc.equalsIgnoreCase(player.getName()) || aplayer.getLevel() == LEVEL_ADMIN()){
                     return;
                 }
                 if(ownerTroc.equalsIgnoreCase("LIBRE") && idGuild == 0 && affectedSlot < 54){
@@ -432,26 +439,5 @@ public class TrocListener {
                 
             });
         }
-    }
-    
-    @Listener
-    public void onClick6(ClickInventoryEvent event, @First Player player) {
-        //List<SlotTransaction> slots = event.getTransactions();
-        //slots.stream().forEach((slot) -> {
-        if(event instanceof ClickInventoryEvent.Drag){
-            //player.sendMessage(MESSAGE("#### drag ####"));
-        }
-        if(event instanceof ClickInventoryEvent.Pickup){
-            //player.sendMessage(MESSAGE("#### pickup ####"));
-        }
-        if(event instanceof ClickInventoryEvent.Primary){
-            //player.sendMessage(MESSAGE("#### prim ####"));
-        }
-        if(event instanceof ClickInventoryEvent.Drop){
-            //player.sendMessage(MESSAGE("#### drop ####"));
-            //event.setCancelled(true);
-        }
-            //player.sendMessage(MESSAGE(event.getClass().getSource().getClass().getCanonicalName()));
-        //});
     }
 }

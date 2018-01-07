@@ -38,7 +38,7 @@ public class CommandPlotTP implements CommandExecutor {
                 if (!plot.isPresent()){
                     player.sendMessage(NO_PLOT());
                     return CommandResult.empty();
-                } else if (plot.get().getNoTeleport() || aplayer.getLevel() == LEVEL_ADMIN()){
+                } else if (!plot.get().getNoTeleport() || aplayer.getLevel() == LEVEL_ADMIN()){
                     Optional<Location> spawn = plot.get().getSpawnPlot();
                     if(spawn.isPresent()){
                         Location lastLocation = player.getLocation();

@@ -3,6 +3,7 @@ package net.teraoctet.actus.commands.guild;
 import java.util.List;
 import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
+import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.Config.GUILD_MAX_NUMBER_OF_MEMBER;
@@ -24,26 +25,26 @@ import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DELETE;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_DEPOSIT;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_INVIT;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_LEAVE;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_MOREACTIONS;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_REMOVEMEMBER;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_RENAME;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_SETGRADE;
-import static net.teraoctet.actus.utils.MessageManager.ONHOVER_GUILD_WITHDRAWAL;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_DELETE;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_DEPOSIT;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_INVIT;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_LEAVE;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_MOREACTIONS;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_REMOVEMEMBER;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_RENAME;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_SETGRADE;
+import static net.teraoctet.actus.utils.MessageManager.GUILD_ONHOVER_WITHDRAWAL;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
 
 public class CommandGuild implements CommandExecutor {
         
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-        if(src instanceof Player && src.hasPermission("actus.guild")) {
+        if(src instanceof Player && src.hasPermission("actus.player.guild")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             //si le joueur est membre d'une guild
-            if(gdm.hasAnyGuild(aplayer)) {
+            if(GuildManager.hasAnyGuild(aplayer)) {
                 Guild gguild = getGuild(aplayer.getID_guild());
                 PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
                 PaginationList.Builder builder = paginationService.builder();  
@@ -55,22 +56,22 @@ public class CommandGuild implements CommandExecutor {
                         builder.header(Text.builder().append(MESSAGE("&2Actions:")).toText())
                                 .contents(Text.builder().append(MESSAGE("&2+ &aAjouter un membre"))
                                         .onClick(TextActions.suggestCommand("/guild invit "))    
-                                        .onHover(TextActions.showText(ONHOVER_GUILD_INVIT())).toText(),
+                                        .onHover(TextActions.showText(GUILD_ONHOVER_INVIT())).toText(),
                                     Text.builder().append(MESSAGE("&2+ &aChanger le grade d'un membre"))
                                         .onClick(TextActions.suggestCommand("/guild setplayergrade "))    
-                                        .onHover(TextActions.showText(ONHOVER_GUILD_SETGRADE())).toText(),
+                                        .onHover(TextActions.showText(GUILD_ONHOVER_SETGRADE())).toText(),
                                     Text.builder().append(MESSAGE("&2+ &aRenvoyer un membre"))
                                         .onClick(TextActions.suggestCommand("/guild removeplayer "))    
-                                        .onHover(TextActions.showText(ONHOVER_GUILD_REMOVEMEMBER())).toText(),
+                                        .onHover(TextActions.showText(GUILD_ONHOVER_REMOVEMEMBER())).toText(),
                                     Text.builder().append(MESSAGE("&2+ &aRetrait bancaire"))
                                         .onClick(TextActions.suggestCommand("/guild withdraw "))    
-                                        .onHover(TextActions.showText(ONHOVER_GUILD_WITHDRAWAL())).toText(),
-                                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&2+ &aRenommer la guild"))
+                                        .onHover(TextActions.showText(GUILD_ONHOVER_WITHDRAWAL())).toText(),
+                                    Text.builder().append(TextSerializers.formattingCode('&').deserialize("&2+ &aRenommer la guilde"))
                                         .onClick(TextActions.suggestCommand("/guild rename "))    
-                                        .onHover(TextActions.showText(ONHOVER_GUILD_RENAME())).toText(),
-                                    Text.builder().append(MESSAGE("&2+ &aSupprimer la guild"))
+                                        .onHover(TextActions.showText(GUILD_ONHOVER_RENAME())).toText(),
+                                    Text.builder().append(MESSAGE("&2+ &aSupprimer la guilde"))
                                         .onClick(TextActions.suggestCommand("/guild delete "))    
-                                        .onHover(TextActions.showText(ONHOVER_GUILD_DELETE())).toText())
+                                        .onHover(TextActions.showText(GUILD_ONHOVER_DELETE())).toText())
                                 .padding(Text.of("-"))
                                 .sendTo(src);
                         return CommandResult.success();
@@ -90,7 +91,7 @@ public class CommandGuild implements CommandExecutor {
                     builder.title(Text.builder().append(MESSAGE(gguild.getName() + "&r - &2Membres: " + guildSize + " / " + GUILD_MAX_NUMBER_OF_MEMBER())).toText())
                             .contents(Text.builder().append(MESSAGE("&2Vous \352tes \"" + playerRank + "\" de " + gguild.getName()))
                                             .onShiftClick(TextActions.insertText("/guild leave"))
-                                            .onHover(TextActions.showText(ONHOVER_GUILD_LEAVE())).toText(),
+                                            .onHover(TextActions.showText(GUILD_ONHOVER_LEAVE())).toText(),
                                     Text.builder().append(MESSAGE("&2Chef : &a" + guildOwner)).toText(),
                                     Text.builder().append(MESSAGE("&a- Sous-chef (" + listRank2.size() + ")"))
                                             .onClick(TextActions.runCommand("/guild memberslist"))
@@ -106,10 +107,10 @@ public class CommandGuild implements CommandExecutor {
                                             .onHover(TextActions.showText(MESSAGE("Recrue(s): " + listRank5))).toText(),
                                     Text.builder().append(MESSAGE("&2Bank de Faction : &a" + gguild.getMoney() + " \351meraudes"))
                                             .onClick(TextActions.suggestCommand("/guild depot "))
-                                            .onHover(TextActions.showText(ONHOVER_GUILD_DEPOSIT())).toText(),
+                                            .onHover(TextActions.showText(GUILD_ONHOVER_DEPOSIT())).toText(),
                                     Text.builder().append(MESSAGE("&2+ Afficher les Actions"))
                                             .onClick(TextActions.runCommand("/guild -a"))
-                                            .onHover(TextActions.showText(ONHOVER_GUILD_MOREACTIONS())).toText())
+                                            .onHover(TextActions.showText(GUILD_ONHOVER_MOREACTIONS())).toText())
                             .padding(Text.of("-"))
                             .sendTo(src); 
                     
@@ -123,7 +124,7 @@ public class CommandGuild implements CommandExecutor {
                 src.sendMessage(GUIDE_GUILD());
                 src.sendMessage(Text.builder().append(MESSAGE("&bCliquez ici pour en cr\351er une !"))
                         .onClick(TextActions.suggestCommand("/guild create "))    
-                        .onHover(TextActions.showText(MESSAGE("&eCr\351er une nouvelle guild\n&f/guild create <name>")))
+                        .onHover(TextActions.showText(MESSAGE("&eCr\351er une nouvelle guilde\n&f/guild create <name>")))
                         .toText()); 
             }
         }

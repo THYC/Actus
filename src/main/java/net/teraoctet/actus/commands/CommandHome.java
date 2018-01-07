@@ -1,6 +1,7 @@
 package net.teraoctet.actus.commands;
 
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.utils.Home;
 import net.teraoctet.actus.player.APlayer;
@@ -18,6 +19,7 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.HOME_NOT_FOUND;
 import static net.teraoctet.actus.utils.MessageManager.HOME_TP_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
+import org.spongepowered.api.text.action.TextActions;
 
 public class CommandHome implements CommandExecutor {
     
@@ -46,6 +48,11 @@ public class CommandHome implements CommandExecutor {
                 return CommandResult.success();
             }else{
                 src.sendMessage(HOME_NOT_FOUND()); 
+                if(ptm.getListPlot(player.getIdentifier()).isPresent()){
+                    player.sendMessage(MESSAGE("&eTu as une ou plusieurs parcelle ou tu peut etre TP dessus ou creer ton HOME"));
+                    player.sendMessage(Text.builder().append(MESSAGE("&l&bClique ici pour te TP sur ta premiere parcelle"))
+                                    .onClick(TextActions.runCommand("/p tp " + ptm.fistplayerPlot(player.getIdentifier()).getName())).toText());
+                }
                 return CommandResult.empty();
             }
         } 

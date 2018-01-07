@@ -29,14 +29,14 @@ public class Reforestation {
         
         task = taskBuilder.execute(()  -> {
                     Optional<ItemStackSnapshot> item = drop.get(Keys.REPRESENTED_ITEM); 
-                    plugin.getLogger().info(item.get().toString());
+                    //plugin.getLogger().info(item.get().toString());
                     BlockState blockState = item.get().getType().getBlock().get().getDefaultState();                
                     TreeType treeType = item.get().get(Keys.TREE_TYPE).get();
                     blockState = blockState.with(Keys.TREE_TYPE,treeType).get();  
-                    plugin.getLogger().info(blockState.getName());
+                    //plugin.getLogger().info(blockState.getName());
                     Location loc = getLocSapling(drop.getLocation());
                     if (loc != null){
-                        //drop.remove();
+                        drop.remove();
                         //loc.setBlockType(blockState.getType());
                         
                         boolean setBlock = loc.add(0,1,0).setBlock(blockState);

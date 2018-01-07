@@ -24,10 +24,7 @@ public class GraveyardManager {
     private final TypeToken<Graveyard> TOKEN_CONFIG = TypeToken.of(Graveyard.class);
     private static final File FILE = new File("config/actus/graveyard.conf");
     private static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
-    private static ConfigurationNode graveyardNode = MANAGER.createEmptyNode(ConfigurationOptions.defaults());;
-    
-
-    //public static ConfigurationNode graveNode = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
+    private static ConfigurationNode graveyardNode = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
     
     /**
      * retourne le caveau du point idGraveyard

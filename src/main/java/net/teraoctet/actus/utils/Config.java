@@ -25,6 +25,7 @@ public class Config {
                 config.getNode("mysql", "USERNAME").setValue("root");
                 config.getNode("mysql", "PASSWORD").setValue("password");
                 config.getNode("mysql", "DATABASE").setValue("minecraft");
+                config.getNode("limits").getOptions().setHeader("limits");
                 config.getNode("limits", "MAX_TEMPBAN_TIME_IN_SECONDS").setValue(3600);
                 config.getNode("limits", "MAX_MUTE_TIME_IN_SECONDS").setValue(600);
                 config.getNode("limits", "DEFAULT_TEMP_JAIL_IN_SECONDS").setValue(3600);
@@ -39,11 +40,13 @@ public class Config {
                 config.getNode("server", "COOLDOWN_TO_TP").setValue(10);
                 config.getNode("server", "UNIQUE_SPAWN_WORLD").setValue(false);
                 config.getNode("server", "SPAWN_WORLD").setValue("World");
-                config.getNode("server", "DIAMETER_MAX_TPR").setValue(2000);
+                config.getNode("server", "DIAMETER_MAX_TPR").setValue(5000);
+                config.getNode("server", "DIAMETER_MIN_TPR").setValue(2000);
                 config.getNode("server", "TNT_DISABLE").setValue(false);
                 config.getNode("server", "CREEPER_DISABLE").setValue(false);
                 config.getNode("server", "LEVEL_ADMIN").setValue(10);
                 config.getNode("server", "LEVEL_DEFAULT").setValue(0);
+                config.getNode("server", "AUTOFOREST").setValue(false);
                 config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").setValue(10);
                 config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue(true);
                 config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue(false);
@@ -76,11 +79,13 @@ public class Config {
     public static int COOLDOWN_TO_TP() { return config.getNode("server", "COOLDOWN_TO_TP").getInt(); }
     public static boolean UNIQUE_SPAWN_WORLD() { return config.getNode("server", "UNIQUE_SPAWN_WORLD").getBoolean(); }
     public static int DIAMETER_MAX_TPR() { return config.getNode("server", "DIAMETER_MAX_TPR").getInt(); }
+    public static int DIAMETER_MIN_TPR() { return config.getNode("server", "DIAMETER_MIN_TPR").getInt(); }
     public static String SPAWN_WORLD() { return config.getNode("server", "SPAWN_WORLD").getString(); }
     public static boolean TNT_DISABLE() { return config.getNode("server", "TNT_DISABLE").getBoolean(); }
     public static boolean CREEPER_DISABLE() { return config.getNode("server", "CREEPER_DISABLE").getBoolean(); }
     public static int LEVEL_ADMIN() { return config.getNode("server", "LEVEL_ADMIN").getInt(); }
     public static int LEVEL_DEFAULT() { return config.getNode("server", "LEVEL_DEFAULT").getInt(); }
+    public static boolean AUTOFOREST() { return config.getNode("server", "AUTOFOREST").getBoolean(); }
     public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(); }
     public static boolean ENABLE_SKULL_GRAVE() { return config.getNode("grave", "ENABLE_SKULL_GRAVE").getBoolean(); }
     public static boolean ENABLE_SIGN_GRAVE() { return config.getNode("grave", "ENABLE_SIGN_GRAVE").getBoolean(); }
@@ -111,6 +116,16 @@ public class Config {
         try {
             config = MANAGER.load();
             config.getNode("shop","ENABLE_SHOP_BOOKVIEW").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void setEnableAutoForest(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("server","AUTOFOREST").setValue(val);
             MANAGER.save(config);
         } catch (IOException ex) {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);

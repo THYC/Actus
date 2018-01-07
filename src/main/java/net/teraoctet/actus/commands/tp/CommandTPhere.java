@@ -22,7 +22,7 @@ public class CommandTPhere implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.player.tpa")) {
             Player player = (Player) src; 
-            if(ctx.getOne("target").isPresent()) {
+            if(ctx.getOne("player").isPresent()) {
                 Player target = ctx.<Player> getOne("player").get();
                 if(!target.isOnline()) {
                     src.sendMessage(NOT_FOUND(target.getName()));
@@ -33,8 +33,8 @@ public class CommandTPhere implements CommandExecutor {
                 ATPA.add(tpa);
                 final int index = ATPA.indexOf(tpa);
 
-                player.sendMessage(MESSAGE("&eVeuillez patienter, demande envoy\351 ..."));
-                target.sendMessage(MESSAGE("&eAcceptez vous que %player% vous t\351l\351porte sur lui ?",target));
+                player.sendMessage(MESSAGE("&eVeuillez patienter, demande envoy\351e ..."));
+                target.sendMessage(MESSAGE("&eAcceptez vous que %player% vous t\351l\351porte sur lui ?", target));
                 target.sendMessage(MESSAGE("&eVous avez 30s pour accepter cette demande en tapant : /tpaccept"));
                 
                 TaskTP tp = new TaskTP(player,index);

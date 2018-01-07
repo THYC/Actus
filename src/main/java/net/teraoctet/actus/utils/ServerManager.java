@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import static net.teraoctet.actus.Actus.mapCountDown;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -15,6 +16,7 @@ import static net.teraoctet.actus.utils.Config.DAYS_BEFORE_MOVE_GRAVE;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
@@ -93,7 +95,7 @@ public class ServerManager {
     }
     
     /**
-     * retourne le GameProfile du joueur
+     * retourne 'inventaire du joueur à partir du GameProfile
      * @param player nom du joueur à retourner
      * @return Inventory
      */
@@ -370,6 +372,11 @@ public class ServerManager {
         return Optional.empty();
     }
     
+    /**
+     * Retourne le sous type de l'item
+     * @param is ItemStack
+     * @return 
+     */
     public Optional<Integer> getItemID(ItemStack is){
         DataContainer container = is.toContainer();
 	DataQuery query = DataQuery.of('/', "UnsafeDamage");
@@ -379,6 +386,11 @@ public class ServerManager {
         return Optional.empty();
     }
     
+    /**
+     * Retourne le sous type de l'item
+     * @param is ItemStackSnapshot
+     * @return 
+     */
     public Optional<Integer> getItemID(ItemStackSnapshot is){
         DataContainer container = is.toContainer();
 	DataQuery query = DataQuery.of('/', "UnsafeDamage");
@@ -386,5 +398,27 @@ public class ServerManager {
             return Optional.of(Integer.valueOf(container.get(query).get().toString()));
         }
         return Optional.empty();
+    }
+    
+    /**
+     * teleporte un joueur au coordonnée String location
+     * @param target joueur a téléporter
+     * @param location String location au format world:x:y:z
+     * @return 
+     */
+    public Consumer<CommandSource> callTP(Optional<Player> target, String location) {
+	return (CommandSource src) -> {
+            Optional<Location<World>> loc = DeSerialize.getLocation(location);
+            if(loc.isPresent()){
+                Player p = (Player)src;
+                if(target.isPresent())p = target.get();
+                Location lastLocation = p.getLocation();
+                APlayer aplayer = getAPlayer(p.getUniqueId().toString());
+                aplayer.setLastposition(DeSerialize.location(lastLocation));
+                aplayer.update();
+                p.transferToWorld(loc.get().getExtent(), new Vector3d(loc.get().getBlockX(), 
+                loc.get().getBlockY(),loc.get().getBlockZ()));           
+            }         
+        };
     }
 }

@@ -19,15 +19,15 @@ public class Home {
 	}
 	
 	public void insert() {
-		Data.queue("INSERT INTO homes VALUES ('" + uuid + "', '" + name + "', '" + world + "', " + x + ", " + y + ", " + z + ")");
+		Data.queue("INSERT INTO HOMES VALUES ('" + uuid + "', '" + name + "', '" + world + "', " + x + ", " + y + ", " + z + ")");
 	}
 	
 	public void update() {
-		Data.queue("UPDATE homes SET world = '" + world + "', x = " + x + ", y = " + y + ", z = " + z + " WHERE uuid = '" + uuid + "' AND name = '" + name + "'");
+		Data.queue("UPDATE HOMES SET world = '" + world + "', x = " + x + ", y = " + y + ", z = " + z + " WHERE uuid = '" + uuid + "' AND name = '" + name + "'");
 	}
 	
 	public void delete() {
-		Data.queue("DELETE FROM homes WHERE uuid = '" + uuid + "' AND name = '" + name + "'");
+		Data.queue("DELETE FROM HOMES WHERE uuid = '" + uuid + "' AND name = '" + name + "'");
 	}
 	
 	public void setUUID(String uuid) { this.uuid = uuid; }

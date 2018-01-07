@@ -23,7 +23,7 @@ public class CommandGuildMemberslist implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.guild.memberslist")) {
+        if(src instanceof Player && src.hasPermission("actus.player.guild.memberslist")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             //si le joueur est membre d'une guild

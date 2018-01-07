@@ -1,8 +1,9 @@
 package net.teraoctet.actus.commands.plot;
 
+import java.util.Optional;
 import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
-import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayerName;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -13,6 +14,7 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.DATA_NOT_FOUND;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.PLOT_LIST;
 import static net.teraoctet.actus.utils.MessageManager.TARGET_PLOT_LIST;
 
@@ -25,22 +27,30 @@ public class CommandPlotList implements CommandExecutor {
 
             if(ctx.getOne("tplayer").isPresent() && src.hasPermission("actus.admin.plot.otherlist")){
                 String targetName = ctx.<String> getOne("tplayer").get();
-                APlayer aplayer = getAPlayer(targetName);
+                Optional<APlayer> aplayer = getAPlayerName(targetName);
                 // si <tplayer> n'est pas dans la base de donnée
-                if(aplayer == null){
+                if(!aplayer.isPresent()){
                     player.sendMessage(DATA_NOT_FOUND(targetName));
                     return CommandResult.empty();
                 } else {    //lorsque <tplayer> est dans la base de donnée
-                    Text listPlot = ptm.getListPlot(aplayer.getUUID());
-                    player.sendMessage(TARGET_PLOT_LIST(targetName));
-                    player.sendMessage(listPlot); 
+                    if(ptm.getListPlot(aplayer.get().getUUID()).isPresent()){
+                        Text listPlot = ptm.getListPlot(aplayer.get().getUUID()).get();
+                        player.sendMessage(TARGET_PLOT_LIST(targetName));
+                        player.sendMessage(listPlot); 
+                    }else{
+                        player.sendMessage(MESSAGE("&eAucune parcelle enregistr\351 pour ce joueur"));
+                    }
                 }
             }
             else {
                 String playerUUID = player.getUniqueId().toString();
-                Text listPlot = ptm.getListPlot(playerUUID);
-                player.sendMessage(PLOT_LIST());
-                player.sendMessage(listPlot);
+                if(ptm.getListPlot(playerUUID).isPresent()){
+                    Text listPlot = ptm.getListPlot(playerUUID).get();
+                    player.sendMessage(PLOT_LIST());
+                    player.sendMessage(listPlot);
+                }else{
+                    player.sendMessage(MESSAGE("&eTu as aucune parcelle enregistr\351"));
+                }
             }
             return CommandResult.success();
         } 

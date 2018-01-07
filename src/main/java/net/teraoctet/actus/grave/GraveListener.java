@@ -15,6 +15,7 @@ import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.utils.Config.ENABLE_SIGN_GRAVE;
 import static net.teraoctet.actus.utils.Config.ENABLE_SKULL_GRAVE;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.GRAVE;
 import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.GRAVE_BREAK;
@@ -68,13 +69,13 @@ public class GraveListener {
                             
     @Listener
     public void onDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
-        String lastdead = DeSerialize.location(player.getLocation());
+        String lastdead = DeSerialize.location(player.getLocation().add(0, 1, 0));
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         aplayer.setLastdeath(lastdead);
         aplayer.setLastposition(lastdead);
         aplayer.update();
 
-        if (player.hasPermission("actus.player.grave") || aplayer.getLevel() == 10) {
+        if (player.hasPermission("actus.player.grave") || aplayer.getLevel() == LEVEL_ADMIN()) {
             if(player.getWorld().getDimension().getType().equals(DimensionTypes.NETHER) || player.getWorld().getDimension().getType().equals(DimensionTypes.THE_END)){
                 return;
             }
@@ -84,7 +85,7 @@ public class GraveListener {
                     
             Optional<Plot> plot = ptm.getPlot(player.getLocation());
             if(plot.isPresent()){
-                if(plot.get().getSpawnGrave()) {
+                if(!plot.get().getSpawnGrave()) {
                     return;
                 }else{
                     locgrave1 = player.getLocation();
@@ -104,12 +105,20 @@ public class GraveListener {
             TileEntity chest2 = locgrave2.getTileEntity().get();
             chest.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
             chest2.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
-            final TileEntityInventory inventory = (TileEntityInventory) chest;
-            player.getInventory().slots().forEach((Inventory slot) -> {
+            
+            
+            final TileEntityInventory inv = (TileEntityInventory) chest;
+            final TileEntityInventory inv2 = (TileEntityInventory) chest2;
+
+            int i = 1;
+            Inventory inventory = inv;
+            for(Inventory slot : player.getInventory().slots()){
+                if(i > 27) inventory = inv2;
                 if (slot.peek().isPresent()) {                    
                     if (inventory.offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) inventory.offer(slot.peek().get());
                 }
-            });
+                i ++;
+            }
             
             //panneau sign de position de la tombe
             Location signgrave = controlBlock(locgrave1);
@@ -131,7 +140,7 @@ public class GraveListener {
             }
             
             //skull du joueur de position de la tombe
-            Optional<ArmorStand> as = Optional.empty();
+            Optional<ArmorStand> as;
             String uuidAS = "";
             if(ENABLE_SKULL_GRAVE()){
                 ItemStack skull = ItemStack.of(ItemTypes.SKULL, 1);
@@ -234,7 +243,7 @@ public class GraveListener {
     }
             
     @Listener
-    public void onInteractGraves(InteractInventoryEvent.Close event, @First Player player) throws IOException, ObjectMappingException {
+    public void onInteractGraves(InteractInventoryEvent.Close event, @First Player player){
         Container b = event.getTargetInventory(); 
         if(b.getArchetype().equals(CHEST) || b.getArchetype().equals(DOUBLE_CHEST)){
             String displayName = b.getName().get();
@@ -262,11 +271,15 @@ public class GraveListener {
                     }
 
                     if(grave.isPresent()){    
-                        BlockState bs1 = grave.get().getBlock1();
-                        BlockState bs2 = grave.get().getBlock2();
-                        grave.get().getLocationBlock1().get().setBlock(bs1);
-                        grave.get().getLocationBlock2().get().setBlock(bs2);
-                        configGrave.delGrave(grave.get().getIDgrave());
+                        try {
+                            BlockState bs1 = grave.get().getBlock1();
+                            BlockState bs2 = grave.get().getBlock2();
+                            grave.get().getLocationBlock1().get().setBlock(bs1);
+                            grave.get().getLocationBlock2().get().setBlock(bs2);
+                            configGrave.delGrave(grave.get().getIDgrave());
+                        } catch (IOException ex) {
+                            Logger.getLogger(GraveListener.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } 
 
                     //effet sur disparition de la tombe

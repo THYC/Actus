@@ -1,7 +1,6 @@
 package net.teraoctet.actus.troc;
 
 import com.google.common.reflect.TypeToken;
-import com.sk89q.worldedit.blocks.BlockType;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.CB_TROC;
 import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.sm;
-import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.troc.EnumTransactType.BUY;
@@ -30,7 +28,6 @@ import static org.spongepowered.api.block.BlockTypes.WALL_SIGN;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
-import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
@@ -577,9 +574,9 @@ public class TrocManager {
                 TileEntity tiledblChest = dblchestBlock.get();
                 tiledblChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
             }
-            String ownerSign = owner;
-            if(idGuild != 0)ownerSign = getGuild(idGuild).getName();
-            writeToChestSign(locTroc,ownerSign,Optional.empty());
+            //String ownerSign = owner;
+            //if(idGuild != 0)ownerSign = getGuild(idGuild).getName();
+            writeToChestSign(locTroc,owner,Optional.empty());
             return true;
         }
         return false;
@@ -614,11 +611,11 @@ public class TrocManager {
                 .append(MESSAGE("&l&4type de transaction ? :" + "\n"))
                 .append(Text.builder()
                 .append(MESSAGE("&l&1-  " + EnumTransactType.SALE + "\n"))
-                .onClick(TextActions.executeCallback(CB_TROC.callSelectTransactType(inv,slot,SALE,0, item)))
+                .onClick(TextActions.executeCallback(CB_TROC.callSelectPrix(inv,slot,SALE,0, item)))
                 .onHover(TextActions.showText(MESSAGE("&eClique ici pour un item a la vente"))).build())
                 .append(Text.builder()        
                 .append(MESSAGE("&l&1-  " + EnumTransactType.BUY + "\n"))
-                .onClick(TextActions.executeCallback(CB_TROC.callSelectTransactType(inv,slot,BUY,0, item)))
+                .onClick(TextActions.executeCallback(CB_TROC.callSelectPrix(inv,slot,BUY,0, item)))
                 .onHover(TextActions.showText(MESSAGE("&eClique ici pour un item a l'achat"))).build())
      
                 .build();
@@ -661,7 +658,7 @@ public class TrocManager {
                 Sign sign=(Sign)tileSign;
                 Optional<SignData> opSign = sign.getOrCreate(SignData.class);
                 String ownerTroc = "&l&3" + owner;
-                if(guild.isPresent())ownerTroc = "&l&9" + guild.get();
+                //if(guild.isPresent())ownerTroc = "&l&9" + guild.get();
                 if(owner.equalsIgnoreCase("LIBRE"))ownerTroc = "&l&4" + owner;
                 SignData signData = opSign.get();
                 List<Text> signTroc = new ArrayList<>();

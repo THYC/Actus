@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
@@ -112,18 +111,16 @@ public class Actus {
     public static EconomyService economyService;
     public static Wedit wedit;
         
-    @Inject
-    @DefaultConfig(sharedRoot = false)
-    private Path defaultConfig;
+    //@Inject
+    //@DefaultConfig(sharedRoot = false)
+    //private Path defaultConfig;
     
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
 
         MessageChannel.TO_CONSOLE.send(MESSAGE("&b[ACTUS] &9developped by THYC and Votop ... Init..."));
         plugin = Sponge.getPluginManager().getPlugin("actus").get();  
-        
-        //Sponge.getRegistry().register(WorldGeneratorModifier.class, new OceanWorldGeneratorModifier());
-                
+                        
         if(!init())plugin.getLogger().error("Erreur init");
                  
         getGame().getEventManager().registerListeners(this, new PlotListener());
@@ -156,7 +153,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandInvsee, "invsee", "is");
         getGame().getCommandManager().register(this, new CommandManager().CommandPlayerinfo, "playerinfo", "pi", "info");
         getGame().getCommandManager().register(this, new CommandManager().CommandBroadcast, "broadcastmessage", "broadcast", "bm", "b");
-        getGame().getCommandManager().register(this, new CommandManager().CommandFaction, "guild", "f", "guilde", "g", "horde");
+        getGame().getCommandManager().register(this, new CommandManager().CommandGuild, "guild", "faction", "f", "guilde", "g", "horde");
 	getGame().getCommandManager().register(this, new CommandManager().CommandTest, "test");
         getGame().getCommandManager().register(this, new CommandManager().CommandRocket, "rocket");
         getGame().getCommandManager().register(this, new CommandManager().CommandPortal, "portal", "portail", "pl", "po");
@@ -177,13 +174,16 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandBank, "bank", "banque", "bk");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopList, "shoplist", "shopl");
         getGame().getCommandManager().register(this, new CommandManager().CommandChest, "chest", "coffre", "lwc");
-        getGame().getCommandManager().register(this, new CommandManager().CommandNPC, "npc");
+        //getGame().getCommandManager().register(this, new CommandManager().CommandNPC, "npc");
         getGame().getCommandManager().register(this, new CommandManager().CommandSpawn, "spawn");
         getGame().getCommandManager().register(this, new CommandManager().CommandSetspawn, "setspawn", "spawnset");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignCmd, "signcmd", "cmd", "scmd");
         getGame().getCommandManager().register(this, new CommandManager().CommandButcher, "butcher", "massacre");
         getGame().getCommandManager().register(this, new CommandManager().CommandTPR, "tpr", "rtp");
         getGame().getCommandManager().register(this, new CommandManager().CommandTPThru, "tpthru", "tpt", "thru");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTPA, "tpa","tpat");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTPhere, "tphere","tph");
+        getGame().getCommandManager().register(this, new CommandManager().CommandTPaccept, "tpaccept","accept");
         getGame().getCommandManager().register(this, new CommandManager().CommandData, "data");
         getGame().getCommandManager().register(this, new CommandManager().CommandAS, "as", "armorstand");
         getGame().getCommandManager().register(this, new CommandManager().CommandMailBox, "mailbox", "mb", "bal", "mail");
@@ -196,6 +196,10 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandBankVerse, "bankverse", "verse");
         getGame().getCommandManager().register(this, new CommandManager().CommandBookAdd, "bookadd", "book+", "b+");
         getGame().getCommandManager().register(this, new CommandManager().CommandPlotCreate, "plot+", "p+");
+        getGame().getCommandManager().register(this, new CommandManager().CommandWarp, "warp");
+        getGame().getCommandManager().register(this, new CommandManager().CommandSetWarp, "setwarp", "warpset");
+        getGame().getCommandManager().register(this, new CommandManager().CommandPostBookMsg, "postmsg", "pbm");
+        getGame().getCommandManager().register(this, new CommandManager().CommandChestSet, "chestset");
     }
         
     @Listener
@@ -244,7 +248,7 @@ public class Actus {
     
     @Listener
     public void reload(GameReloadEvent event) {
-        init();
+        if(init())getLogger().info("Actus reloaded ..");
     }
     
     private boolean init() {

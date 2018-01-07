@@ -1,9 +1,13 @@
 package net.teraoctet.actus.commands.guild;
 
+import java.util.Collection;
+import java.util.Optional;
+import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getUUID;
+import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.utils.ServerManager.isOnline;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
@@ -21,6 +25,12 @@ import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.WRONG_RANK;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.service.ProviderRegistration;
+import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.user.UserStorageService;
 
 public class CommandGuildRemoveplayer implements CommandExecutor {
         
@@ -50,7 +60,18 @@ public class CommandGuildRemoveplayer implements CommandExecutor {
                                 target_aplayer.setID_guild(0);
                                 target_aplayer.setFactionRank(0);
                                 target_aplayer.update();
-
+                                
+                                Optional<ProviderRegistration<UserStorageService>> optprov = Sponge.getServiceManager().getRegistration(UserStorageService.class);
+                                if(optprov.isPresent()) {
+                                    ProviderRegistration<UserStorageService> provreg = optprov.get();
+                                    UserStorageService uss = provreg.getProvider();
+                                    Optional<User>  user = uss.get(targetUUID);
+                                    if(user.isPresent()){
+                                        //Guild guild = getGuild(aplayer.getID_guild());
+                                        user.get().getSubjectData().clearOptions(SubjectData.GLOBAL_CONTEXT);//,"prefix","[" + guild.getName() + "]");
+                                    }
+                                }
+                                
                                 if(isOnline(targetName)) { 
                                     Player targetPlayer = getGame().getServer().getPlayer(targetName).get();
                                     targetPlayer.sendMessage(GUILD_RETURNED_BY(src.getName()));

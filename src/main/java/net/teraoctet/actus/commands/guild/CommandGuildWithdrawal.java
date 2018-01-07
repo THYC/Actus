@@ -2,6 +2,7 @@ package net.teraoctet.actus.commands.guild;
 
 import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
+import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -26,7 +27,7 @@ public class CommandGuildWithdrawal implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.guild.withdrawal")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
-            if(gdm.hasAnyGuild(aplayer)) {
+            if(GuildManager.hasAnyGuild(aplayer)) {
                 if(aplayer.getGuildRank() <= 2){
                     double amount = ctx.<Double> getOne("amount").get();
                     Guild gguild = getGuild(aplayer.getID_guild());

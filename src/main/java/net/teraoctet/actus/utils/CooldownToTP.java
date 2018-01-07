@@ -14,7 +14,9 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.world.World;
 
 public class CooldownToTP {
     
@@ -62,8 +64,13 @@ public class CooldownToTP {
         taskCountdown = Sponge.getScheduler().createTaskBuilder().execute(() -> {
             try{
                 Location lastLocation = player.getLocation();
-                player.setLocation(new Location(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z)));
-                if(entity.isPresent())entity.get().setLocation(new Location(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z)));
+                Optional<Location<World>> newloc = Sponge.getGame().getTeleportHelper().getSafeLocation(new Location(getGame().getServer().getWorld(world).get(), new Vector3d(X, Y, Z)));
+                if(newloc.isPresent()){
+                    player.setLocation(newloc.get());
+                    if(entity.isPresent())entity.get().setLocation(newloc.get());
+                }else{
+                    player.sendMessage(MESSAGE("&4Erreur Teleportation"));
+                }
                 mapCountDown.remove(player);
                 APlayer aplayer = getAPlayer(player.getUniqueId().toString());
                 aplayer.setLastposition(DeSerialize.location(lastLocation));

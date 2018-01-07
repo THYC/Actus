@@ -73,15 +73,15 @@ public class Ticket {
     }
 
     public void insert() {
-        Data.queue("INSERT INTO ticket VALUES (" + date + ", '" + uuid + "', " + ", '" + message + "', " + ", '" + world + "', " + x + ", " + y + ", " + z + ", '" + ", '" + assigned + "', " + ", '" + priority + "', " + status + ")");
+        Data.queue("INSERT INTO TICKET VALUES (" + date + ", '" + uuid + "', " + ", '" + message + "', " + ", '" + world + "', " + x + ", " + y + ", " + z + ", '" + ", '" + assigned + "', " + ", '" + priority + "', " + status + ")");
     }
 
     public void update() {
-        Data.queue("UPDATE ticket SET world = '" + world + "', x = " + x + ", y = " + y + ", z = " + z + ", message = '" + message + "' WHERE date = '" + date + "' AND uuid = '" + uuid + "'");
+        Data.queue("UPDATE TICKET SET world = '" + world + "', x = " + x + ", y = " + y + ", z = " + z + ", message = '" + message + "' WHERE date = '" + date + "' AND uuid = '" + uuid + "'");
     }
 
     public void delete() {
-        Data.queue("DELETE FROM ticket WHERE date = " + date + " AND uuid = '" + uuid + "'");
+        Data.queue("DELETE FROM TICKET WHERE date = " + date + " AND uuid = '" + uuid + "'");
     }
     
     public void setWorld(String world){ this.world = world;}

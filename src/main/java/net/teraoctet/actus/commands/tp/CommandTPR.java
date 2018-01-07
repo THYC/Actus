@@ -7,9 +7,11 @@ import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.utils.Config.DIAMETER_MAX_TPR;
+import static net.teraoctet.actus.utils.Config.DIAMETER_MIN_TPR;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
+import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.AIR;
@@ -36,19 +38,23 @@ public class CommandTPR implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.player.tpr")) {
             Player player = (Player) src;
             World world = player.getWorld();
+            if(ctx.getOne("world").isPresent()){
+                String worldname = ctx.<String> getOne("world").get();
+                Optional<World> w = getGame().getServer().getWorld(worldname);
+                if(w.isPresent())world = w.get();
+            }
             player.sendMessage(MESSAGE("&eRecherche d'un point de chute securis\351 ..."));
             
             Location loc = getRandomLocation(world,false).add(0, 2, 0);
             
             Entity boat = player.getBaseVehicle();
             if(boat.getType().equals(EntityTypes.BOAT)){
-                loc = getRandomLocation(world,true).add(0, 2, 0);
-                boat.setLocation(loc);  
+                loc = getRandomLocation(world,true).add(0, 1, 0);
                 sm.teleport(player, world.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), Optional.of(boat));
             }else if(boat != null){
-                sm.teleport(player, world.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), Optional.of(boat));   
+                sm.teleport(player, world.getName(), loc.getBlockX(), loc.add(0, 1, 0).getBlockY(), loc.getBlockZ(), Optional.of(boat));   
             }else{     
-                sm.teleport(player, world.getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), Optional.empty());   
+                sm.teleport(player, world.getName(), loc.getBlockX(), loc.add(0, 1, 0).getBlockY(), loc.getBlockZ(), Optional.empty());   
             }
             return CommandResult.success();
         } 
@@ -64,15 +70,15 @@ public class CommandTPR implements CommandExecutor {
     
     private Location getRandomLocation(World world, boolean water){
         WorldBorder worldBorder = world.getWorldBorder();
-        int d = (int)worldBorder.getDiameter();
-        if(d > DIAMETER_MAX_TPR()) d = DIAMETER_MAX_TPR();
+        int D = (int)worldBorder.getDiameter();
+        int d = DIAMETER_MIN_TPR();
+        if(D > DIAMETER_MAX_TPR()) D = DIAMETER_MAX_TPR();
 
-        plugin.getLogger().info(String.valueOf(d));
         Vector3d centre = worldBorder.getCenter();
-
-        int x = random.nextInt(d) - d/2;
+        
+        int x = d/2 + (int)(Math.random() * ((D/2 - d/2) + 1)); 
         plugin.getLogger().info(String.valueOf(x));
-        int z = random.nextInt(d) - d/2;
+        int z = d/2 + (int)(Math.random() * ((D/2 - d/2) + 1));
         plugin.getLogger().info(String.valueOf(z));
         Location tmp = new Location<>(world, new Vector3d(x + centre.getX(), 250, z + centre.getZ()));
         tmp = getFinalLocation(tmp);

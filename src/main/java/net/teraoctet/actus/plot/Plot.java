@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static java.util.Objects.isNull;
 import java.util.Optional;
 import net.teraoctet.actus.utils.Data;
 import static net.teraoctet.actus.utils.Data.datasource;
@@ -47,6 +48,7 @@ public class Plot {
     private String message;
     private int mode;
     private boolean noMob;
+    private boolean noAnimal;
     private boolean noTNT;
     private boolean noCommand;
     private String uuidOwner;
@@ -61,7 +63,7 @@ public class Plot {
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
     boolean jail, boolean noEnter, boolean noFly, boolean noBuild, boolean noBreak, boolean noTeleport, boolean noInteract, boolean noFire, 
-    String message, int mode, boolean noMob, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed, 
+    String message, int mode, boolean noMob, boolean noAnimal, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed, 
     int id_guild, boolean spawnGrave, boolean noPVPplayer, boolean noPVPmonster, boolean noProjectile, boolean noLiquidFlow, boolean autoForest){
         
         this.plotName = plotName;
@@ -86,6 +88,7 @@ public class Plot {
         this.uuidOwner = uuidOwner;
         this.uuidAllowed = uuidAllowed;
         this.noMob = noMob;
+        this.noAnimal = noAnimal;
         this.noTNT = noTNT;
         this.noCommand = noCommand;
         this.id_guild = id_guild;
@@ -99,7 +102,7 @@ public class Plot {
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
     boolean jail, boolean noEnter, boolean noFly, boolean noBuild, boolean noBreak, boolean noTeleport, boolean noInteract, boolean noFire, 
-    String message, int mode, boolean noMob, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed){
+    String message, int mode, boolean noMob, boolean noAnimal, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed){
         
         this.plotName = plotName;
         this.level = level;
@@ -121,6 +124,7 @@ public class Plot {
         this.message = message;
         this.mode = mode;
         this.noMob = noMob;
+        this.noAnimal = noAnimal;
         this.noTNT = noTNT;
         this.uuidOwner = uuidOwner;
         this.uuidAllowed = uuidAllowed;
@@ -156,6 +160,7 @@ public class Plot {
         this.uuidOwner = uuidOwner;
         this.uuidAllowed = uuidAllowed;
         this.noMob = false;
+        this.noAnimal = false;
         this.noTNT = true;
         this.noCommand = false;
         this.spawnGrave = true;
@@ -188,6 +193,7 @@ public class Plot {
         this.uuidOwner = "";
         this.uuidAllowed = "";
         this.noMob = false;
+        this.noAnimal = false;
         this.noTNT = true;
         this.noCommand = false;
         this.spawnGrave = true;
@@ -199,9 +205,9 @@ public class Plot {
     }
     
     public void insert() {
-	Data.queue("INSERT INTO plot VALUES ('" + plotName + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
+	Data.queue("INSERT INTO PLOT VALUES ('" + plotName + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
         + ", " + x2 + ", " + y2 + ", " + z2 + ", " + jail + ", " + noEnter + ", " + noFly + ", " + noBuild + ", " + noBreak + ", " + noTeleport 
-        + ", " + noInteract + ", " + noFire + ", '" + message + "', " + mode + ", " + noMob + ", " + noTNT + ", " + noCommand 
+        + ", " + noInteract + ", " + noFire + ", '" + message() + "', " + mode + ", " + noMob + ", " + noAnimal + ", " + noTNT + ", " + noCommand 
         + ", '" + uuidOwner + "', '" + uuidAllowed + "', " + id_guild + ", "+ spawnGrave + ", " + noPVPplayer + ", " + noPVPmonster 
         + ", " + noProjectile + ", " + noLiquidFlow + ", " + autoForest + ")");
     }
@@ -213,7 +219,7 @@ public class Plot {
      */
     public void addSale(Location loc) {
         String location = DeSerialize.location(loc);
-	Data.queue("INSERT INTO plsale VALUES ('" + plotName + "', '" + location + "')");
+	Data.queue("INSERT INTO PLSALE VALUES ('" + plotName + "', '" + location + "')");
     }
     
     /**
@@ -226,7 +232,7 @@ public class Plot {
         try {
             Connection c = datasource.getConnection();
             Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery("SELECT * FROM plsale WHERE plotName = '" + plotName + "'");
+            ResultSet rs = s.executeQuery("SELECT * FROM PLSALE WHERE plotName = '" + plotName + "'");
             while(rs.next()) {
                 Optional<Location<World>> loc = DeSerialize.getLocation(rs.getString("location"));
                 if (loc.get().getBlockType().equals(BlockTypes.STANDING_SIGN) || loc.get().getBlockType().equals(BlockTypes.WALL_SIGN)){
@@ -252,21 +258,27 @@ public class Plot {
             s.close();
             c.close();
         } catch (SQLException e) {}
-	Data.queue("DELETE FROM plsale WHERE plotName = '" + plotName + "'");
+	Data.queue("DELETE FROM PLSALE WHERE plotName = '" + plotName + "'");
     }
     
     public void update() {
-	Data.queue("UPDATE plot SET plotName = '" + plotName + "', level = " + level + ", world = '" + world 
+	Data.queue("UPDATE PLOT SET plotName = '" + plotName + "', level = " + level + ", world = '" + world 
         + "', X1 = " + x1 + ", Y1 = " + y1 + ", Z1 = " + z1 + ", X2 = " + x2 + ", Y2 = " + y2 + ", Z2 = " + z2 + ", jail = " + jail 
         + ", noEnter = " + noEnter + ", noFly = " + noFly + ", noBuild = " + noBuild + ", noBreak = " + noBreak + ", noTeleport = " + noTeleport 
-        + ", noInteract = " + noInteract + ", noFire = " + noFire + ", message = '" + message + "', mode = " + mode + ", uuidOwner = '" + uuidOwner 
-        + "', uuidAllowed = '" + uuidAllowed + "', noMob = " + noMob + ", noTNT = " + noTNT 
+        + ", noInteract = " + noInteract + ", noFire = " + noFire + ", message = '" + message() + "', mode = " + mode + ", uuidOwner = '" + uuidOwner 
+        + "', uuidAllowed = '" + uuidAllowed + "', noMob = " + noMob + ", noAnimal = " + noAnimal + ", noTNT = " + noTNT 
         + ", noCommand = " + noTNT + ", id_guild = " + id_guild + ", spawnGrave = " + spawnGrave + ", noPVPplayer = " + noPVPplayer 
         + ", noPVPmonster = " + noPVPmonster + ", noProjectile = " + noProjectile + ", noLiquidFlow = " + noLiquidFlow + ", autoForest = " + autoForest + " WHERE plotName = '" + plotName + "'");
     }
 	
     public void delete() {
-	Data.queue("DELETE FROM plot WHERE plotName = '" + plotName + "'");
+	Data.queue("DELETE FROM PLOT WHERE plotName = '" + plotName + "'");
+    }
+    
+    private String message(){
+        String msg = this.message;
+        msg = msg.replace("'","\'");
+        return msg;
     }
     
     /**
@@ -285,6 +297,7 @@ public class Plot {
         flag = flag + "noFire(Incendie) : " + this.noFire + " | ";
         flag = flag + "Gamemode : " + this.mode + " | ";
         flag = flag + "noMob(monstre) : " + this.noMob + " | ";
+        flag = flag + "noAnimal : " + this.noAnimal + " | ";
         flag = flag + "noTNT(TNT) : " + this.noTNT + " | ";
         flag = flag + "noCommand(commande) : " + this.noCommand + " | ";
         return flag;
@@ -311,6 +324,7 @@ public class Plot {
     public void setNoEnter(boolean noEnter){this.noEnter = noEnter;}
     public void setMessage(String message){this.message = message;}
     public void setNoMob(boolean noMob){this.noMob = noMob;}
+    public void setNoAnimal(boolean noAnimal){this.noAnimal = noAnimal;}
     public void setNoTNT(boolean noTNT){this.noTNT = noTNT;}
     public void setMode(int mode){this.mode = mode;} 
     public void setNoCommand(boolean noCommand){this.noCommand = noCommand;} 
@@ -343,6 +357,7 @@ public class Plot {
     public boolean getNoEnter(){return this.noEnter;}
     public String getMessage(){return this.message;}
     public boolean getNoMob(){return this.noMob;}
+    public boolean getNoAnimal(){return this.noAnimal;}
     public boolean getNoTNT(){return this.noTNT;}
     public int getMode(){return this.mode;} 
     public boolean getNoCommand(){return this.noCommand;}
@@ -372,8 +387,15 @@ public class Plot {
      * @return String
      */
     public String getNameOwner(){
-        if (uuidOwner.equalsIgnoreCase("ADMIN")) return "ADMIN";
-        return getAPlayer(uuidOwner).getName();
+        if (uuidOwner.equalsIgnoreCase("ADMIN")){ 
+            return "ADMIN";
+        }else{
+            if(!isNull(getAPlayer(uuidOwner))){
+                return getAPlayer(uuidOwner).getName();
+            }else{
+                return uuidOwner;
+            }
+        }
     }
     
     /**

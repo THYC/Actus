@@ -79,7 +79,32 @@ public class CallBackPlot {
                     plot.setSpawnGrave(value);
                     player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &espawnGrave = " + ptm.ValueOf(value)));
                     break;
+                case "noanimal":
+                    plot.setNoAnimal(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoAnimal = " + ptm.ValueOf(value)));
+                    break;
+                case "nopvpmonster":
+                    plot.setNoPVPmonster(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoPVPmonster = " + ptm.ValueOf(value)));
+                    break;
+                case "nopvplayer":
+                    plot.setNoPVPplayer(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoPVPplayer = " + ptm.ValueOf(value)));
+                    break;
+                case "noprojectile":
+                    plot.setNoProjectile(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoProjectile = " + ptm.ValueOf(value)));
+                    break;
+                case "noliquidflow":
+                    plot.setNoLiquidFlow(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &enoLiquidFlow = " + ptm.ValueOf(value)));
+                    break;
+                case "autoforest":
+                    plot.setAutoForest(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &eAutoForest = " + ptm.ValueOf(value)));
+                    break;
             }
+    
             plot.update();
             Data.commit();
             Sponge.getCommandManager().process(player,"plot flag");

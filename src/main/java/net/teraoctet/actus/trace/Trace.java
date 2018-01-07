@@ -42,11 +42,11 @@ public class Trace {
     }
 
     public void insert() {
-        Data.queue("INSERT INTO trace VALUES (" + date + ", '" + world + "', " + x + ", " + y + ", " + z + ", '" + uuid + "', '" + type + "', '" + block + "')");
+        Data.queue("INSERT INTO TRACE VALUES (" + date + ", '" + world + "', " + x + ", " + y + ", " + z + ", '" + uuid + "', '" + type + "', '" + block + "')");
     }
 
     public void delete() {
-        Data.queue("DELETE FROM trace WHERE date = " + date + " AND uuid = '" + uuid + "'");
+        Data.queue("DELETE FROM TRACE WHERE date = " + date + " AND uuid = '" + uuid + "'");
     }
         
     public void setWorld(String world){ this.world = world;}

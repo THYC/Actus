@@ -20,7 +20,7 @@ public class CommandBank implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.player.bank")) {
             Player player = (Player)src;
             APlayer aplayer = getAPlayer(player.getIdentifier());
-            player.sendMessage(MESSAGE("&6Tu disposes de " + String.valueOf(aplayer.getMoney()) + " Emeraude(s)"));
+            player.sendMessage(MESSAGE("&6Tu disposes de " + aplayer.getMoney() + " Emeraude(s)"));
             return CommandResult.success();
         } 
         

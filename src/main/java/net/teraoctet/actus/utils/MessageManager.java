@@ -100,17 +100,23 @@ public class MessageManager {
     private static Text WRONG_CHARACTERS_NUMBER;
     private static Text KILLED_BY;
     private static Text SUICIDE;
-    private static Text ONHOVER_GUILD_MOREACTIONS;
-    private static Text ONHOVER_GUILD_SETGRADE;
-    private static Text ONHOVER_GUILD_RENAME;
-    private static Text ONHOVER_GUILD_INVIT;
-    private static Text ONHOVER_GUILD_DELETE;
-    private static Text ONHOVER_GUILD_REMOVEMEMBER;
-    private static Text ONHOVER_GUILD_WITHDRAWAL;
-    private static Text ONHOVER_GUILD_DEPOSIT;
-    private static Text ONHOVER_GUILD_LEAVE;
-    private static Text ONHOVER_GUILD_LIST_LVL10;
-    private static Text ONHOVER_PI_NAME;
+    private static Text GUILD_ONHOVER_MOREACTIONS;
+    private static Text GUILD_ONHOVER_SETGRADE;
+    private static Text GUILD_ONHOVER_RENAME;
+    private static Text GUILD_ONHOVER_INVIT;
+    private static Text GUILD_ONHOVER_DELETE;
+    private static Text GUILD_ONHOVER_REMOVEMEMBER;
+    private static Text GUILD_ONHOVER_WITHDRAWAL;
+    private static Text GUILD_ONHOVER_DEPOSIT;
+    private static Text GUILD_ONHOVER_LEAVE;
+    private static Text GUILD_ONHOVER_LIST_LVL10;
+    private static Text PI_ONHOVER_HOME;
+    private static Text PI_ONHOVER_PLOT;
+    private static Text PI_ONHOVER_GUILD;
+    private static Text PI_ONHOVER_NOGUILD;
+    private static Text PI_ADMIN_ONLINE_ONHOVER_NAME;    
+    private static Text PI_ADMIN_OFFLINE_ONHOVER_NAME;
+    private static Text PI_ADMIN_ONHOVER_TP;
     private static Text SHOP_SALE;
     private static Text SHOP_BUY;
     private static Text WITHDRAW_SUCCESS;
@@ -143,6 +149,9 @@ public class MessageManager {
     private static Text GRAVE_RIP3;
     private static Text GRAVE_RIP4;
     private static Text GRAVE_POSITION;
+    private static Text WARP_ALREADY_EXIST;
+    private static Text WARP_SET_SUCCESS;
+    private static Text WARP_DEL_SUCCESS;
         
     public static final File FILE = new File("config/actus/message.conf");
     public static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
@@ -163,17 +172,17 @@ public class MessageManager {
                 if(message.getNode("SERVER","RULES").isVirtual()){
                     msg = new ArrayList<>();
                     msg.add("&7- Ce serveur est en mode survie et PVP");
-                    msg.add("&7- Cele ne veut pas dire que tu peux faire n'importe quoi !");
-                    msg.add("&7- Tu doit etre courtois, aucune insulte n'est tol\351r\351");
+                    msg.add("&7- Cel\340 ne veut pas dire que tu peux faire n'importe quoi !");
+                    msg.add("&7- Tu dois \352tre courtois, aucune insulte n'est tol\351r\351e");
                     msg.add("&7- Tu ne dois pas d\351truire les constructions des autres joueurs");
-                    msg.add("&7- La TNT est autoris\351 uniquement sur ta parcelle");
-                    msg.add("&7- Tu ne dois pas utilis\351 des mods te facilitant la triche");
+                    msg.add("&7- La TNT est autoris\351e uniquement sur ta parcelle");
+                    msg.add("&7- Tu ne dois pas utiliser des mods te permettant de tricher");
                     msg.add("&7- N'oublie pas que ce serveur est avant tout un regroupement");
                     msg.add("&7- de joueurs fan du jeu Minecraft dont le but est de jouer");
                     msg.add("&7- dans un esprit de convivialit\351 et d'entraide.");
-                    msg.add("&7- Des commandes fun te sont disponibles pour te prot\351ger,");
-                    msg.add("&7- utilise les ! ou ne vient pas te plandre apr\350s !.");
-                    msg.add("&7- Commandes consultable ici : &bhttp://craft.teraoctet.net/actus/commandes\n");
+                    msg.add("&7- Des commandes sont disponibles pour te prot\351ger,");
+                    msg.add("&7- utilise-les ! ou ne viens pas te plandre apr\350s !.");
+                    msg.add("&7- Commandes consultables ici : &bhttp://craft.teraoctet.net/actus/commandes\n");
                     msg.add("&7- En cas de conflit, c'est le Staff qui tranche.");
                     msg.add("&e- inscris-toi sur notre forum pour suivre les actus &bhttp://craft.teraoctet.net\n");
                     message.getNode("SERVER","RULES").setValue(msg);
@@ -272,7 +281,7 @@ public class MessageManager {
                 
                 if(message.getNode("SERVER","LAST_CONNECT").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&7Derniere connection : %var1%");
+                    msg.add("&7Derni\350re connexion : %var1%");
                     message.getNode("SERVER","LAST_CONNECT").setValue(msg);
                     MANAGER.save(message);
                 }
@@ -414,35 +423,35 @@ public class MessageManager {
                 
                 if(message.getNode("GUILD","NO_GUILD").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&cVous n'\352tes dans aucune guild !");
+                    msg.add("&cVous n'\352tes dans aucune guilde !");
                     message.getNode("GUILD","NO_GUILD").setValue(msg);
                     MANAGER.save(message);
                 }
                 
                 if(message.getNode("GUILD","ALREADY_GUILD_MEMBER").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&cVous \352tes d\351j\340 dans une guild !");
+                    msg.add("&cVous \352tes d\351j\340 dans une guilde !");
                     message.getNode("GUILD","ALREADY_GUILD_MEMBER").setValue(msg);
                     MANAGER.save(message);
                 }
                 
                 if(message.getNode("GUILD","WRONG_RANK").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&cVotre rang dans la guild ne vous permet pas d'utiliser \347a !");
+                    msg.add("&cVotre rang dans la guilde ne vous permet pas d'utiliser \347a !");
                     message.getNode("GUILD","WRONG_RANK").setValue(msg);
                     MANAGER.save(message);
                 }
                 
                 if(message.getNode("GUILD","NOT_IN_SAME_GUILD").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&c%var1% ne fait pas parti de votre guild !");
+                    msg.add("&c%var1% ne fait pas partie de votre guilde !");
                     message.getNode("GUILD","NOT_IN_SAME_GUILD").setValue(msg);
                     MANAGER.save(message);
                 }
                 
                 if(message.getNode("GUILD","OWNER_CANNOT_LEAVE").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&cVous \352tes chef de votre guild, vous ne pouvez pas la quitter !");
+                    msg.add("&cVous \352tes chef de votre guilde, vous ne pouvez pas la quitter !");
                     msg.add("&cVeuillez c\351der le grade à un autre membre avec : /guild setgrade 1 <player>");
                     message.getNode("GUILD","OWNER_CANNOT_LEAVE").setValue(msg);
                     MANAGER.save(message);
@@ -450,54 +459,60 @@ public class MessageManager {
                 
                 if(message.getNode("GUILD","GUILD_NEW_CHEF").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&9%var1% est le nouveau leader de la guild \"%var2%&9\" !");
+                    msg.add("&9%var1% est le nouveau leader de la guilde \"%var2%&9\" !");
                     message.getNode("GUILD","GUILD_NEW_CHEF").setValue(msg);
                     MANAGER.save(message);
                 }
-                        
-                msg = new ArrayList<>();
-                msg.add("&2Vous avez c\351d\351 votre grade de chef \340 %var1% !");
-                message.getNode("GUILD","GUILD_CHEF_GRADE_GIVEN").setValue(msg);
-                MANAGER.save(message);
-                        
-                msg = new ArrayList<>();
-                msg.add("&2Vous \352tes le nouveau leader de votre guild !");
-                message.getNode("GUILD","GUILD_YOU_ARE_NEW_CHEF").setValue(msg);
-                MANAGER.save(message);
+                
+                if(message.getNode("GUILD","GUILD_CHEF_GRADE_GIVEN").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&2Vous avez c\351d\351 votre grade de chef \340 %var1% !");
+                    message.getNode("GUILD","GUILD_CHEF_GRADE_GIVEN").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GUILD","GUILD_YOU_ARE_NEW_CHEF").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&2Vous \352tes le nouveau leader de votre guilde !");
+                    message.getNode("GUILD","GUILD_YOU_ARE_NEW_CHEF").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("GUILD","GUIDE_GUILD").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&n&eQu'est-ce que \347a apporte d'\350tre dans une guilde ?");
+                    msg.add("&eComing soon ..!");
+                    msg.add("&ePlus d'infos sur &bhttp://craft.teraoctet.net\n");
+                    message.getNode("GUILD","GUIDE_GUILD").setValue(msg);
+                }
                 
                 msg = new ArrayList<>();
-                msg.add("&n&eQu'est-ce que \347a apporte d'\350tre dans une guild ?");
-                msg.add("&eComing soon ..!");
-                msg.add("&ePlus d'infos sur &bhttp://craft.teraoctet.net\n");
-                message.getNode("GUILD","GUIDE_GUILD").setValue(msg);
-                
-                msg = new ArrayList<>();
-                msg.add("&eVous venez de cr\351er la guild \"&r%var1%&e\"");
+                msg.add("&eVous venez de cr\351er la guilde \"&r%var1%&e\"");
                 message.getNode("GUILD","GUILD_CREATED_SUCCESS").setValue(msg);
                 MANAGER.save(message);
                         
                 msg = new ArrayList<>();
-                msg.add("&eVous venez de supprimer la guild \"&r%var1%&e\"");
+                msg.add("&eVous venez de supprimer la guilde \"&r%var1%&e\"");
                 message.getNode("GUILD","GUILD_DELETED_SUCCESS").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&eLa guild \"&6%var1%&e\" a \351t\351 renomm\351e en \"&6%var2%&e\"");
+                msg.add("&eLa guilde \"&6%var1%&e\" a \351t\351 renomm\351e en \"&6%var2%&e\"");
                 message.getNode("GUILD","GUILD_RENAMED_SUCCESS").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&eVous venez de quitter la guild \"&r%var1%&e\"");
+                msg.add("&eVous venez de quitter la guilde \"&r%var1%&e\"");
                 message.getNode("GUILD","LEAVING_GUILD_SUCCESS").setValue(msg);
                 MANAGER.save(message);
                         
                 msg = new ArrayList<>();
-                msg.add("&eVous avez renvoy\351 &6%var1% &ede votre guild");
+                msg.add("&eVous avez renvoy\351 &6%var1% &ede votre guilde");
                 message.getNode("GUILD","GUILD_MEMBER_REMOVED_SUCCESS").setValue(msg);
                 MANAGER.save(message);
                      
                 msg = new ArrayList<>();
-                msg.add("&eVous avez \351t\351 renvoy\351 de votre guild par &6%var1%");
+                msg.add("&eVous avez \351t\351 renvoy\351 de votre guilde par &6%var1%");
                 message.getNode("GUILD","GUILD_RETURNED_BY").setValue(msg);
                 MANAGER.save(message);
                 
@@ -507,22 +522,22 @@ public class MessageManager {
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Affiche un menu pour g\351rer la guild");
+                msg.add("&l&6Affiche un menu pour g\351rer la guilde");
                 msg.add("&n&eAccessible par :&r Chef, Sous-chef, Officier");
-                message.getNode("GUILD","ONHOVER_GUILD_MOREACTIONS").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_MOREACTIONS").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Shift+Click pour quitter la guild");
+                msg.add("&l&6Shift+Click pour quitter la guilde");
                 msg.add("\n&7/guild leave");
-                message.getNode("GUILD","ONHOVER_GUILD_LEAVE").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_LEAVE").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Inviter un joueur \340 rejoindre la guild");
+                msg.add("&l&6Inviter un joueur \340 rejoindre la guilde");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef, Officier");
                 msg.add("\n&7/guild addplayer <player>");
-                message.getNode("GUILD","ONHOVER_GUILD_INVIT").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_INVIT").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
@@ -530,48 +545,48 @@ public class MessageManager {
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef, Officier");
                 msg.add("\n&7/guild setplayergrade <player> <grade>");
                 msg.add("&o&n&7Grade :&r&o&7 2 -> Sous-chef | 3 -> Officer | 4 -> Membre | 5 -> Recrue");
-                message.getNode("GUILD","ONHOVER_GUILD_SETGRADE").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_SETGRADE").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Renvoyer un joueur de la guild");
+                msg.add("&l&6Renvoyer un joueur de la guilde");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild removeplayer <player>");
-                message.getNode("GUILD","ONHOVER_GUILD_REMOVEMEMBER").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_REMOVEMEMBER").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Retirer des \351meraudes de la banque de guild");
+                msg.add("&l&6Retirer des \351meraudes de la banque de guilde");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild withdraw <montant>");
-                message.getNode("GUILD","ONHOVER_GUILD_WITHDRAWAL").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_WITHDRAWAL").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Renommer la guild");
+                msg.add("&l&6Renommer la guilde");
                 msg.add("&e&nUtilisable par :&r Chef, Sous-chef");
                 msg.add("\n&7/guild rename <nom>");
-                message.getNode("GUILD","ONHOVER_GUILD_RENAME").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_RENAME").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Supprimer la guild");
+                msg.add("&l&6Supprimer la guilde");
                 msg.add("&e&nUtilisable par :&r Chef");
                 msg.add("\n&7/guild delete <nom>");
-                message.getNode("GUILD","ONHOVER_GUILD_DELETE").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_DELETE").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6D\351poser des \351meraudes dans la banque de la guild");
+                msg.add("&l&6D\351poser des \351meraudes dans la banque de la guilde");
                 msg.add("\n&7/guild depot <montant>");
-                message.getNode("GUILD","ONHOVER_GUILD_DEPOSIT").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_DEPOSIT").setValue(msg);
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&l&6Faction : &r%var1%");
+                msg.add("&l&6Guilde : &r%var1%");
                 msg.add("&e&nChef : &r%var2%");
                 msg.add("\n&7&n&oShift+Click :&r &8&o/guild delete <name>");
-                message.getNode("GUILD","ONHOVER_GUILD_LIST_LVL10").setValue(msg);
+                message.getNode("GUILD","GUILD_ONHOVER_LIST_LVL10").setValue(msg);
                 MANAGER.save(message);
                 
                 //-------------------------
@@ -673,13 +688,13 @@ public class MessageManager {
                 MANAGER.save(message);
                 
                 msg = new ArrayList<>();
-                msg.add("&cVotre guild ne poss\351de pas autant d'\351meraudes dans ses coffres !");
+                msg.add("&cVotre guilde ne poss\351de pas assez d'\351meraudes dans ses coffres !");
                 message.getNode("ECONOMY","GUILD_MISSING_BALANCE").setValue(msg);
                 MANAGER.save(message);
                 
                 if(message.getNode("ECONOMY","CLICK_TO_CONFIRM").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&eMaintenant cliques de nouveau sur le panneau pour confirmer/n");
+                    msg.add("&eMaintenant clique une nouvelle fois sur le panneau pour confirmer/n");
                     message.getNode("ECONOMY","CLICK_TO_CONFIRM").setValue(msg);
                     MANAGER.save(message);
                 }
@@ -734,15 +749,79 @@ public class MessageManager {
                 message.getNode("TELEPORTATION","HOME_TP_SUCCESS").setValue(msg);
                 MANAGER.save(message);
                 
+                if(message.getNode("TELEPORTATION","WARP_ALREADY_EXIST").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&cWarp d\351j\340 d\351fini, veuillez le supprimer avant de pouvoir le red\351finir");
+                    message.getNode("TELEPORTATION","WARP_ALREADY_EXIST").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("TELEPORTATION","WARP_SET_SUCCESS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&eLe warp &6%var1% &ea \351t\351 cr\351\351 avec succ\350s");
+                    message.getNode("TELEPORTATION","WARP_SET_SUCCESS").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
+                if(message.getNode("TELEPORTATION","WARP_SET_SUCCESS").isVirtual()){
+                    msg = new ArrayList<>();
+                    msg.add("&eLe warp &6%var1% &ea \351t\351 supprim\351 avec succ\350s");
+                    message.getNode("TELEPORTATION","WARP_DEL_SUCCESS").setValue(msg);
+                    MANAGER.save(message);
+                }
+                
                 //-------------------------
                 // Message Commande PlayerInfo
                 //-------------------------
+                msg.add("&l&6Supprimer la guilde");
+                msg.add("&e&nUtilisable par :&r Chef");
                 
                 msg = new ArrayList<>();
-                msg.add("&nUUID:&r %var1%\n");
+                msg.add("&l&6Afficher la liste des home(s)");
+                msg.add("&e(WORK IN PROGRESS)\n");
+                msg.add("&7&n&oClick :&r &8&o/homelist");
+                message.getNode("CMD_PLAYERINFO","PI_ONHOVER_HOME").setValue(msg);
+                MANAGER.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&l&6Afficher la liste des parcelle(s)\n");
+                msg.add("&7&n&oClick :&r &8&o/plot list");
+                message.getNode("CMD_PLAYERINFO","PI_ONHOVER_PLOT").setValue(msg);
+                MANAGER.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&l&6Afficher menu de la Guilde");
+                msg.add("&e&nGrade:&r &7%var1%\n");
+                msg.add("&7&n&oClick :&r &8&o/guild");
+                message.getNode("CMD_PLAYERINFO","PI_ONHOVER_GUILD").setValue(msg);
+                MANAGER.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&l&6Aucune Guilde");
+                msg.add("&eVous êtes membre d'aucune guilde,");
+                msg.add("&een cliquant ici vous pouvez en créer une nouvelle\n");
+                msg.add("&7&n&oClick :&r &8&o/guild create <nom>");
+                message.getNode("CMD_PLAYERINFO","PI_ONHOVER_NOGUILD").setValue(msg);
+                MANAGER.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&l&n&6UUID:&r &l&6%var1%\n");
                 msg.add("&7&n&oClick :&r &8&o/kick <player> <raison>");
                 msg.add("&7&n&oShift+Click :&r &8&o/ban <player> <raison>");
-                message.getNode("CMD_PLAYERINFO","ONHOVER_PI_NAME").setValue(msg);
+                message.getNode("CMD_PLAYERINFO","PI_ADMIN_ONLINE_ONHOVER_NAME").setValue(msg);
+                MANAGER.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&l&n&6UUID:&r &l&6%var1%\n");
+                msg.add("&7&n&oShift+Click :&r &8&o/ban <player> <raison>");
+                message.getNode("CMD_PLAYERINFO","PI_ADMIN_OFFLINE_ONHOVER_NAME").setValue(msg);
+                MANAGER.save(message);
+                
+                msg = new ArrayList<>();
+                msg.add("&l&6T\351l\351portation aux coordonn\351es");
+                msg.add("&e(WORK IN PROGRESS)\n");
+                msg.add("&7&n&oClick :&r &8&o/tp <coords>");
+                message.getNode("CMD_PLAYERINFO","PI_ADMIN_ONHOVER_TP").setValue(msg);
                 MANAGER.save(message);
                 
                 //-------------------------
@@ -814,7 +893,7 @@ public class MessageManager {
                 
                 if(message.getNode("CHEST","CHEST_LOCK").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&eoups ! ce coffre est verouill\351 !");
+                    msg.add("&eCe coffre est verouill\351 !");
                     message.getNode("CHEST","CHEST_LOCK").setValue(msg);
                     MANAGER.save(message);
                 }
@@ -948,7 +1027,7 @@ public class MessageManager {
                 
                 if(message.getNode("GRAVE","GRAVE_BREAK").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&bUne pauvre ame repose dans ce cercueil, tu ne peux le detruire..");
+                    msg.add("&bUne pauvre \342me repose dans ce cercueil, tu ne peux le d\351truire..");
                     message.getNode("GRAVE","GRAVE_BREAK").setValue(msg);
                     MANAGER.save(message);
                 }
@@ -962,7 +1041,7 @@ public class MessageManager {
                 
                 if(message.getNode("GRAVE","GRAVE_RIP2").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&o&5 Repose En Paix");
+                    msg.add("&o&5 Repose en Paix");
                     message.getNode("GRAVE","GRAVE_RIP2").setValue(msg);
                     MANAGER.save(message);
                 }
@@ -983,7 +1062,7 @@ public class MessageManager {
                 
                 if(message.getNode("GRAVE","GRAVE_POSITION").isVirtual()){
                     msg = new ArrayList<>();
-                    msg.add("&eTon Stuff est situ\351 dans ta tombe a la postion : ");
+                    msg.add("&eTon \351quipement est situ\351 dans une tombe \340 la position : ");
                     message.getNode("GRAVE","GRAVE_POSITION").setValue(msg);
                     MANAGER.save(message);
                 }
@@ -1216,25 +1295,25 @@ public class MessageManager {
     
     public static Text GUILD_DELETED_NOTIFICATION(String guildName){return format(GUILD_DELETED_NOTIFICATION, "GUILD", "GUILD_DELETED_NOTIFICATION", guildName, "");}
     
-    public static Text ONHOVER_GUILD_MOREACTIONS(){return format(ONHOVER_GUILD_MOREACTIONS, "GUILD", "ONHOVER_GUILD_MOREACTIONS");}
+    public static Text GUILD_ONHOVER_MOREACTIONS(){return format(GUILD_ONHOVER_MOREACTIONS, "GUILD", "GUILD_ONHOVER_MOREACTIONS");}
     
-    public static Text ONHOVER_GUILD_LEAVE(){return format(ONHOVER_GUILD_LEAVE, "GUILD", "ONHOVER_GUILD_LEAVE");}
+    public static Text GUILD_ONHOVER_LEAVE(){return format(GUILD_ONHOVER_LEAVE, "GUILD", "GUILD_ONHOVER_LEAVE");}
     
-    public static Text ONHOVER_GUILD_DEPOSIT(){return format(ONHOVER_GUILD_DEPOSIT, "GUILD", "ONHOVER_GUILD_DEPOSIT");}
+    public static Text GUILD_ONHOVER_DEPOSIT(){return format(GUILD_ONHOVER_DEPOSIT, "GUILD", "GUILD_ONHOVER_DEPOSIT");}
     
-    public static Text ONHOVER_GUILD_INVIT(){return format(ONHOVER_GUILD_INVIT, "GUILD", "ONHOVER_GUILD_INVIT");}
+    public static Text GUILD_ONHOVER_INVIT(){return format(GUILD_ONHOVER_INVIT, "GUILD", "GUILD_ONHOVER_INVIT");}
     
-    public static Text ONHOVER_GUILD_SETGRADE(){return format(ONHOVER_GUILD_SETGRADE, "GUILD", "ONHOVER_GUILD_SETGRADE");}
+    public static Text GUILD_ONHOVER_SETGRADE(){return format(GUILD_ONHOVER_SETGRADE, "GUILD", "GUILD_ONHOVER_SETGRADE");}
     
-    public static Text ONHOVER_GUILD_REMOVEMEMBER(){return format(ONHOVER_GUILD_REMOVEMEMBER, "GUILD", "ONHOVER_GUILD_REMOVEMEMBER");}
+    public static Text GUILD_ONHOVER_REMOVEMEMBER(){return format(GUILD_ONHOVER_REMOVEMEMBER, "GUILD", "GUILD_ONHOVER_REMOVEMEMBER");}
     
-    public static Text ONHOVER_GUILD_WITHDRAWAL(){return format(ONHOVER_GUILD_WITHDRAWAL, "GUILD", "ONHOVER_GUILD_WITHDRAWAL");}
+    public static Text GUILD_ONHOVER_WITHDRAWAL(){return format(GUILD_ONHOVER_WITHDRAWAL, "GUILD", "GUILD_ONHOVER_WITHDRAWAL");}
     
-    public static Text ONHOVER_GUILD_RENAME(){return format(ONHOVER_GUILD_RENAME, "GUILD", "ONHOVER_GUILD_RENAME");}
+    public static Text GUILD_ONHOVER_RENAME(){return format(GUILD_ONHOVER_RENAME, "GUILD", "GUILD_ONHOVER_RENAME");}
     
-    public static Text ONHOVER_GUILD_DELETE(){return format(ONHOVER_GUILD_DELETE, "GUILD", "ONHOVER_GUILD_DELETE");}
+    public static Text GUILD_ONHOVER_DELETE(){return format(GUILD_ONHOVER_DELETE, "GUILD", "GUILD_ONHOVER_DELETE");}
     
-    public static Text ONHOVER_GUILD_LIST_LVL10(String guildName, String ownerName){return format(ONHOVER_GUILD_LIST_LVL10, "GUILD", "ONHOVER_GUILD_LIST_LVL10", guildName, ownerName);}
+    public static Text GUILD_ONHOVER_LIST_LVL10(String guildName, String ownerName){return format(GUILD_ONHOVER_LIST_LVL10, "GUILD", "GUILD_ONHOVER_LIST_LVL10", guildName, ownerName);}
     
     //-------------------------
     // Message PLOT / PARCELLE
@@ -1312,12 +1391,30 @@ public class MessageManager {
     
     public static Text HOME_TP_SUCCESS(Player player, String var1){return format(HOME_TP_SUCCESS, "TELEPORTATION","HOME_TP_SUCCESS", player, var1, "");}
     
+    public static Text WARP_ALREADY_EXIST(){return format(WARP_ALREADY_EXIST, "TELEPORTATION","WARP_ALREADY_EXIST");}
+    
+    public static Text WARP_SET_SUCCESS(Player player, String var1){return format(WARP_SET_SUCCESS, "TELEPORTATION","WARP_SET_SUCCESS",player,var1,"");}
+    
+    public static Text WARP_DEL_SUCCESS(Player player, String var1){return format(WARP_DEL_SUCCESS, "TELEPORTATION","WARP_DEL_SUCCESS",player,var1,"");}
+    
     //-------------------------
     // Message Commande PlayerInfo
     //-------------------------
 
-    public static Text ONHOVER_PI_NAME(String UUID){return format(ONHOVER_PI_NAME, "CMD_PLAYERINFO","ONHOVER_PI_NAME",UUID, "");}
-                
+    public static Text PI_ONHOVER_HOME(){return format(PI_ONHOVER_HOME, "CMD_PLAYERINFO","PI_ONHOVER_HOME");}
+
+    public static Text PI_ONHOVER_PLOT(){return format(PI_ONHOVER_PLOT, "CMD_PLAYERINFO","PI_ONHOVER_PLOT");}
+
+    public static Text PI_ONHOVER_GUILD(String grade){return format(PI_ONHOVER_GUILD, "CMD_PLAYERINFO","PI_ONHOVER_GUILD",grade, "");}
+    
+    public static Text PI_ONHOVER_NOGUILD(){return format(PI_ONHOVER_NOGUILD, "CMD_PLAYERINFO","PI_ONHOVER_NOGUILD");}
+    
+    public static Text PI_ADMIN_ONLINE_ONHOVER_NAME(String UUID){return format(PI_ADMIN_ONLINE_ONHOVER_NAME, "CMD_PLAYERINFO","PI_ADMIN_ONLINE_ONHOVER_NAME",UUID, "");}
+      
+    public static Text PI_ADMIN_OFFLINE_ONHOVER_NAME(String UUID){return format(PI_ADMIN_OFFLINE_ONHOVER_NAME, "CMD_PLAYERINFO","PI_ADMIN_OFFLINE_ONHOVER_NAME",UUID, "");}
+      
+    public static Text PI_ADMIN_ONHOVER_TP(){return format(PI_ADMIN_ONHOVER_TP, "CMD_PLAYERINFO","PI_ADMIN_ONHOVER_TP");}
+    
     //-------------------------
     // Message WORLD
     //-------------------------

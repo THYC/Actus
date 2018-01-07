@@ -38,12 +38,16 @@ public class ConfigBook {
         return Optional.of(book);
     }
     
-    public void saveBook(Book book) throws IOException, ObjectMappingException{
-        File file = new File("config/actus/book/" + book.title.toPlain() + ".conf");
-        ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
-        ConfigurationNode node = manager.createEmptyNode(ConfigurationOptions.defaults());
-        node.getNode("book").setValue(TOKEN_CONFIG, book);
-        manager.save(node);
+    public void saveBook(Book book){
+        try {
+            File file = new File("config/actus/book/" + book.title.toPlain() + ".conf");
+            ConfigurationLoader<?> manager = HoconConfigurationLoader.builder().setFile(file).build();
+            ConfigurationNode node = manager.createEmptyNode(ConfigurationOptions.defaults());
+            node.getNode("book").setValue(TOKEN_CONFIG, book);
+            manager.save(node);
+        } catch (ObjectMappingException | IOException ex) {
+            Logger.getLogger(ConfigBook.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public int getCountMessageBook(Player player){
@@ -132,22 +136,14 @@ public class ConfigBook {
     }
     
     public void SendBookMessage(Player player, Text message){
-        try {
-            List<Text> pages = new ArrayList<>();
-            pages.add(message);
-            Book bookMsg = new Book(MESSAGE(player.getName() + "SERVER" + "_" + sm.dateShortToString()),MESSAGE("MAIL"),pages);
-            configBook.saveBook(bookMsg);
-        } catch (IOException | ObjectMappingException ex) {
-            Logger.getLogger(ConfigBook.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        List<Text> pages = new ArrayList<>();
+        pages.add(message);
+        Book bookMsg = new Book(MESSAGE(player.getName() + "SERVER" + "_" + sm.dateShortToString()),MESSAGE("MAIL"),pages);
+        configBook.saveBook(bookMsg);
     }
     
     public void SendBookMessage(Player player, List<Text> pages){
-        try {
-            Book bookMsg = new Book(MESSAGE(player.getName() + "SERVER" + "_" + sm.dateShortToString()),MESSAGE("MAIL"),pages);
-            configBook.saveBook(bookMsg);
-        } catch (IOException | ObjectMappingException ex) {
-            Logger.getLogger(ConfigBook.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Book bookMsg = new Book(MESSAGE(player.getName() + "SERVER" + "_" + sm.dateShortToString()),MESSAGE("MAIL"),pages);
+        configBook.saveBook(bookMsg);
     }
 }

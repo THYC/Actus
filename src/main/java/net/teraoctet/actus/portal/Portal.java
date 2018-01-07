@@ -8,9 +8,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 public class Portal {
-
-    //private final Location border1 = null;
-    //private final Location border2 = null;
     private String portalname;
     private int level;
     private String world;
@@ -87,19 +84,19 @@ public class Portal {
     }
         
     public void insert() {
-	Data.queue("INSERT INTO portal VALUES ('" + portalname + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
+	Data.queue("INSERT INTO PORTAL VALUES ('" + portalname + "', " + level + ", '" + world + "', " + x1 + ", " + y1 + ", " + z1
         + ", " + x2 + ", " + y2 + ", " + z2 + ", '" + toworld + "', " + tox + ", " + toy + ", " + toz + ", '" + message + "', '" + cmd + "')");
     }
 	
     public void update() {
-	Data.queue("UPDATE portal SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 
+	Data.queue("UPDATE PORTAL SET portalname = '" + portalname + "', level = " + level + ", world = '" + world 
         + "', x1 = " + x1 + ", y1 = " + y1 + ", z1 = " + z1 + ", x2 = " + x2 + ", y2 = " + y2 + ", z2 = " + z2 
         + ", toworld = '" + toworld + "', tox = " + tox + ", toy = " + toy + ", toz = " + toz + ", message = '" + sm.quoteToSQL(message) 
         + "', cmd = '" + cmd + "' WHERE portalname = '" + portalname + "'");
     }
 	
     public void delete() {
-	Data.queue("DELETE FROM portal WHERE portalname = '" + portalname + "'");
+	Data.queue("DELETE FROM PORTAL WHERE portalname = '" + portalname + "'");
     }
        
     public void setName(String portalname){this.portalname = portalname;}

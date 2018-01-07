@@ -22,7 +22,7 @@ public class CommandGuildDeposit implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.guild.deposit")) {
+        if(src instanceof Player && src.hasPermission("actus.player.guild.deposit")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             
             if(GuildManager.hasAnyGuild(aplayer)) {

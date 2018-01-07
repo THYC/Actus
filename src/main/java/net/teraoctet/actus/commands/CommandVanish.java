@@ -31,10 +31,10 @@ public class CommandVanish implements CommandExecutor {
 
             if (player.get(Keys.VANISH).isPresent() && !player.get(Keys.VANISH).get()){
                 player.offer(Keys.VANISH, true);
-                player.sendMessage(MESSAGE("&eTu es maintenant invisible ..."));
+                player.sendMessage(MESSAGE("&eVanish actif ..."));
             }else if(player.get(Keys.VANISH).isPresent() && player.get(Keys.VANISH).get()){
                 player.offer(Keys.VANISH, false);
-                player.sendMessage(MESSAGE("&eTu es de nouveau visible ..."));
+                player.sendMessage(MESSAGE("&eVanish inactif ..."));
             }
             return CommandResult.success();
         } 

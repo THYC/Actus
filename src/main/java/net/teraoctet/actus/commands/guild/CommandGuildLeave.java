@@ -2,6 +2,7 @@ package net.teraoctet.actus.commands.guild;
 
 import static net.teraoctet.actus.Actus.gdm;
 import net.teraoctet.actus.guild.Guild;
+import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
@@ -23,13 +24,13 @@ public class CommandGuildLeave implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.guild.setowner")) {
+        if(src instanceof Player && src.hasPermission("actus.player.guild.setowner")) {
             APlayer aplayer = getAPlayer(src.getIdentifier());
             int id_guild = aplayer.getID_guild();
             Guild gguild = getGuild(id_guild);
             
-            if(gdm.hasAnyGuild(aplayer)) {
-                if(gdm.isOwner(aplayer)) {
+            if(GuildManager.hasAnyGuild(aplayer)) {
+                if(GuildManager.isOwner(aplayer)) {
                     if(gdm.getGuildPlayers(id_guild).size() > 1) {
                         src.sendMessage(OWNER_CANNOT_LEAVE());
                     } else {

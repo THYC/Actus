@@ -3,6 +3,7 @@ package net.teraoctet.actus.player;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.addUUID;
@@ -12,6 +13,7 @@ import net.teraoctet.actus.utils.Home;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import static net.teraoctet.actus.utils.Data.queue;
+import net.teraoctet.actus.utils.ServerManager;
 
 public class APlayer{
 	
@@ -64,13 +66,14 @@ public class APlayer{
     }
     
     public void insert() {
-        queue("INSERT INTO aplayers VALUES ('" + uuid + "', " + level + ", '" + name + "', '" + godmode + "', " + flymode + ", '" + mails + "', " + money + ", '" + lastposition + "', '" + lastdeath + "', " + onlinetime + ", " + lastonline + ", '" + jail + "', " + timejail + ", " + id_guild + ", " + guild_rank + ")");
+        queue("INSERT INTO APLAYERS VALUES ('" + uuid + "', " + level + ", '" + name + "', '" + godmode + "', " + flymode + ", '" + mails + "', " + money + ", '" + lastposition + "', '" + lastdeath + "', " + onlinetime + ", " + lastonline + ", '" + jail + "', " + timejail + ", " + id_guild + ", " + guild_rank + ")");
         addAPlayer(uuid, this);
         addUUID(name, uuid);
+        plugin.getLogger().info(queue.get(0));
     }
 
     public void update() {
-        queue("UPDATE aplayers SET name = '" + name + "', level = " + level + ", godmode = '" + godmode + "', flymode = " + flymode + ", mails = '" + mails + "', money = " + money + ", lastposition = '" + lastposition + "', lastdeath = '" + lastdeath + "', onlinetime = " + onlinetime + ", lastonline = " + lastonline + ", jail = '" + jail + "', timejail = " + timejail + ", id_guild = " + id_guild + ", guild_rank = " + guild_rank + " WHERE uuid = '" + uuid + "'");
+        queue("UPDATE APLAYERS SET name = '" + name + "', level = " + level + ", godmode = '" + godmode + "', flymode = " + flymode + ", mails = '" + mails + "', money = " + money + ", lastposition = '" + lastposition + "', lastdeath = '" + lastdeath + "', onlinetime = " + onlinetime + ", lastonline = " + lastonline + ", jail = '" + jail + "', timejail = " + timejail + ", id_guild = " + id_guild + ", guild_rank = " + guild_rank + " WHERE uuid = '" + uuid + "'");
         removeAPlayer(uuid);
         removeUUID(name);
         addAPlayer(uuid, this);
@@ -78,7 +81,7 @@ public class APlayer{
     }
 
     public void delete() {
-        queue("DELETE FROM aplayers WHERE uuid = '" + uuid + "'");
+        queue("DELETE FROM APLAYERS WHERE uuid = '" + uuid + "'");
         removeAPlayer(uuid);
         removeUUID(name);
     }
@@ -152,7 +155,7 @@ public class APlayer{
 
     public void sendMessage(Text text)
     {
-        if(sm.isOnline(name)){
+        if(ServerManager.isOnline(name)){
             Optional<Player> player = sm.getPlayer(name);
             if(player.isPresent()){player.get().sendMessage(text);}
         }
