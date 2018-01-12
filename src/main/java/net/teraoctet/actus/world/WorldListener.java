@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.configInv;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.inventory.AInventory;
 import net.teraoctet.actus.player.APlayer;
@@ -28,6 +29,7 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.explosive.PrimedTNT;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Creeper;
+import org.spongepowered.api.entity.living.monster.Enderman;
 import org.spongepowered.api.entity.living.monster.Monster;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.vehicle.minecart.TNTMinecart;
@@ -47,25 +49,26 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.explosion.Explosion;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
+import org.spongepowered.api.event.filter.cause.Last;
 
 public class WorldListener {
     
     private final List<ChangeBlockEvent.Break> firedEvents = Lists.newArrayList();
     private final List<Vector3i> locDrop = Lists.newArrayList();
-    
+            
     @Listener
-    public void onEntitySpawn(SpawnEntityEvent event, @First org.spongepowered.api.event.cause.entity.spawn.SpawnType entitySpawnType){
-	if(!event.getEntities().isEmpty() && !(entitySpawnType.equals(SpawnTypes.PLACEMENT)) && !(entitySpawnType.equals(SpawnTypes.DROPPED_ITEM)) && !(entitySpawnType.equals(SpawnTypes.CHUNK_LOAD))) {
+    public void onEntitySpawn(SpawnEntityEvent event){
+	 if(!event.getEntities().isEmpty() ) {
             List<Entity> entities = event.getEntities();
         
             for (Entity entity : entities) {
                 AWorld world = WorldManager.getWorld(entity.getWorld().getName());
-                Optional<Plot> plot = ptm.getPlot(entity.getLocation());
-
+                
                 if(world == null) return;
-                if(!world.getAnimal() && entity instanceof Animal || entity.getType().equals(EntityTypes.BAT)) { event.setCancelled(true);return;}
-                if(!world.getMonster() && entity instanceof Monster) {event.setCancelled(true);return;}
-
+                if(!world.getAnimal() && (entity instanceof Animal || entity.getType().equals(EntityTypes.BAT))) { event.setCancelled(true);return;}
+                if(!world.getMonster() && entity instanceof Monster) {event.setCancelled(true);return;}              
+                
+                Optional<Plot> plot = ptm.getPlot(entity.getLocation());
                 if(plot.isPresent()){
                     if(plot.get().getNoMob() && entity instanceof Monster) {event.setCancelled(true);return;}
                     if(plot.get().getNoAnimal() && entity instanceof Animal) {event.setCancelled(true);return;}
@@ -74,6 +77,31 @@ public class WorldListener {
             }
         }
     }  
+        
+    /*@Listener
+    public void onEntitySpawn(SpawnEntityEvent event, @First org.spongepowered.api.event.cause.entity.spawn.SpawnType entitySpawnType){
+	plugin.getLogger().info("1");
+        if(!event.getEntities().isEmpty() && !(entitySpawnType.equals(SpawnTypes.SPAWN_EGG)) && !(entitySpawnType.equals(SpawnTypes.DROPPED_ITEM))) {
+            List<Entity> entities = event.getEntities();
+        
+            for (Entity entity : entities) {
+                AWorld world = WorldManager.getWorld(entity.getWorld().getName());
+                
+                if(world == null) return;
+                if(!world.getAnimal() && (entity instanceof Animal || entity.getType().equals(EntityTypes.BAT))) { event.setCancelled(true);return;}
+                if(!world.getMonster() && entity instanceof Monster) {event.setCancelled(true);return;}
+                plugin.getLogger().info("2");
+                
+                Optional<Plot> plot = ptm.getPlot(entity.getLocation());
+                if(plot.isPresent()){
+                    plugin.getLogger().info("3");
+                    if(plot.get().getNoMob() && entity instanceof Monster) {event.setCancelled(true);return;}
+                    if(plot.get().getNoAnimal() && entity instanceof Animal) {event.setCancelled(true);return;}
+                }
+
+            }
+        }
+    } */ 
                 
     @Listener
     public void onExplode(ExplosionEvent.Detonate event){ 
@@ -159,7 +187,7 @@ public class WorldListener {
         }
     }
     
-    /*@Listener
+    @Listener
     public void treeBreak(ChangeBlockEvent.Break breakEvent, @First Player player) throws Exception {
         if (!firedEvents.contains(breakEvent) && 
             !breakEvent.isCancelled() && breakEvent.getTransactions().size() == 1 &&
@@ -197,7 +225,7 @@ public class WorldListener {
                 firedEvents.clear();
             }
         }
-    }*/
+    }
     
     @Listener
     public void blockChange(ChangeBlockEvent.Modify event){
@@ -215,6 +243,11 @@ public class WorldListener {
 
 
         }
+    }
+    
+    @Listener
+    public void onBlockBreak(ChangeBlockEvent event, @Root Enderman enderman) {
+        event.setCancelled(true);
     }
     
     private double getPower(BlockType powerBlock){

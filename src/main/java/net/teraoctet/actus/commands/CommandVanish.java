@@ -29,11 +29,17 @@ public class CommandVanish implements CommandExecutor {
                 }
             }
 
-            if (player.get(Keys.VANISH).isPresent() && !player.get(Keys.VANISH).get()){
+            if (player.get(Keys.VANISH).isPresent() && !player.get(Keys.VANISH).get()){            
+                player.offer(Keys.INVISIBLE, true);
                 player.offer(Keys.VANISH, true);
+                player.offer(Keys.VANISH_IGNORES_COLLISION, true);
+                player.offer(Keys.VANISH_PREVENTS_TARGETING, true);
                 player.sendMessage(MESSAGE("&eVanish actif ..."));
             }else if(player.get(Keys.VANISH).isPresent() && player.get(Keys.VANISH).get()){
+                player.offer(Keys.INVISIBLE, false);
                 player.offer(Keys.VANISH, false);
+                player.offer(Keys.VANISH_IGNORES_COLLISION, false);
+                player.offer(Keys.VANISH_PREVENTS_TARGETING, false);
                 player.sendMessage(MESSAGE("&eVanish inactif ..."));
             }
             return CommandResult.success();

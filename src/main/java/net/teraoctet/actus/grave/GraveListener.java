@@ -32,6 +32,7 @@ import org.spongepowered.api.block.BlockTypes;
 import static org.spongepowered.api.block.BlockTypes.*;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
@@ -55,7 +56,6 @@ import static org.spongepowered.api.item.inventory.InventoryArchetypes.CHEST;
 import static org.spongepowered.api.item.inventory.InventoryArchetypes.DOUBLE_CHEST;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
-import org.spongepowered.api.item.inventory.type.TileEntityInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
@@ -101,19 +101,18 @@ public class GraveListener {
             BlockState chestBlock = BlockState.builder().blockType(BlockTypes.CHEST).build();
             locgrave1.setBlock(chestBlock);
             locgrave2.setBlock(chestBlock);
-            TileEntity chest = locgrave1.getTileEntity().get();
-            TileEntity chest2 = locgrave2.getTileEntity().get();
-            chest.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
-            chest2.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
             
+            TileEntity tileEntity1 = locgrave1.getTileEntity().get();
+            TileEntity tileEntity2 = locgrave2.getTileEntity().get();
+            tileEntity1.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
+            tileEntity2.offer(Keys.DISPLAY_NAME, MESSAGE("&b[+]").concat(GRAVE(player)));
             
-            final TileEntityInventory inv = (TileEntityInventory) chest;
-            final TileEntityInventory inv2 = (TileEntityInventory) chest2;
-
+            Chest chest = (Chest)tileEntity1;
+            Optional<Inventory> inv = chest.getDoubleChestInventory();
+            
             int i = 1;
-            Inventory inventory = inv;
+            Inventory inventory = inv.get();
             for(Inventory slot : player.getInventory().slots()){
-                if(i > 27) inventory = inv2;
                 if (slot.peek().isPresent()) {                    
                     if (inventory.offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) inventory.offer(slot.peek().get());
                 }

@@ -265,19 +265,24 @@ public class PlotManager {
      * retourne True si une parcelle est présente sur la zone séléctionné. 
      * @param l1 Location du point 1
      * @param l2 Location du point 2
+     * @param ownerUUID string UUID du player
      * @return Boolean
      */
-    public boolean plotNotAllow(Location l1, Location l2){                
+    public boolean plotNotAllow(Location l1, Location l2, String ownerUUID){                
         Location <World> w = l1;
         World world = w.getExtent();
         Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
                 
         for(Plot plot : PLOTS){
-            if(!plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return true;
+            if(!plot.getworldName().equalsIgnoreCase(newPlot.getworldName()))return false;
             if(foundPlot(plot.getLocX1Y1Z1(),newPlot) || foundPlot(plot.getLocX2Y2Z2(),newPlot) ||
                 foundPlot(plot.getLocX1Y1Z2(),newPlot) || foundPlot(plot.getLocX2Y2Z1(),newPlot) ||
                 foundPlot(plot.getLocX1Y2Z2(),newPlot) || foundPlot(plot.getLocX2Y1Z2(),newPlot) ||
-                foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot))return true;
+                foundPlot(plot.getLocX2Y1Z1(),newPlot) || foundPlot(plot.getLocX1Y2Z1(),newPlot)){
+                if(!plot.getUuidOwner().contains(ownerUUID)){
+                    return true;
+                }
+            }
         }
         return false;
     }

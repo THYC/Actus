@@ -6,9 +6,13 @@ import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.ism;
+import static net.teraoctet.actus.Actus.plugin;
+import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.commands.shop.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import net.teraoctet.actus.plot.Plot;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
@@ -34,7 +38,12 @@ import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.data.type.HandTypes;
 import static org.spongepowered.api.entity.EntityTypes.ARMOR_STAND;
 import static org.spongepowered.api.entity.EntityTypes.ITEM_FRAME;
+import org.spongepowered.api.entity.hanging.Hanging;
+import org.spongepowered.api.entity.living.ArmorStand;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.entity.HarvestEntityEvent;
+import org.spongepowered.api.event.filter.cause.Last;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.ItemTypes;
 
 public class ShopListener {
@@ -132,16 +141,15 @@ public class ShopListener {
             }
         } 
     }
-    
+               
     @Listener
-    public void onInteractShopLeft(InteractEntityEvent.Primary event, @First Player player) throws IOException{     
+    public void onInteractShopLeft(InteractEntityEvent.Primary event, @Last Player player) throws IOException{     
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Entity entity = event.getTargetEntity();
         UUID uuid = entity.getUniqueId();
-        
-        if(entity.getType().getName().contains("itemframe") || entity.getType().getName().contains("armorstand")){
+        if(entity instanceof Hanging || entity instanceof ArmorStand){
             if(ism.hasShop(uuid)){
-                if(aplayer.getLevel() == 10){ 
+                if(aplayer.getLevel() == LEVEL_ADMIN()){ 
                     entity.remove();
                     ism.delItemShop(uuid);
                     player.sendMessage(MESSAGE("&e-------------------------"));
@@ -150,9 +158,25 @@ public class ShopListener {
                 }else{
                     event.setCancelled(true);
                 }
+            }else{
+                Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
+                if (plot.isPresent()) {
+                    if(!plot.get().getUuidOwner().contains(player.getIdentifier()) && aplayer.getLevel() != LEVEL_ADMIN())event.setCancelled(true);
+                }
             }
         } 
     }
+                
+    /*@Listener
+    public void onBreakFrame(HarvestEntityEvent event){
+        Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
+        if (plot.isPresent()) {
+            Player player = (Player) event.getSource();
+            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+            //if(!plot.get().getUuidOwner().contains(player.getIdentifier()) || aplayer.getLevel() != LEVEL_ADMIN())event.setCancelled(true);
+            plugin.getLogger().info("--" + player.getName());
+        }      
+    }*/
     
     @Listener
     public void onInteractSignBank(InteractBlockEvent event, @First Player player){ 

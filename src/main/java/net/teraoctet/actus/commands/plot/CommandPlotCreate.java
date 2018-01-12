@@ -58,7 +58,7 @@ public class CommandPlotCreate implements CommandExecutor {
                 }
                 Location[] c = {plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get()};
                 int level = 1;
-                if(plotManager.plotNotAllow(plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
+                if(plotManager.plotNotAllow(plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get(), player.getIdentifier())){
                     if(aplayer.getLevel() != LEVEL_ADMIN() && !plotManager.hasOwnerPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();

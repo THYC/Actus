@@ -52,7 +52,7 @@ public class CommandPlotClaim implements CommandExecutor {
                 Location[] c = {loc1, loc2};
                 int level = 1;
 
-                if(ptm.plotNotAllow(loc1, loc2)){
+                if(ptm.plotNotAllow(loc1, loc2, player.getIdentifier())){
                     player.sendMessage(ALREADY_OWNED_PLOT());
                     return CommandResult.empty();
                 }

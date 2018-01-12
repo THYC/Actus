@@ -22,6 +22,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.tileentity.Sign;
 import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -193,34 +194,42 @@ public class GraveManager {
         Optional<Graveyard> graveyard = configGraveyard.load(configGraveyard.getRandomID());
         if(graveyard.isPresent()){
             TileEntity cave = graveyard.get().locChest1.getTileEntity().get();
-            final TileEntityInventory invCave = (TileEntityInventory) cave;
+            final TileEntityInventory tileInvCave = (TileEntityInventory) cave;
+            Chest chestCave = (Chest)tileInvCave;
+            Optional<Inventory> invCave = chestCave.getDoubleChestInventory();
             
-            Optional<TileEntity> chest = grave.getLocationBlock1().get().getTileEntity();
-            if(chest.isPresent()){
-                final TileEntityInventory invGrave = (TileEntityInventory) chest.get();
+            //grave
+            Optional<TileEntity> tileEntity = grave.getLocationBlock1().get().getTileEntity();
+            if(tileEntity.isPresent()) {
+                Chest chestGrave = (Chest)tileEntity.get();
+                Optional<Inventory> invGrave = chestGrave.getDoubleChestInventory();
+
+                if(invGrave.isPresent() && invCave.isPresent()){
+                    invGrave.get().slots().forEach((Inventory slot) -> {
+                        if (slot.peek().isPresent()) {                    
+                            if (invCave.get().offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) invCave.get().offer(slot.peek().get());
+                        }
+                    });
             
-                invGrave.slots().forEach((Inventory slot) -> {
-                    if (slot.peek().isPresent()) {                    
-                        if (invCave.offer(slot.peek().get()).getType() != InventoryTransactionResult.Type.SUCCESS) invCave.offer(slot.peek().get());
-                    }
-                });
-            
-                invGrave.clear();
+                    invGrave.get().clear();
                 
-                Optional<TileEntity> signBlock = graveyard.get().signGrave.getTileEntity();
-                if(signBlock.isPresent()){
-                    TileEntity tileSign = signBlock.get();
-                    Sign sign=(Sign)tileSign;
-                    Optional<SignData> opSign = sign.getOrCreate(SignData.class);
-                    SignData signData = opSign.get();
-                    signData.setElement(1, MESSAGE("&4" + grave.getName()));
-                    sign.offer(signData);
+                    Optional<TileEntity> signBlock = graveyard.get().signGrave.getTileEntity();
+                    if(signBlock.isPresent()){
+                        TileEntity tileSign = signBlock.get();
+                        Sign sign=(Sign)tileSign;
+                        Optional<SignData> opSign = sign.getOrCreate(SignData.class);
+                        SignData signData = opSign.get();
+                        signData.setElement(0, MESSAGE("&4Ci-git"));
+                        signData.setElement(1, MESSAGE("&l&4" + grave.getName()));
+                        signData.setElement(2, MESSAGE("&4" + sm.longToDateString2(grave.getGraveTime())));
+                        sign.offer(signData);
+                    }
                 }
-            }
-            try {
-                delGrave(grave.getIDgrave());
-            } catch (IOException ex) {
-                Logger.getLogger(GraveManager.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    delGrave(grave.getIDgrave());
+                } catch (IOException ex) {
+                    Logger.getLogger(GraveManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
          

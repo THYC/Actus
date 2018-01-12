@@ -27,6 +27,8 @@ import static net.teraoctet.actus.utils.Data.commit;
 import static net.teraoctet.actus.player.PlayerManager.getUUID;
 import static net.teraoctet.actus.player.PlayerManager.removeAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.removeUUID;
+import static net.teraoctet.actus.utils.Config.AUTO_LOCKCHEST;
+import static net.teraoctet.actus.utils.Config.ENABLE_LOCKCHEST;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.CHEST_LOCK;
 import static net.teraoctet.actus.utils.MessageManager.CLICK_TO_CONFIRM;
@@ -80,6 +82,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
@@ -231,27 +234,33 @@ public class PlayerListener {
     
     @Listener
     public void onInteractChest(InteractInventoryEvent.Open event, @First Player player){
-        APlayer aplayer = getAPlayer(player.getIdentifier());
-        
-        if(!event.getTargetInventory().getName().get().contains(player.getName()) && !event.getTargetInventory().getName().get().contains("[+]") && aplayer.getLevel() != LEVEL_ADMIN()){
-            player.sendMessage(CHEST_LOCK());
-            event.setCancelled(true);     
+        if(!event.getTargetInventory().getArchetype().getClass().equals(Chest.class))return;
+        if(ENABLE_LOCKCHEST()){
+            APlayer aplayer = getAPlayer(player.getIdentifier());
+            if(!event.getTargetInventory().getName().get().contains(player.getName()) && 
+                    !event.getTargetInventory().getName().get().contains("[+]") && 
+                    !event.getTargetInventory().getName().get().contains("Chest") &&
+                    aplayer.getLevel() != LEVEL_ADMIN()){
+                player.sendMessage(CHEST_LOCK());
+                event.setCancelled(true);     
+            }
         }
-    } 
+    }
     
     @Listener
-    public void onBreakChest(ChangeBlockEvent.Break event, @First Player player) {
-        Transaction<BlockSnapshot> block = event.getTransactions().get(0);
-        Optional<Location<World>> optLoc = block.getOriginal().getLocation();
-        Location<World> loc = optLoc.get();
-        if(loc.getTileEntity().isPresent()){
-            TileEntity chest = loc.getTileEntity().get();
-            
-            if(chest.get(Keys.DISPLAY_NAME).isPresent()){
-                String name = chest.get(Keys.DISPLAY_NAME).get().toPlain();         
-                if(!name.contains(player.getName()) && !name.contains("[+]")){
-                    player.sendMessage(CHEST_LOCK());
-                    event.setCancelled(true);  
+    public void onBreakChest(final ChangeBlockEvent.Break.Pre event, @Root Player player) {
+        if(!event.getLocations().get(0).getBlock().getType().equals(CHEST))return;
+        if(ENABLE_LOCKCHEST()){   
+            if(event.getLocations().get(0).getTileEntity().isPresent()){
+                Location<World> loc = event.getLocations().get(0);
+                TileEntity chest = loc.getTileEntity().get();
+
+                if(chest.get(Keys.DISPLAY_NAME).isPresent()){
+                    String name = chest.get(Keys.DISPLAY_NAME).get().toPlain();         
+                    if(!name.contains(player.getName()) && !name.contains("[+]")){
+                        player.sendMessage(CHEST_LOCK());
+                        event.setCancelled(true);  
+                    }
                 }
             }
         }
@@ -548,7 +557,7 @@ public class PlayerListener {
     }
                     
     @Listener
-    public void onPlaceChest(ChangeBlockEvent.Place event, @First Player player){
+    public void onPlaceChest(ChangeBlockEvent.Place event, @First Player player){      
         Transaction<BlockSnapshot> block = event.getTransactions().get(0);
         
         Optional<Location<World>> optLoc = block.getOriginal().getLocation();
@@ -570,10 +579,12 @@ public class PlayerListener {
                     tileChest.offer(Keys.DISPLAY_NAME, chest.get().get(Keys.DISPLAY_NAME).get());
                 }
             }else{
-                String chestName = "&b" + player.getName();
-                Optional<TileEntity> chestBlock = loc.getTileEntity();
-                TileEntity tileChest = chestBlock.get();
-                tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
+                if(AUTO_LOCKCHEST()){
+                    String chestName = "&b" + player.getName();
+                    Optional<TileEntity> chestBlock = loc.getTileEntity();
+                    TileEntity tileChest = chestBlock.get();
+                    tileChest.offer(Keys.DISPLAY_NAME, MESSAGE(chestName));
+                }
             }
             
         }

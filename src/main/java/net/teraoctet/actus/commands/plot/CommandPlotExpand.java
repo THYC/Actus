@@ -1,7 +1,6 @@
 package net.teraoctet.actus.commands.plot;
 
 import com.flowpowered.math.vector.Vector3d;
-import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
@@ -272,7 +271,7 @@ public class CommandPlotExpand implements CommandExecutor {
     }
     
     private boolean IsAllowed(Location<World> loc, APlayer aplayer){
-        if(ptm.plotNotAllow(loc, loc)){
+        if(ptm.plotNotAllow(loc, loc, aplayer.getUUID())){
             if(aplayer.getLevel() != LEVEL_ADMIN()){
                 return false;
             }

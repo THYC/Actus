@@ -24,14 +24,9 @@ public class CommandTemplate implements CommandExecutor {
             //CODER LA COMMANDE ICI
             
             return CommandResult.success();
-        } 
-        
-        else if (src instanceof ConsoleSource) {
+        } else if (src instanceof ConsoleSource) {
             src.sendMessage(NO_CONSOLE());
-        }
-        
-        //si on arrive jusqu'ici c'est que la source n'a pas les permissions pour cette commande ou que quelque chose s'est mal passé
-        else {
+        } else {
             src.sendMessage(NO_PERMISSIONS());
         }
                 

@@ -676,7 +676,7 @@ public class CommandManager {
         
         public CommandSpec CommandShopPurchase = CommandSpec.builder()
                 .description(MESSAGE("/shoppurchase <uuid>"))
-                .permission("actus.admin.shop")
+                .permission("actus.player.shop")
                 .arguments(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("uuid"))))
                 .executor(new CommandShopPurchase())
@@ -684,7 +684,7 @@ public class CommandManager {
         
         public CommandSpec CommandShopSell = CommandSpec.builder()
                 .description(MESSAGE("/shopsell <uuid>"))
-                .permission("actus.admin.shop")
+                .permission("actus.player.shop")
                 .arguments(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("uuid"))))
                 .executor(new CommandShopSell())
@@ -745,7 +745,7 @@ public class CommandManager {
                 .extendedDescription(MESSAGE("&9coin = &esomme a verser \n&9player = &enom du joueur"))
                 .permission("actus.admin.bank.verse")
                 .arguments(
-                    GenericArguments.onlyOne(GenericArguments.doubleNum(MESSAGE("coin"))),
+                    GenericArguments.onlyOne(GenericArguments.integer(MESSAGE("coin"))),
                     GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))))
                 .executor(new CommandBankVerse())
                 .build();
@@ -791,6 +791,11 @@ public class CommandManager {
                 .child(CommandChestAdd, "add", "lock")
                 .child(CommandChestRemove, "remove", "sup", "del")
                 .child(CommandChestInfo, "info", "inf")
+                .arguments(
+                    GenericArguments.flags()
+                        .valueFlag(GenericArguments.bool(MESSAGE("enable")),"e")
+                        .valueFlag(GenericArguments.bool(MESSAGE("auto")),"a")
+                        .buildWith(GenericArguments.none()))
                 .executor(new CommandChest())
                 .build();
         

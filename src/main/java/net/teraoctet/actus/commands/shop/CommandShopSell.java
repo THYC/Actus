@@ -26,7 +26,7 @@ public class CommandShopSell implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.admin.shop")) {
+        if(src instanceof Player && src.hasPermission("actus.player.shop")) {
             Player player = (Player) src;
             if(!action.containsKey(player)){
                 player.sendMessages(MESSAGE("&eVous n'avez pas de transaction en cours"));

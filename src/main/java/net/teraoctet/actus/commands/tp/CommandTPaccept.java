@@ -2,6 +2,7 @@ package net.teraoctet.actus.commands.tp;
 
 import static net.teraoctet.actus.Actus.ATPA;
 import static net.teraoctet.actus.Actus.sm;
+import net.teraoctet.actus.utils.Config;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
@@ -43,7 +44,9 @@ public class CommandTPaccept implements CommandExecutor {
                 player.sendMessage(MESSAGE("&eAucune demande en cours !"));
                 return CommandResult.success();
             }
+            
             sm.teleport(fromPlayer, toPlayer);
+            src.sendMessage(MESSAGE("&eVous serez TP dans environ " + Config.COOLDOWN_TO_TP()));
             ATPA.remove(index);
             return CommandResult.success();
         } 

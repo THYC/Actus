@@ -17,6 +17,7 @@ import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.ERROR;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.world.Location;
@@ -38,7 +39,14 @@ public class CommandPlotTP implements CommandExecutor {
                 if (!plot.isPresent()){
                     player.sendMessage(NO_PLOT());
                     return CommandResult.empty();
-                } else if (!plot.get().getNoTeleport() || aplayer.getLevel() == LEVEL_ADMIN()){
+                } 
+                
+                if (!plot.get().getUuidAllowed().contains(player.getIdentifier())){
+                    player.sendMessage(PLOT_PROTECTED());
+                    return CommandResult.empty();
+                }
+                
+                if (!plot.get().getNoTeleport() || aplayer.getLevel() == LEVEL_ADMIN()){
                     Optional<Location> spawn = plot.get().getSpawnPlot();
                     if(spawn.isPresent()){
                         Location lastLocation = player.getLocation();

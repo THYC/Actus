@@ -47,6 +47,9 @@ public class Config {
                 config.getNode("server", "LEVEL_ADMIN").setValue(10);
                 config.getNode("server", "LEVEL_DEFAULT").setValue(0);
                 config.getNode("server", "AUTOFOREST").setValue(false);
+                config.getNode("server", "ENDERMAN_DESTRUCT").setValue(false);
+                config.getNode("server", "AUTOLOCKCHEST").setValue(false);
+                config.getNode("server", "ENABLE_LOCKCHEST").setValue(true);
                 config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").setValue(10);
                 config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue(true);
                 config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue(false);
@@ -86,6 +89,9 @@ public class Config {
     public static int LEVEL_ADMIN() { return config.getNode("server", "LEVEL_ADMIN").getInt(); }
     public static int LEVEL_DEFAULT() { return config.getNode("server", "LEVEL_DEFAULT").getInt(); }
     public static boolean AUTOFOREST() { return config.getNode("server", "AUTOFOREST").getBoolean(); }
+    public static boolean ENDERMAN_DESTRUCT() { return config.getNode("server", "ENDERMAN_DESTRUCT").getBoolean(); }
+    public static boolean AUTO_LOCKCHEST() { return config.getNode("server", "AUTO_LOCKCHEST").getBoolean(); }
+    public static boolean ENABLE_LOCKCHEST() { return config.getNode("server", "ENABLE_LOCKCHEST").getBoolean(); }
     public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(); }
     public static boolean ENABLE_SKULL_GRAVE() { return config.getNode("grave", "ENABLE_SKULL_GRAVE").getBoolean(); }
     public static boolean ENABLE_SIGN_GRAVE() { return config.getNode("grave", "ENABLE_SIGN_GRAVE").getBoolean(); }
@@ -112,6 +118,10 @@ public class Config {
         }
     }
     
+    /**
+     * Active/Desactive l'affichage de la transaction des Shops via un bookview
+     * @param val 
+     */
     public void setEnableShopBookview(boolean val) {
         try {
             config = MANAGER.load();
@@ -122,10 +132,42 @@ public class Config {
         }
     }
     
+    /**
+     * Active/Desactive la replantation automatique des racines d'arbres
+     * @param val 
+     */
     public void setEnableAutoForest(boolean val) {
         try {
             config = MANAGER.load();
             config.getNode("server","AUTOFOREST").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Active/Desactive l'autoLock des coffres, si true, le coffre sera lock dès sa pose
+     * @param val 
+     */
+    public void setEnableAutoLockChest(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("server","AUTO_LOCKCHEST").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Active/Desactive le module de LockChest (securite coffre)
+     * @param val 
+     */
+    public void setEnableLockChest(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("server","ENABLE_LOCKCHEST").setValue(val);
             MANAGER.save(config);
         } catch (IOException ex) {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);

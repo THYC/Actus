@@ -394,7 +394,7 @@ public class PlotListener {
 
                     int level = 1;
 
-                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
+                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get(), player.getIdentifier())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return;
                     }
@@ -409,7 +409,7 @@ public class PlotListener {
 
                     int level = 1;
 
-                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
+                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get(), player.getIdentifier())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return;
                     }
@@ -424,7 +424,7 @@ public class PlotListener {
 
                     int level = 1;
 
-                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get())){
+                    if(ptm.plotNotAllow(plotSelect.getMinPosLoc().get(), plotSelect.getMaxPosLoc().get(), player.getIdentifier())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return;
                     }

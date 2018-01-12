@@ -30,6 +30,7 @@ public class Restore{
                 .execute(() -> {
                     try { 
                         if(!bs.get(i).getOriginal().getState().getType().equals(TNT)){
+                            plugin.getLogger().info(bs.get(i).getOriginal().toString());
                             bs.get(i).getOriginal().restore(true, BlockChangeFlag.ALL);
                         }
                     } catch(Exception e) {}

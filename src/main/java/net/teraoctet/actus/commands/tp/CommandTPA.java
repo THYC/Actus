@@ -35,7 +35,7 @@ public class CommandTPA implements CommandExecutor {
                 final int index = ATPA.indexOf(tpa);
 
                 player.sendMessage(MESSAGE("&eVeuillez patienter, demande envoy\351e ..."));
-                target.sendMessage(MESSAGE("&eAcceptez vous que %player% se t\351l\351porte sur vous ?", target));
+                target.sendMessage(MESSAGE("&eAcceptez vous que %name% se t\351l\351porte sur vous ?", target));
                 target.sendMessage(MESSAGE("&eVous disposez de 30 secondes pour accepter cette demande en tapant : /tpaccept"));
                 
                 TaskTP tp = new TaskTP(player,index);
