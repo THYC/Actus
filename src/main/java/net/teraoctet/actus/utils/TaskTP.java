@@ -21,20 +21,20 @@ public class TaskTP {
     }
     
     public void run(){
-        this.taskTP = Sponge.getScheduler().createTaskBuilder().execute(() -> {
-            ATPA.remove(index);
-            player.sendMessage(MESSAGE("&eTemps d'attente dépass\351 ..."));
-            this.result = true;
-             
-        }).delay(30, TimeUnit.SECONDS).submit(plugin);
+        this.taskTP = Sponge.getScheduler().createTaskBuilder()
+                .delay(30, TimeUnit.SECONDS)
+                .execute(() -> {
+                    ATPA.remove(index);
+                    player.sendMessage(MESSAGE("&eTemps d'attente dépass\351 ..."));
+                    this.result = true;
+        }).submit(plugin);
     }
         
     public boolean getResult(){
         return this.result;
     }
 
-    public void stopTP()
-    {
+    public void stopTP(){
         taskTP.cancel();
     }
 }

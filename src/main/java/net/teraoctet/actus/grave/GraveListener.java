@@ -247,6 +247,7 @@ public class GraveListener {
         if(b.getArchetype().equals(CHEST) || b.getArchetype().equals(DOUBLE_CHEST)){
             String displayName = b.getName().get();
             if(displayName.contains("[+]")){
+                if(b.parent().totalItems()==0)player.sendMessage(MESSAGE("TOMBE VIDE"));
                 Optional<Location<World>> loc = Optional.empty();
                 BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(10).build(); 
                 while (playerBlockRay.hasNext()){ 

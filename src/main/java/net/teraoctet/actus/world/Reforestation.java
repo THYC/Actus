@@ -12,6 +12,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.Location;
 
 public class Reforestation {
@@ -26,24 +27,18 @@ public class Reforestation {
     public void run(){
         Scheduler scheduler = getGame().getScheduler();
         Task.Builder taskBuilder = scheduler.createTaskBuilder();
-        
         task = taskBuilder.execute(()  -> {
                     Optional<ItemStackSnapshot> item = drop.get(Keys.REPRESENTED_ITEM); 
-                    //plugin.getLogger().info(item.get().toString());
                     BlockState blockState = item.get().getType().getBlock().get().getDefaultState();                
                     TreeType treeType = item.get().get(Keys.TREE_TYPE).get();
                     blockState = blockState.with(Keys.TREE_TYPE,treeType).get();  
-                    //plugin.getLogger().info(blockState.getName());
                     Location loc = getLocSapling(drop.getLocation());
-                    if (loc != null){
-                        drop.remove();
-                        //loc.setBlockType(blockState.getType());
-                        
-                        boolean setBlock = loc.add(0,1,0).setBlock(blockState);
+                    if (loc != null){                     
+                        boolean setBlock = loc.add(0,1,0).setBlock(blockState, BlockChangeFlags.ALL);
                         if(setBlock)drop.remove();
                     }
                 })
-            /*.async()*/.delay(10, TimeUnit.SECONDS)
+            .delay(10, TimeUnit.SECONDS)
             .name("Reforestation")
             .submit(plugin);
     }

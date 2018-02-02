@@ -103,6 +103,10 @@ public class CallBackPlot {
                     plot.setAutoForest(value);
                     player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &eAutoForest = " + ptm.ValueOf(value)));
                     break;
+                case "nomsg":
+                    plot.setNoMsg(value);
+                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE("&7Flag enregistr\351 : &eNoMsg = " + ptm.ValueOf(value)));
+                    break;
             }
     
             plot.update();

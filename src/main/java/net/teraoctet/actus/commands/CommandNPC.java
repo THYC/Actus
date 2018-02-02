@@ -1,5 +1,6 @@
 package net.teraoctet.actus.commands;
 
+import com.flowpowered.math.vector.Vector3d;
 import net.teraoctet.actus.skin.MineSkin;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
@@ -24,19 +25,20 @@ public class CommandNPC implements CommandExecutor {
                     
             String name = ctx.<String> getOne("name").orElse(player.getName());
             String skin = ctx.<String> getOne("skin").orElse(player.getName());
-            
-            //if("".equals(name))name = player.getName();
-            //if("".equals(skin))skin = player.getName();
-            
+                       
             MineSkin ms = new MineSkin(skin);
             
             Entity ent = player.getWorld().createEntity(EntityTypes.HUMAN, player.getLocation().getPosition());
-            ent.offer(Keys.AI_ENABLED, true);
+            //ent.offer(Keys.AI_ENABLED, true);
             ent.offer(Keys.DISPLAY_NAME, Text.of(name));
             //ent.offer(Keys.IS_SITTING,true);
-
-            ent.offer(Keys.SKIN_UNIQUE_ID, ms.getUUID());
+            
+            if(ms.getUUID().isPresent()){
+                ent.offer(Keys.SKIN_UNIQUE_ID, ms.getUUID().get());
+            }
             player.getLocation().getExtent().spawnEntity(ent);
+            ent.setLocationAndRotation(player.getLocation(), player.getRotation());
+            ent.setScale(player.getScale());
             return CommandResult.success();
         } 
         

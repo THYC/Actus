@@ -59,6 +59,7 @@ import net.teraoctet.actus.commands.grave.CommandGraveList;
 import net.teraoctet.actus.commands.grave.CommandGraveTp;
 import net.teraoctet.actus.commands.grave.CommandGraveyard;
 import net.teraoctet.actus.commands.grave.CommandGraveyardCreate;
+import net.teraoctet.actus.commands.guild.CommandGuildAccept;
 import net.teraoctet.actus.commands.plot.CommandPlotClaim;
 import net.teraoctet.actus.commands.plot.CommandPlotListNameAllowed;
 import net.teraoctet.actus.commands.plot.CommandPlotSetLevel;
@@ -162,14 +163,14 @@ public class CommandManager {
         
         public CommandSpec CommandPlotRemove = CommandSpec.builder()
                 .description(MESSAGE("&9Supprime une parcelle")) 
-                //.permission("actus.player.plot.remove")
+                .permission("actus.player.plot.remove")
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotRemove()) 
                 .build(); 
         
         public CommandSpec CommandPlotSale = CommandSpec.builder()
                 .description(MESSAGE("&9Pour vendre une parcelle")) 
-                //.permission("actus.player.plot.sale") 
+                .permission("actus.player.plot.sale") 
                 .arguments(
                     GenericArguments.seq(
                         GenericArguments.optional(GenericArguments.integer(MESSAGE("price"))),
@@ -179,7 +180,7 @@ public class CommandManager {
         
         public CommandSpec CommandPlotAddplayer = CommandSpec.builder()
                 .description(MESSAGE("&9Ajoute un habitant sur la parcelle")) 
-                //.permission("actus.player.plot.addplayer") 
+                .permission("actus.player.plot.addplayer") 
                 .arguments(
                     GenericArguments.seq(
                         GenericArguments.optional(GenericArguments.string(MESSAGE("player"))),
@@ -189,17 +190,17 @@ public class CommandManager {
         
         public CommandSpec CommandPlotRemoveplayer = CommandSpec.builder()
                 .description(MESSAGE("/plot removeplayer <player> [name]")) 
-                //.permission("actus.player.plot.removeplayer") 
+                .permission("actus.player.plot.removeplayer") 
                 .arguments(
                     GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))),
+                        GenericArguments.onlyOne(GenericArguments.user(MESSAGE("player"))),
                         GenericArguments.optional(GenericArguments.string(MESSAGE("name")))))
                 .executor(new CommandPlotRemoveplayer()) 
                 .build(); 
         
         public CommandSpec CommandPlotOwnerset = CommandSpec.builder()
                 .description(MESSAGE("/plot ownerset <player> [name]")) 
-                //.permission("actus.player.plot.ownerset") 
+                .permission("actus.player.plot.ownerset") 
                 .arguments(
                     GenericArguments.seq(
                         GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))),
@@ -280,8 +281,8 @@ public class CommandManager {
                 .child(CommandPlotFlaglist, "flaglist")
                 .child(CommandPlotRemove, "remove", "del", "-")
                 .child(CommandPlotSale, "sale", "vend")
-                .child(CommandPlotAddplayer, "addplayer", "addp", "+p")
-                .child(CommandPlotRemoveplayer, "removeplayer", "remp", "-p")
+                .child(CommandPlotAddplayer, "addplayer", "addp", "p+")
+                .child(CommandPlotRemoveplayer, "removeplayer", "remp", "p-")
                 .child(CommandPlotOwnerset, "ownerset", "adm")
                 .child(CommandPlotMsg, "msg")
                 .child(CommandPlotTP, "tp")
@@ -401,7 +402,7 @@ public class CommandManager {
         public CommandSpec CommandInvsee = CommandSpec.builder()
                 .description(MESSAGE("/invsee <player>"))
                 .permission("actus.modo.invsee")
-                .arguments(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("target"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.user(MESSAGE("target"))))
                 .executor(new CommandInvsee())
                 .build();
         
@@ -462,10 +463,16 @@ public class CommandManager {
                 .build();
          
         public CommandSpec CommandGuildInvit = CommandSpec.builder()
-                .description(MESSAGE("/guild invit <player>")) 
+                .description(MESSAGE("&9Invite un joueur a rejoindre ta guilde")) 
                 .permission("actus.player.guild.invit") 
                 .arguments(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))))
                 .executor(new CommandGuildInvit()) 
+                .build();
+        
+        public CommandSpec CommandGuildAccept = CommandSpec.builder()
+                .description(MESSAGE("&9accepte l'invitation a rejoindre une guilde")) 
+                .permission("actus.player.guild.accept") 
+                .executor(new CommandGuildAccept()) 
                 .build();
          
         public CommandSpec CommandGuildRemoveplayer = CommandSpec.builder()
@@ -517,6 +524,7 @@ public class CommandManager {
                 .child(CommandGuildMemberslist, "memberslist")
                 .child(CommandGuildList, "list")
                 .child(CommandGuildInvit, "invit", "inviter", "add")
+                .child(CommandGuildAccept, "accept", "acc", "ok")
                 .child(CommandGuildRemoveplayer, "removeplayer")
                 .child(CommandGuildSetplayergrade, "setplayergrade")
                 .child(CommandGuildSetowner, "setowner")
@@ -1005,5 +1013,13 @@ public class CommandManager {
                 .arguments(GenericArguments.seq(
                     GenericArguments.optional(GenericArguments.string(MESSAGE("target")))))
                 .executor(new CommandChestSet())
+                .build();
+        
+        public CommandSpec CommandConfigActus = CommandSpec.builder()
+                .description(MESSAGE("&9Modifie les parametres config ACTUS")) 
+                .permission("actus.admin.config")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("cmd"))))
+                .executor(new CommandConfigActus())
                 .build();
 }

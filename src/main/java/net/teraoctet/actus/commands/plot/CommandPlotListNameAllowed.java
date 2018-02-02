@@ -19,7 +19,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import static net.teraoctet.actus.utils.MessageManager.formatText;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.service.pagination.PaginationList;
@@ -56,9 +55,9 @@ public class CommandPlotListNameAllowed implements CommandExecutor {
             PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
             PaginationList.Builder builder = paginationService.builder();
 
-            builder.title(formatText("&6Plot Joueur habitant la parcelle"))
+            builder.title(MESSAGE("&6Plot Joueur habitant la parcelle"))
                     .contents(list.toText())
-                    .header(formatText("&ePlot " + plot.get().getName()))
+                    .header(MESSAGE("&ePlot " + plot.get().getName()))
                     .padding(Text.of("-"))
                     .sendTo(src);
             return CommandResult.success();

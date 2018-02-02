@@ -200,6 +200,7 @@ public class Data {
                             + "noProjectile BOOLEAN DEFAULT FALSE,"
                             + "noLiquidFlow BOOLEAN DEFAULT FALSE,"
                             + "autoForest BOOLEAN DEFAULT TRUE, "
+                            + "noMsg BOOLEAN DEFAULT FALSE, "
                             + "KEY (plotName), UNIQUE (plotName))");
                 }
                 
@@ -358,7 +359,8 @@ public class Data {
                         rs.getBoolean("noPVPmonster"),
                         rs.getBoolean("noProjectile"),
                         rs.getBoolean("noLiquidFlow"),
-                        rs.getBoolean("autoForest"));
+                        rs.getBoolean("autoForest"),
+                        rs.getBoolean("noMsg"));
                     if(plot.getJail()){PJAILS.add(plot);}
                     else{PLOTS.add(plot);}   
                 }
@@ -440,8 +442,6 @@ public class Data {
 	public static void commit() {
 		if(queue.isEmpty()) return;
 		execute(queue);
-                plugin.getLogger().info(queue.get(0));
-                plugin.getLogger().info(" - " + queue.size());
 		queue.clear();
 	}
 	

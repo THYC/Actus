@@ -25,8 +25,22 @@ public class MineSkin {
         } catch (IOException e) {}
     }
     
-    public String getIdentifier() {return skinProfile.get().data.uuid;}
-    public UUID getUUID() {return UUID.fromString(getIdentifier());}
+    public Optional<String> getIdentifier() {
+        if(skinProfile.isPresent()){
+            return Optional.of(skinProfile.get().data.uuid);
+        }else{
+            return Optional.empty();
+        }
+    }
+    
+    public Optional<UUID> getUUID() {
+        if(getIdentifier().isPresent()){
+            return Optional.of(UUID.fromString(getIdentifier().get()));
+        }else{
+            return Optional.empty();
+        }
+    }
+    
     public String getName() {return skinProfile.get().name;}
     
     public Optional<GameProfile> getGameProfile() { 

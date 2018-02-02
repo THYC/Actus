@@ -1,7 +1,6 @@
 package net.teraoctet.actus.bookmessage;
 
 import java.util.List;
-import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.text.BookView;

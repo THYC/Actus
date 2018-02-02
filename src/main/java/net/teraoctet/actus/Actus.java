@@ -19,7 +19,6 @@ import net.teraoctet.actus.utils.TPAH;
 
 import com.google.inject.Inject;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +45,6 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.Sponge.getGame;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -67,7 +65,7 @@ import net.teraoctet.actus.troc.TrocManager;
 @Plugin(
     id = "actus", 
     name = "Actus", 
-    version = "0.1.0",
+    version = "0.1.1",
     url = "http://actus.teraoctet.net",
     authors = {
         "thyc82","Votop"
@@ -79,7 +77,11 @@ import net.teraoctet.actus.troc.TrocManager;
 public class Actus {
      
     @Inject private Logger logger;
+    public Logger getLogger(){return logger;}  
     
+    public static Game game;
+    @Inject public static PluginContainer plugin;
+        
     public static ServerManager sm = new ServerManager();
     public static PlotManager ptm = new PlotManager();
     public static PortalManager plm = new PortalManager();
@@ -90,14 +92,12 @@ public class Actus {
     public static TraceManager tem = new TraceManager();
     public static WorldManager wdm = new WorldManager();
     public static TrocManager tm = new TrocManager(); 
-    public Logger getLogger(){return logger;}  
-    public static Game game;
-    public static PluginContainer plugin;
-    public static Map<Player, CooldownToTP> mapCountDown = new HashMap<>();
-    public static Map<Player,String>inputShop = new HashMap<>();
-    public static Map<Player,Double>inputDouble = new HashMap<>();
-    public static Map<Player,String>action = new HashMap<>();
-    public static Map<Player, Map<Integer, ItemTransact>> TROC = new HashMap<>();
+   
+    public static Map<String, CooldownToTP> mapCountDown = new HashMap<>();
+    public static Map<String,String>inputShop = new HashMap<>();
+    public static Map<String,Double>inputDouble = new HashMap<>();
+    public static Map<String,String>action = new HashMap<>();
+    public static Map<String, Map<Integer, ItemTransact>> TROC = new HashMap<>();
     public static final ArrayList<TPAH> ATPA = new ArrayList<>();
     public static Config config = new Config();
     public static ConfigBook configBook = new ConfigBook();
@@ -110,10 +110,6 @@ public class Actus {
     public static final CallBackTroc CB_TROC = new CallBackTroc();
     public static EconomyService economyService;
     public static Wedit wedit;
-        
-    //@Inject
-    //@DefaultConfig(sharedRoot = false)
-    //private Path defaultConfig;
     
     @Listener
     public void onServerInit(GameInitializationEvent event) throws ObjectMappingException {
@@ -174,7 +170,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandBank, "bank", "banque", "bk");
         getGame().getCommandManager().register(this, new CommandManager().CommandShopList, "shoplist", "shopl");
         getGame().getCommandManager().register(this, new CommandManager().CommandChest, "chest", "coffre", "lwc");
-        //getGame().getCommandManager().register(this, new CommandManager().CommandNPC, "npc");
+        getGame().getCommandManager().register(this, new CommandManager().CommandNPC, "npc");
         getGame().getCommandManager().register(this, new CommandManager().CommandSpawn, "spawn");
         getGame().getCommandManager().register(this, new CommandManager().CommandSetspawn, "setspawn", "spawnset");
         getGame().getCommandManager().register(this, new CommandManager().CommandSignCmd, "signcmd", "cmd", "scmd");
@@ -200,6 +196,8 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandSetWarp, "setwarp", "warpset");
         getGame().getCommandManager().register(this, new CommandManager().CommandPostBookMsg, "postmsg", "pbm");
         getGame().getCommandManager().register(this, new CommandManager().CommandChestSet, "chestset");
+        getGame().getCommandManager().register(this, new CommandManager().CommandConfigActus, "confactus","conf","ca");
+        getGame().getCommandManager().register(this, new CommandManager().CommandPlotFlaglist, "flaglist");
     }
         
     @Listener
@@ -248,6 +246,7 @@ public class Actus {
     
     @Listener
     public void reload(GameReloadEvent event) {
+        Data.commit();
         if(init())getLogger().info("Actus reloaded ..");
     }
     

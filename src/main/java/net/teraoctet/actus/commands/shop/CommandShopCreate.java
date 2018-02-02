@@ -110,7 +110,7 @@ public class CommandShopCreate implements CommandExecutor {
                         .append(MESSAGE("&eTransaction : &l&b" + transactType.get() +"\n\n"))
                         .append(MESSAGE("&eMaintenant tape le prix souhait\351\n"))
                         .build();
-                        inputShop.put(player, "shopcreate " + uuid.get() + " " + transactType.get());
+                        inputShop.put(player.getIdentifier(), "shopcreate " + uuid.get() + " " + transactType.get());
                 player.sendMessage(text);
                 return CommandResult.success();
             }else if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent() && uuid.isPresent() && transactType.isPresent() && price.isPresent()){
@@ -137,19 +137,19 @@ public class CommandShopCreate implements CommandExecutor {
                             armorStand.offer(Keys.HAS_GRAVITY, false);
                             armorStand.offer(Keys.CUSTOM_NAME_VISIBLE, true);
                                                         
-                            if(is.getItem().getName().toUpperCase().contains("CHESTPLATE")){
+                            if(is.getType().getName().toUpperCase().contains("CHESTPLATE")){
                                 armorStand.offer(Keys.ARMOR_STAND_IS_SMALL, false);
                                 armorStand.offer(Keys.INVISIBLE, false);
                                 armorStand.setChestplate(is);
-                            }else if(is.getItem().getName().toUpperCase().contains("LEGGINGS")){
+                            }else if(is.getType().getName().toUpperCase().contains("LEGGINGS")){
                                 armorStand.offer(Keys.ARMOR_STAND_IS_SMALL, false);
                                 armorStand.offer(Keys.INVISIBLE, false);
                                 armorStand.setLeggings(is);
-                            }else if(is.getItem().getName().toUpperCase().contains("HELMET")){
+                            }else if(is.getType().getName().toUpperCase().contains("HELMET")){
                                 armorStand.offer(Keys.ARMOR_STAND_IS_SMALL, false);
                                 armorStand.offer(Keys.INVISIBLE, false);
                                 armorStand.setHelmet(is);
-                            }else if(is.getItem().getName().toUpperCase().contains("BOOTS")){
+                            }else if(is.getType().getName().toUpperCase().contains("BOOTS")){
                                 armorStand.offer(Keys.ARMOR_STAND_IS_SMALL, false);
                                 armorStand.offer(Keys.INVISIBLE, false);
                                 armorStand.setBoots(is);
@@ -163,7 +163,7 @@ public class CommandShopCreate implements CommandExecutor {
                             }   
                         }
                         player.setItemInHand(HandTypes.MAIN_HAND, null);
-                        inputShop.remove(player);
+                        inputShop.remove(player.getIdentifier());
                         return CommandResult.success();   
                     } else {
                         player.sendMessage(ERROR());

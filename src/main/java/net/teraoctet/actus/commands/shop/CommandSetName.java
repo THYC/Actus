@@ -35,12 +35,12 @@ public class CommandSetName implements CommandExecutor {
                     if(arguments.isPresent()){
                         String[] args = arguments.get().split(" ");
                         String name = "";
-                        for(int i = 0; i < args.length; i++){
-                            name = name + args[i] + " ";
+                        for (String arg : args) {
+                            name = name + arg + " ";
                         }
                         item = name;
                     }else{
-                        item = "&4" + is.getItem().getName();
+                        item = "&4" + is.getType().getName();
                     } 
                     
                     is.offer(Keys.DISPLAY_NAME, MESSAGE(item));

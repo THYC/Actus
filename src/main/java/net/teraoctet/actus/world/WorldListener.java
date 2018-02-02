@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static net.teraoctet.actus.Actus.configInv;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.inventory.AInventory;
 import net.teraoctet.actus.player.APlayer;
@@ -14,6 +13,8 @@ import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Config;
 import static net.teraoctet.actus.utils.Config.AUTOFOREST;
+import static net.teraoctet.actus.utils.Config.ENABLE_TREEBREAK;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import net.teraoctet.actus.utils.DeSerialize;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -36,7 +37,6 @@ import org.spongepowered.api.entity.vehicle.minecart.TNTMinecart;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnType;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
@@ -48,8 +48,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.explosion.Explosion;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
-import org.spongepowered.api.event.filter.cause.Last;
 
 public class WorldListener {
     
@@ -77,6 +75,11 @@ public class WorldListener {
             }
         }
     }  
+    
+    /*@Listener(order=Order.FIRST, beforeModifications = true)
+    public void onEntitySpawn(SpawnEntityEvent event, @First SpawnTypes spawntype){
+   
+    }*/
         
     /*@Listener
     public void onEntitySpawn(SpawnEntityEvent event, @First org.spongepowered.api.event.cause.entity.spawn.SpawnType entitySpawnType){
@@ -132,6 +135,7 @@ public class WorldListener {
                 bs.stream().forEach((b) -> {
                     locDrop.add(b.getFinal().getPosition());
                 });
+                //bs.clear();
             }
         }
     }
@@ -172,7 +176,7 @@ public class WorldListener {
         }
     }
     
-    @Listener
+    /*@Listener
     public void onTeleport(MoveEntityEvent.Teleport event) {
         if(event.getTargetEntity() instanceof Player){
             Player player = (Player) event.getTargetEntity();
@@ -181,21 +185,22 @@ public class WorldListener {
             aplayer.update();
             AInventory inv = new AInventory(player, event.getFromTransform().getExtent().getName());
             configInv.save(inv);
-            player.offer(Keys.GAME_MODE, player.getWorld().getProperties().getGameMode());
+            if(aplayer.getLevel() != LEVEL_ADMIN())player.offer(Keys.GAME_MODE, player.getWorld().getProperties().getGameMode());
             inv = configInv.load(player, event.getToTransform().getExtent().getName()).get();
             inv.set();
         }
-    }
+    }*/
     
     @Listener
     public void treeBreak(ChangeBlockEvent.Break breakEvent, @First Player player) throws Exception {
+        if(!ENABLE_TREEBREAK())return;
         if (!firedEvents.contains(breakEvent) && 
             !breakEvent.isCancelled() && breakEvent.getTransactions().size() == 1 &&
             TreeDetector.isWood(breakEvent.getTransactions().get(0).getOriginal())) {
             
             Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
             
-            if (is.isPresent() && is.get().getItem() == DIAMOND_AXE) {
+            if (is.isPresent() && is.get().getType().equals(DIAMOND_AXE)) {
                 TreeDetector tree = new TreeDetector(breakEvent.getTransactions().get(0).getOriginal());
                 List<Transaction<BlockSnapshot>> transactions = new ArrayList<>(tree.getWoodLocations().size());
                 player.getWorld().playSound(SoundTypes.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, player.getLocation().getPosition(), 2); 
@@ -223,6 +228,9 @@ public class WorldListener {
                     blockSnapshotTransaction.getFinal().getLocation().get().removeBlock();
                 });
                 firedEvents.clear();
+                ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
+                item.offer(Keys.ITEM_DURABILITY, player.getItemInHand(HandTypes.MAIN_HAND).get().get(Keys.ITEM_DURABILITY).get()-10);
+                player.setItemInHand(HandTypes.MAIN_HAND,item);
             }
         }
     }
@@ -246,7 +254,7 @@ public class WorldListener {
     }
     
     @Listener
-    public void onBlockBreak(ChangeBlockEvent event, @Root Enderman enderman) {
+    public void onBlockBreak(ChangeBlockEvent.Modify event, @Root Enderman enderman) {
         event.setCancelled(true);
     }
     

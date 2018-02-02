@@ -12,6 +12,7 @@ import static net.teraoctet.actus.Actus.CB_TROC;
 import static net.teraoctet.actus.Actus.TROC;
 import static net.teraoctet.actus.Actus.configBook;
 import static net.teraoctet.actus.Actus.ism;
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.sm;
 import static net.teraoctet.actus.Actus.tm;
 import net.teraoctet.actus.guild.Guild;
@@ -19,17 +20,13 @@ import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.troc.EnumTransactType.BUY;
 import static net.teraoctet.actus.troc.EnumTransactType.SALE;
-import static net.teraoctet.actus.utils.Config.ENABLE_TROC_SCOREBOARD;
 import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import net.teraoctet.actus.utils.Data;
-import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
@@ -39,10 +36,6 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.util.blockray.BlockRay;
-import org.spongepowered.api.util.blockray.BlockRayHit;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 
 public class TrocListener {  
         
@@ -65,7 +58,7 @@ public class TrocListener {
             double price[] = {0,0,0,0,0,0,0,0,0};
             String label[] = {"","","","","","","","",""};                  
             
-            for(Entry<Integer, ItemTransact> transact : TROC.get(player).entrySet()) {                
+            for(Entry<Integer, ItemTransact> transact : TROC.get(player.getIdentifier()).entrySet()) {                
                 switch(transact.getKey()){
                     case 0:
                         if(transact.getValue().getQte()!=0){
@@ -180,7 +173,7 @@ public class TrocListener {
                     }
                 }
             }
-            TROC.remove(player);
+            TROC.remove(player.getIdentifier());
         }
     }
     
@@ -199,7 +192,7 @@ public class TrocListener {
             slotItemTransact.put(6, it);
             slotItemTransact.put(7, it);
             slotItemTransact.put(8, it);
-            TROC.put(player, slotItemTransact);
+            TROC.put(player.getIdentifier(), slotItemTransact);
         }
     }
     
@@ -315,7 +308,7 @@ public class TrocListener {
                         }
                         int qteO = slot.getOriginal().getQuantity();
                         int qteF = slot.getFinal().getQuantity();                    
-                        int total = TROC.get(player).get(slottroc).getQte();
+                        int total = TROC.get(player.getIdentifier()).get(slottroc).getQte();
                         int qteMax = tm.getTroc(loc, slottroc).get().getQteMax();
                         
                         if(tm.getTroc(loc, slottroc).get().getTransactType().equals(BUY)){
@@ -328,7 +321,8 @@ public class TrocListener {
                             }
                         }    
                         total = total - (qteO - qteF);
-                        if(ism.getQteCoin(player.getInventory()) < total){
+                        plugin.getLogger().info("2/total : " + total + " bank : " + ism.getQteCoin(player.getInventory()));
+                        if(ism.getQteCoin(player.getInventory()) < -total){
                             player.sendMessage(MESSAGE("&eTu n'as pas assez de cr\351dit sur toi !"));
                             player.sendMessage(MESSAGE("&eTu dois avoir dans ton inventaire une bourse avec au moins " + total + "e"));
                             player.sendMessage(MESSAGE("&ePour retirer une bourse ou la recharger, rends toi a la banque"));
@@ -336,7 +330,7 @@ public class TrocListener {
                             return;
                         }
                         ItemTransact it = new ItemTransact(player,slottroc,total);
-                        TROC.get(player).put(slottroc, it);
+                        TROC.get(player.getIdentifier()).put(slottroc, it);
                        
                     }
                     
@@ -349,7 +343,7 @@ public class TrocListener {
                         }
                         int qteO = slot.getOriginal().getQuantity();
                         int qteF = slot.getFinal().getQuantity();
-                        int total = TROC.get(player).get(slottroc).getQte();
+                        int total = TROC.get(player.getIdentifier()).get(slottroc).getQte();
                         int qteMax = tm.getTroc(loc, slottroc).get().getQteMax();
                         
                         if(tm.getTroc(loc, slottroc).get().getTransactType().equals(SALE)){
@@ -365,7 +359,7 @@ public class TrocListener {
                             total = total + (qteF - qteO);
                             ItemTransact it = new ItemTransact(player,slottroc,total);
                             tm.setBuyQteMax(event.getTargetInventory(),loc, slottroc, qteMax-total);
-                            TROC.get(player).put(slottroc, it);
+                            TROC.get(player.getIdentifier()).put(slottroc, it);
                         }
                         
                     }
@@ -383,7 +377,7 @@ public class TrocListener {
                         }
                         int qteO = slot.getOriginal().getQuantity();
                         int qteF = slot.getFinal().getQuantity();
-                        int total = TROC.get(player).get(slottroc).getQte();
+                        int total = TROC.get(player.getIdentifier()).get(slottroc).getQte();
                         int qteMax = tm.getTroc(loc, slottroc).get().getQteMax();
                         
                         if(tm.getTroc(loc, slottroc).get().getTransactType().equals(BUY)){
@@ -396,7 +390,8 @@ public class TrocListener {
                             }
                         }    
                         total = total - qteO;
-                        if(ism.getQteCoin(player.getInventory()) < total){
+                        plugin.getLogger().info("1/total : " + total + " bank : " + ism.getQteCoin(player.getInventory()));
+                        if(ism.getQteCoin(player.getInventory()) < -total){
                             player.sendMessage(MESSAGE("&eTu n'as pas assez de cr\351dit sur toi !"));
                             player.sendMessage(MESSAGE("&eTu dois avoir dans ton inventaire une bourse avec au moins " + total + "e"));
                             player.sendMessage(MESSAGE("&ePour retirer une bourse ou la recharger, rends toi a la banque"));
@@ -404,7 +399,7 @@ public class TrocListener {
                             return;
                         }
                         ItemTransact it = new ItemTransact(player,slottroc,total);
-                        TROC.get(player).put(slottroc, it);
+                        TROC.get(player.getIdentifier()).put(slottroc, it);
                     }
                     
                     //ajout au troc
@@ -416,7 +411,7 @@ public class TrocListener {
                         }
                         int qteO = slot.getOriginal().getQuantity();
                         int qteF = slot.getFinal().getQuantity();  
-                        int total = TROC.get(player).get(slottroc).getQte();
+                        int total = TROC.get(player.getIdentifier()).get(slottroc).getQte();
                         int qteMax = tm.getTroc(loc, slottroc).get().getQteMax();
                         
                         if(tm.getTroc(loc, slottroc).get().getTransactType().equals(SALE)){
@@ -432,7 +427,7 @@ public class TrocListener {
                             total = total + qteF;
                             ItemTransact it = new ItemTransact(player,slottroc,total);
                             tm.setBuyQteMax(event.getTargetInventory(),loc, slottroc, qteMax-total);
-                            TROC.get(player).put(slottroc, it);
+                            TROC.get(player.getIdentifier()).put(slottroc, it);
                         }
                     }
                 }

@@ -44,7 +44,7 @@ public class CommandShopList implements CommandExecutor {
                         String Y = String.valueOf(loc.getBlockY());
                         String Z = String.valueOf(loc.getBlockZ());
                         Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid));
-                        String item = itemShop.get().getItemStack().getItem().getTranslation().get(Locale.FRENCH);
+                        String item = itemShop.get().getItemStack().getType().getTranslation().get(Locale.FRENCH);
                         String transaction = itemShop.get().getTransactType();
                         Double price = itemShop.get().getPrice();
                         src.sendMessages(Text.builder()

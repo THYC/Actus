@@ -8,13 +8,14 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 
 public class CommandInvsee implements CommandExecutor {
     
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
         if(src instanceof Player && src.hasPermission("actus.modo.invsee")) {
-            Player target = ctx.<Player> getOne("target").get();
+            User target = ctx.<User> getOne("target").get();
             Player player = (Player) src; 
             player.openInventory(target.getInventory());
             return CommandResult.success();

@@ -6,6 +6,7 @@ import net.teraoctet.actus.plot.Plot;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.player.APlayer;
+import static net.teraoctet.actus.player.PlayerManager.getAPlayerName;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -52,7 +53,12 @@ public class CommandPlotOwnerset implements CommandExecutor {
                     player.sendMessage(MESSAGE("&e" + target + " &7 doit \352tre connect\351 pour l'ajouter"));
                     return CommandResult.empty();
                 } else {
-                    plot.get().setUuidOwner(target.getUniqueId().toString());
+                    plot.get().setUuidOwner(target.getIdentifier());
+                    if(!plot.get().getUuidAllowed().contains(target.getIdentifier())){
+                        plot.get().setUuidAllowed(plot.get().getUuidAllowed() + " " + target.getIdentifier());
+                    }
+                    plot.get().update();
+                
                     player.sendMessage(MESSAGE("&e" + target.getName() + " &7est maintenant le propri\351taire de &e" + plot.get().getName()));
                     target.sendMessage(MESSAGE("&7Vous \352tes maintenant propri\351taire de &e" + plot.get().getName()));
                     return CommandResult.success();

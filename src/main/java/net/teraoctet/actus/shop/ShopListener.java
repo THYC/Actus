@@ -6,7 +6,6 @@ import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.ism;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.commands.shop.CallBackEconomy;
 import net.teraoctet.actus.player.APlayer;
@@ -16,10 +15,10 @@ import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.DEPOSIT_SUCCESS;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.MISSING_BALANCE;
+import static net.teraoctet.actus.utils.MessageManager.PLOT_PROTECTED;
 import static net.teraoctet.actus.utils.MessageManager.WITHDRAW_SUCCESS;
 import org.spongepowered.api.data.manipulator.mutable.DisplayNameData;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
-import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
@@ -41,10 +40,9 @@ import static org.spongepowered.api.entity.EntityTypes.ITEM_FRAME;
 import org.spongepowered.api.entity.hanging.Hanging;
 import org.spongepowered.api.entity.living.ArmorStand;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.entity.HarvestEntityEvent;
 import org.spongepowered.api.event.filter.cause.Last;
-import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.enchantment.Enchantment;
 
 public class ShopListener {
     
@@ -64,22 +62,33 @@ public class ShopListener {
         if(entity.getType().equals(ITEM_FRAME) || entity.getType().equals(ARMOR_STAND)){
             
             //Si aucum ItemShop est enregistré a cette coordonnée on propose d'en creer un
-            if(!ism.hasShop(uuid) && aplayer.getLevel()==10){ 
-                Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
-                if(is.isPresent()){
-                    player.sendMessage(MESSAGE("\n\n"));
-                    player.sendMessage(MESSAGE("&l&e-------------------------"));
-                    player.sendMessage(MESSAGE("&7Voulez vous cr\351er un nouveau ItemShop ?"));
-                    player.sendMessage(Text.builder("Clique ici pour lancer la cr\351ation d'un ItemShop").onClick(TextActions.runCommand("/shopcreate " + uuid.toString())).color(TextColors.AQUA).build()); 
-                    player.sendMessage(MESSAGE("&l&e-------------------------"));
-                    event.setCancelled(true);
+            if(!ism.hasShop(uuid)){ 
+                if(aplayer.getLevel() == LEVEL_ADMIN()){
+                    Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
+                    if(is.isPresent()){
+                        player.sendMessage(MESSAGE("\n\n"));
+                        player.sendMessage(MESSAGE("&l&e-------------------------"));
+                        player.sendMessage(MESSAGE("&7Voulez vous cr\351er un nouveau ItemShop ?"));
+                        player.sendMessage(Text.builder("Clique ici pour lancer la cr\351ation d'un ItemShop").onClick(TextActions.runCommand("/shopcreate " + uuid.toString())).color(TextColors.AQUA).build()); 
+                        player.sendMessage(MESSAGE("&l&e-------------------------"));
+                        event.setCancelled(true);
+                    }
+                }else{
+                    Location loc = event.getTargetEntity().getLocation();
+                    Optional<Plot> plot = ptm.getPlot(loc);
+                    if(plot.isPresent()){
+                        if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN()) {
+                            player.sendMessage(PLOT_PROTECTED());
+                            event.setCancelled(true);
+                        }
+                    }
                 }
             }else{
                 if(ism.hasShop(uuid) && aplayer.getLevel()!=10){
                     Optional<ItemShop> is = ism.getItemShop(uuid);
                     if(is.isPresent()){
                         ItemStack itemStack = is.get().getItemStack();
-                        String name = "";
+                        String name;
                         Optional<DisplayNameData> displayData = itemStack.get(DisplayNameData.class);
                         if(displayData.isPresent()){
                             name = displayData.get().displayName().get().toPlain();
@@ -87,10 +96,10 @@ public class ShopListener {
                             name = Text.builder(itemStack.getTranslation()).build().toPlain();
                         }
                         EnchantmentData enchantmentData = itemStack.getOrCreate(EnchantmentData.class).get();
-                        final ListValue<ItemEnchantment> enchantments = enchantmentData.enchantments();
+                        final ListValue<Enchantment> enchantments = enchantmentData.enchantments();
                         String enchantment = "";
-                        for (ItemEnchantment e : enchantments) {
-                            enchantment = enchantment + e.getEnchantment().getId() + " / ";
+                        for (Enchantment e : enchantments) {
+                            enchantment = enchantment + e.getType().getId() + " / ";
                         }
                         enchantment = enchantment.replace("minecraft:", "");
                         Text text;
@@ -101,14 +110,14 @@ public class ShopListener {
                         //  ACHAT 
                         //--------
                         if(is.get().getTransactType().contains("buy")){
-                            action.put(player, "shop");
+                            action.put(player.getIdentifier(), "shop");
                             text = 
                                 Text.builder()  .append(MESSAGE("\n\n\n"))
                                                 .append(MESSAGE("&l&b   -----------------\n"))
                                                 .append(MESSAGE("&l&b         ItemShop \n"))
                                                 .append(MESSAGE("&l&b   -----------------\n"))
                                                 .append(MESSAGE("&e&o" + is.get().getTransactType() + " : &l&b" + name + "\n"))
-                                                .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n"))
+                                                .append(MESSAGE("&e&o(" + itemStack.getType().getName() + ")\n"))
                                                 .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n")).build().concat(
                                 Text.builder()  .append(MESSAGE("&b - Clique ici pour vendre les items de ta main seulemeent\n"))
                                                 .onClick(TextActions.runCommand("/shopsell " + uuid)).build()).concat(  
@@ -119,14 +128,14 @@ public class ShopListener {
                         //  VENTE 
                         //--------
                         } else {   
-                            action.put(player, "shop");
+                            action.put(player.getIdentifier(), "shop");
                             text = 
                                 Text.builder()  .append(MESSAGE("\n\n\n"))
                                                 .append(MESSAGE("&l&b   -----------------\n"))
                                                 .append(MESSAGE("&l&b         ItemShop \n"))
                                                 .append(MESSAGE("&l&b   -----------------\n"))
                                                 .append(MESSAGE("&e&o" + is.get().getTransactType() + " : &l&b" + name + "\n"))
-                                                .append(MESSAGE("&e&o(" + itemStack.getItem().getName() + ")\n"))
+                                                .append(MESSAGE("&e&o(" + itemStack.getType().getName() + ")\n"))
                                                 .append(MESSAGE("&l&eEnchantments :\n"))
                                                 .append(MESSAGE("&b" + enchantment + "\n"))
                                                 .append(MESSAGE("&e&oPrix : &b" + is.get().getPrice() + " Emeraude(s)\n")).build().concat(
@@ -166,18 +175,7 @@ public class ShopListener {
             }
         } 
     }
-                
-    /*@Listener
-    public void onBreakFrame(HarvestEntityEvent event){
-        Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
-        if (plot.isPresent()) {
-            Player player = (Player) event.getSource();
-            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            //if(!plot.get().getUuidOwner().contains(player.getIdentifier()) || aplayer.getLevel() != LEVEL_ADMIN())event.setCancelled(true);
-            plugin.getLogger().info("--" + player.getName());
-        }      
-    }*/
-    
+        
     @Listener
     public void onInteractSignBank(InteractBlockEvent event, @First Player player){ 
         /*----------------------------------------------*/
@@ -213,8 +211,8 @@ public class ShopListener {
                                 
                                 //on verifie si il y a eu une demande de saisie
                                 Optional<Double>coin;
-                                if(inputDouble.containsKey(player)){
-                                    coin = Optional.of(inputDouble.get(player));
+                                if(inputDouble.containsKey(player.getIdentifier())){
+                                    coin = Optional.of(inputDouble.get(player.getIdentifier()));
                                     if(coin.isPresent()){
                                         
                                         //si une valeur a été saisie précédemment on effectue le versement et on sort
@@ -229,7 +227,7 @@ public class ShopListener {
                                                     ItemStack is = ItemStack.of(ItemTypes.EMERALD, coinInt);
                                                     player.getInventory().offer(is);
                                                 }
-                                                inputDouble.remove(player);
+                                                inputDouble.remove(player.getIdentifier());
                                                 player.sendMessages(WITHDRAW_SUCCESS(String.valueOf(coinInt)));
                                                 return;
                                             }else{

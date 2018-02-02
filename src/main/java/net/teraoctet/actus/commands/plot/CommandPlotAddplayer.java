@@ -17,7 +17,6 @@ import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import org.spongepowered.api.command.source.ConsoleSource;
 
 public class CommandPlotAddplayer implements CommandExecutor {
@@ -42,8 +41,9 @@ public class CommandPlotAddplayer implements CommandExecutor {
                 player.sendMessage(USAGE("/plot addplayer : ajoute un habitant - vous devez \352tre sur la parcelle"));
                 player.sendMessage(USAGE("/plot addplayer <nomParcelle> : ajoute un habitant sur la parcelle nomm\351e"));
                 return CommandResult.empty();
-            } else if (!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
-                player.sendMessage(ALREADY_OWNED_PLOT());
+            } else if (!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && 
+                    !plot.get().getUuidOwner().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
+                player.sendMessage(MESSAGE("&eTu dois etre habitant pour utiliser cette commande"));
                 return CommandResult.empty();   
             }
 

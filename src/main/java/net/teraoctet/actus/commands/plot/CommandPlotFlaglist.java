@@ -19,7 +19,6 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.formatText;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -55,7 +54,7 @@ public class CommandPlotFlaglist implements CommandExecutor {
             PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
             Builder builder = paginationService.builder();
 
-            builder.title(formatText("&ePlot " + plot.get().getName() ))
+            builder.title(MESSAGE("&ePlot " + plot.get().getName() ))
                     .contents(  
                                 Text.builder().append(MESSAGE("&9[ " + ptm.ValueOf(plot.get().getNoEnter()) + " ] &7Interdiction d'entrer sur la parcelle"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callChangeFlag(plot.get(), "noenter", getValue(plot.get().getNoEnter()))))    
@@ -95,7 +94,7 @@ public class CommandPlotFlaglist implements CommandExecutor {
                                     .onHover(TextActions.showText(MESSAGE("Click pour changer la valeur"))).toText())
   
                     
-                .header(formatText("&o&eListe des droits accord\351s aux autres joueurs :"))
+                .header(MESSAGE("&o&eListe des droits accord\351s aux autres joueurs :"))
                 .footer(Text.builder().append(MESSAGE("&o&9 Besoin d'aide ?"))
                                     .onClick(TextActions.executeCallback(CB_PLOT.callHelpPlotFlag()))    
                                     .onHover(TextActions.showText(MESSAGE("Click pour afficher l'aide"))).toText())

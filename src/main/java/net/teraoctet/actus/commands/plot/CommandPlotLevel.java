@@ -30,7 +30,7 @@ public class CommandPlotLevel implements CommandExecutor {
                 plot = ptm.getPlot(player.getLocation());
             }
 
-            if (plot == null){
+            if (!plot.isPresent()){
                 player.sendMessage(NO_PLOT());
                 return CommandResult.empty();
             }

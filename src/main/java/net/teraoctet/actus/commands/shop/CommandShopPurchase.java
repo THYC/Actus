@@ -18,6 +18,7 @@ import org.spongepowered.api.data.type.HandTypes;
 import static org.spongepowered.api.item.ItemTypes.EMERALD;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
 public class CommandShopPurchase implements CommandExecutor {
         
@@ -26,19 +27,19 @@ public class CommandShopPurchase implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.player.shop")) {
             Player player = (Player) src;
-            if(!action.containsKey(player)){
+            if(!action.containsKey(player.getIdentifier())){
                 player.sendMessages(MESSAGE("&eVous n'avez pas de transaction en cours"));
                 player.sendMessages(MESSAGE("&eVous devez d'abord faire un click droit sur le Shop de vente"));
                 return CommandResult.empty();
             }
-            action.remove(player);
+            action.remove(player.getIdentifier());
             Optional<String> uuid = ctx.<String> getOne("uuid");
             Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid.get()));
             if(itemShop.isPresent()){
                 ItemStack is = itemShop.get().getItemStack();
                 int price = itemShop.get().getPriceInt();
                 
-                Inventory items = player.getInventory().query(EMERALD);
+                Inventory items = player.getInventory().query(QueryOperationTypes.ITEM_TYPE.of(EMERALD));
                 if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
                     if(ism.hasCoinPurses(player.getItemInHand(HandTypes.MAIN_HAND).get())){
                         Optional<ItemStack> coin = ism.removeCoin(price,player.getItemInHand(HandTypes.MAIN_HAND).get());

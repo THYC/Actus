@@ -71,7 +71,7 @@ public class CooldownToTP {
                 }else{
                     player.sendMessage(MESSAGE("&4Erreur Teleportation"));
                 }
-                mapCountDown.remove(player);
+                mapCountDown.remove(player.getIdentifier());
                 APlayer aplayer = getAPlayer(player.getUniqueId().toString());
                 aplayer.setLastposition(DeSerialize.location(lastLocation));
                 aplayer.update();

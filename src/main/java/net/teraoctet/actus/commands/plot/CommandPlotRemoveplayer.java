@@ -15,8 +15,8 @@ import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_CONSOLE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PLOT;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
-import static net.teraoctet.actus.utils.MessageManager.ALREADY_OWNED_PLOT;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.entity.living.player.User;
 
 public class CommandPlotRemoveplayer implements CommandExecutor {
        
@@ -41,22 +41,22 @@ public class CommandPlotRemoveplayer implements CommandExecutor {
                 player.sendMessage(USAGE("/plot removeplayer <NomParcelle> : retire un habitant sur la parcelle nomm\351e"));
                 return CommandResult.empty();
             } else if (!plot.get().getUuidOwner().equalsIgnoreCase(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
-                player.sendMessage(ALREADY_OWNED_PLOT());
+                player.sendMessage(MESSAGE("&eTu dois etre habitant pour utiliser cette commande"));
                 return CommandResult.empty(); 
             }
 
             if(ctx.getOne("player").isPresent()){
-                Player target = ctx.<Player> getOne("player").get();  
-                if (target == null){
-                    player.sendMessage(MESSAGE("&e" + target + " &7 doit \352tre connecté pour le retirer"));
+                Optional<User> target = ctx.<User> getOne("player");  
+                if (!target.isPresent()){
+                    player.sendMessage(MESSAGE("&eCe joueur ne semble pas etre connu sur ce serveur !"));
                     return CommandResult.empty();
                 }
 
                 String uuidAllowed = plot.get().getUuidAllowed();
-                uuidAllowed = uuidAllowed.replace(target.getUniqueId().toString(), "");
+                uuidAllowed = uuidAllowed.replace(target.get().getUniqueId().toString(), "");
                 plot.get().setUuidAllowed(uuidAllowed);
-                player.sendMessage(MESSAGE("&e" + target.getName() + " &7a \351t\351 retir\351 de la liste des habitants"));
-                target.sendMessage(MESSAGE("&e" + player.getName() + " &7vous a retir\351 des habitants de &e" + plot.get().getName()));
+                player.sendMessage(MESSAGE("&e" + target.get().getName() + " &7a \351t\351 retir\351 de la liste des habitants"));
+                if(target.get().getPlayer().isPresent())target.get().getPlayer().get().sendMessage(MESSAGE("&e" + player.getName() + " &7vous a retir\351 des habitants de &e" + plot.get().getName()));
                 return CommandResult.success();
             } else {
                 player.sendMessage(USAGE("/plot removeplayer <playerName> [NomParcelle]"));

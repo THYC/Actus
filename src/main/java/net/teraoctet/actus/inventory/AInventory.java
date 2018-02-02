@@ -12,6 +12,7 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import static org.spongepowered.api.item.inventory.query.QueryOperationTypes.INVENTORY_TYPE;
 
 @ConfigSerializable
 public final class AInventory {
@@ -41,7 +42,7 @@ public final class AInventory {
         this.experience_level = player.get(Keys.EXPERIENCE_LEVEL).get();
         this.total_experience = player.get(Keys.TOTAL_EXPERIENCE).get();
         
-        PlayerInventory playerInv = player.getInventory().query(PlayerInventory.class);
+        PlayerInventory playerInv = player.getInventory().query(INVENTORY_TYPE.of(PlayerInventory.class));
         int i = 0;
         for (Inventory item : playerInv.getHotbar().slots()) {
             Slot slot = (Slot) item;
@@ -72,7 +73,7 @@ public final class AInventory {
     
     public void set() {
         player.getInventory().clear();
-	PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
+	PlayerInventory inv = player.getInventory().query(INVENTORY_TYPE.of(PlayerInventory.class));
         player.offer(Keys.HEALTH, health);
         player.offer(Keys.FOOD_LEVEL, food_level);
         player.offer(Keys.SATURATION, saturation);

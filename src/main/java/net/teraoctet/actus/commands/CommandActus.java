@@ -1,5 +1,6 @@
 package net.teraoctet.actus.commands;
 
+import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.command.CommandResult;
@@ -14,12 +15,13 @@ public class CommandActus implements CommandExecutor {
            
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
-    
+        
+        
         PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
         PaginationList.Builder builder = paginationService.builder();  
 
         builder
-                .title(Text.builder().append(MESSAGE("&eActus 0.1 Beta")).toText())
+                .title(Text.builder().append(MESSAGE("&eActus " + plugin.getVersion().get())).toText())
                 .contents(
                         Text.builder().append(MESSAGE("&9/setname <name> &e: Change le nom d'un item ")).toText(),
                         Text.builder().append(MESSAGE("&9/kill &e: se suicide")).toText(),
@@ -40,19 +42,19 @@ public class CommandActus implements CommandExecutor {
                         Text.builder().append(MESSAGE("&9/worldtp &e: teleporte sur un monde")).toText(),
                         Text.builder().append(MESSAGE("&9/clearinventory &e: supprime l'inventaire")).toText(),
                         Text.builder().append(MESSAGE("&9/invsee &e: regarde le contenu d'un inventaire de joueur")).toText(),
-                        Text.builder().append(MESSAGE("&9/playerinfo")).toText(),
-                        Text.builder().append(MESSAGE("&9/broadcast")).toText(),
-                        Text.builder().append(MESSAGE("&9/guild")).toText(),
-                        Text.builder().append(MESSAGE("&9/rocket")).toText(),
-                        Text.builder().append(MESSAGE("&9/portal")).toText(),
-                        Text.builder().append(MESSAGE("&9/mc")).toText(),
-                        Text.builder().append(MESSAGE("&9/write")).toText(),
-                        Text.builder().append(MESSAGE("&9/signhelp")).toText(),
-                        Text.builder().append(MESSAGE("&9/signbank")).toText(),
-                        Text.builder().append(MESSAGE("&9/tpa")).toText(),
-                        Text.builder().append(MESSAGE("&9/tphere")).toText(),
-                        Text.builder().append(MESSAGE("&9/tpaccept")).toText(),
-                        Text.builder().append(MESSAGE("&9/vanish")).toText(),
+                        Text.builder().append(MESSAGE("&9/playerinfo &e: affiche les infos du joueur")).toText(),
+                        Text.builder().append(MESSAGE("&9/broadcast &e: envoie un message sur le canal ADMIN")).toText(),
+                        Text.builder().append(MESSAGE("&9/guild &e: info guild")).toText(),
+                        Text.builder().append(MESSAGE("&9/rocket &e: projette un joueur ")).toText(),
+                        Text.builder().append(MESSAGE("&9/portal &e: affiche les commandes portail")).toText(),
+                        Text.builder().append(MESSAGE("&9/mc &e: spawn un item MagicCompass")).toText(),
+                        Text.builder().append(MESSAGE("&9/write &e: ecrit/modifie le texte d'un panneau")).toText(),
+                        Text.builder().append(MESSAGE("&9/signhelp &e: declare une commande d'aide sur un panneau")).toText(),
+                        Text.builder().append(MESSAGE("&9/signbank &e: declare une commande Bank a un panneau")).toText(),
+                        Text.builder().append(MESSAGE("&9/tpa &e: demande autorisation de TP sur un joueur")).toText(),
+                        Text.builder().append(MESSAGE("&9/tphere &e: demande autorisation de TP un joueur sur soi même")).toText(),
+                        Text.builder().append(MESSAGE("&9/tpaccept &e: accepte la demande de TP")).toText(),
+                        Text.builder().append(MESSAGE("&9/vanish &e: ")).toText(),
                         Text.builder().append(MESSAGE("&9/enchant")).toText(),
                         Text.builder().append(MESSAGE("&9/rule")).toText(),
                         Text.builder().append(MESSAGE("&9/bank")).toText(),

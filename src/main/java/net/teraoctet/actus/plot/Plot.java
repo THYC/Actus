@@ -60,11 +60,13 @@ public class Plot {
     private boolean noProjectile;
     private boolean noLiquidFlow;
     private boolean autoForest;
+    private boolean noMsg;
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
     boolean jail, boolean noEnter, boolean noFly, boolean noBuild, boolean noBreak, boolean noTeleport, boolean noInteract, boolean noFire, 
     String message, int mode, boolean noMob, boolean noAnimal, boolean noTNT, boolean noCommand, String uuidOwner, String uuidAllowed, 
-    int id_guild, boolean spawnGrave, boolean noPVPplayer, boolean noPVPmonster, boolean noProjectile, boolean noLiquidFlow, boolean autoForest){
+    int id_guild, boolean spawnGrave, boolean noPVPplayer, boolean noPVPmonster, boolean noProjectile, boolean noLiquidFlow, 
+    boolean noMsg, boolean autoForest){
         
         this.plotName = plotName;
         this.level = level;
@@ -98,6 +100,7 @@ public class Plot {
         this.noProjectile = noProjectile;
         this.noLiquidFlow = noLiquidFlow;
         this.autoForest = autoForest;
+        this.noMsg = noMsg;
     }
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, 
@@ -136,6 +139,7 @@ public class Plot {
         this.noProjectile = false;
         this.noLiquidFlow = false;
         this.autoForest = true;
+        this.noMsg = false;
     }
     
     public Plot(String plotName, int level, String world, int x1, int y1, int z1, int x2, int y2, int z2, String uuidOwner, String uuidAllowed){
@@ -169,6 +173,7 @@ public class Plot {
         this.noProjectile = false;
         this.noLiquidFlow = false;
         this.autoForest = true;
+        this.noMsg = false;
     }
     
     public Plot(String world, int x1, int y1, int z1, int x2, int y2, int z2){
@@ -202,6 +207,7 @@ public class Plot {
         this.noProjectile = false;
         this.noLiquidFlow = false;
         this.autoForest = true;
+        this.noMsg = false;
     }
     
     public void insert() {
@@ -209,7 +215,7 @@ public class Plot {
         + ", " + x2 + ", " + y2 + ", " + z2 + ", " + jail + ", " + noEnter + ", " + noFly + ", " + noBuild + ", " + noBreak + ", " + noTeleport 
         + ", " + noInteract + ", " + noFire + ", '" + message() + "', " + mode + ", " + noMob + ", " + noAnimal + ", " + noTNT + ", " + noCommand 
         + ", '" + uuidOwner + "', '" + uuidAllowed + "', " + id_guild + ", "+ spawnGrave + ", " + noPVPplayer + ", " + noPVPmonster 
-        + ", " + noProjectile + ", " + noLiquidFlow + ", " + autoForest + ")");
+        + ", " + noProjectile + ", " + noLiquidFlow + ", " + autoForest + ", " + noMsg + ")");
     }
     
     /**
@@ -267,8 +273,8 @@ public class Plot {
         + ", noEnter = " + noEnter + ", noFly = " + noFly + ", noBuild = " + noBuild + ", noBreak = " + noBreak + ", noTeleport = " + noTeleport 
         + ", noInteract = " + noInteract + ", noFire = " + noFire + ", message = '" + message() + "', mode = " + mode + ", uuidOwner = '" + uuidOwner 
         + "', uuidAllowed = '" + uuidAllowed + "', noMob = " + noMob + ", noAnimal = " + noAnimal + ", noTNT = " + noTNT 
-        + ", noCommand = " + noTNT + ", id_guild = " + id_guild + ", spawnGrave = " + spawnGrave + ", noPVPplayer = " + noPVPplayer 
-        + ", noPVPmonster = " + noPVPmonster + ", noProjectile = " + noProjectile + ", noLiquidFlow = " + noLiquidFlow + ", autoForest = " + autoForest + " WHERE plotName = '" + plotName + "'");
+        + ", noCommand = " + noCommand + ", id_guild = " + id_guild + ", spawnGrave = " + spawnGrave + ", noPVPplayer = " + noPVPplayer 
+        + ", noPVPmonster = " + noPVPmonster + ", noProjectile = " + noProjectile + ", noLiquidFlow = " + noLiquidFlow + ", autoForest = " + autoForest + ", noMsg = " + noMsg + " WHERE plotName = '" + plotName + "'");
     }
 	
     public void delete() {
@@ -335,6 +341,7 @@ public class Plot {
     public void setNoProjectile(boolean noProjectile){this.noProjectile = noProjectile;}
     public void setNoLiquidFlow(boolean noLiquidFlow){this.noLiquidFlow = noLiquidFlow;}
     public void setAutoForest(boolean autoForest){this.autoForest = autoForest;}
+    public void setNoMsg(boolean noMsg){this.noMsg = noMsg;}
     
     public String getUuidOwner(){return this.uuidOwner;}
     public String getUuidAllowed(){return this.uuidAllowed;}
@@ -368,6 +375,7 @@ public class Plot {
     public boolean getNoProjectile(){return this.noProjectile;} 
     public boolean getNoLiquidFlow(){return this.noLiquidFlow;}
     public boolean getAutoForest(){return this.autoForest;}
+    public boolean getNoMsg(){return this.noMsg;}
     
     /**
      * Retourne l'objet World correspondant

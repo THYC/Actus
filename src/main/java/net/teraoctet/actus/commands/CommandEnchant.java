@@ -4,6 +4,7 @@ import java.util.Optional;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
+import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -12,10 +13,10 @@ import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
-import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.enchantment.Enchantment;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class CommandEnchant implements CommandExecutor {
@@ -50,7 +51,7 @@ public class CommandEnchant implements CommandExecutor {
             if(optPlayer.isPresent()){
                 Player player = optPlayer.get();
                 if(enchantmentName.isPresent()){
-                    Enchantment enchantment = Sponge.getRegistry().getType(Enchantment.class, enchantmentName.get()).orElse(null);
+                    EnchantmentType enchantment = Sponge.getRegistry().getType(CatalogTypes.ENCHANTMENT_TYPE, enchantmentName.get()).orElse(null);
                     if (enchantment == null){
                         src.sendMessage(MESSAGE("&4Erreur: Enchantement non trouv\351 !"));
                         src.sendMessage(MESSAGE("&bArme : sharpness, smite, bane_of_arthropods, knockback, fire_aspect, looting, power, punch, flame, infinity"));
@@ -77,11 +78,11 @@ public class CommandEnchant implements CommandExecutor {
                         }
 
                         EnchantmentData enchantmentData = itemInHand.getOrCreate(EnchantmentData.class).get();
-                        ItemEnchantment itemEnchantment = new ItemEnchantment(enchantment, level.get());
-                        ItemEnchantment sameEnchantment = null;
+                        Enchantment itemEnchantment = Enchantment.of(enchantment, level.get());
+                        Enchantment sameEnchantment = null;
 
-                        for (ItemEnchantment ench : enchantmentData.enchantments()){
-                            if (ench.getEnchantment().getId().equals(enchantment.getId())){
+                        for (Enchantment ench : enchantmentData.enchantments()){
+                            if (ench.getType().equals(enchantment)){
                                 sameEnchantment = ench;
                                 break;
                             }

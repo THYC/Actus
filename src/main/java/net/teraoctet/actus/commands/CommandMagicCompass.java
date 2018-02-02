@@ -102,7 +102,7 @@ public class CommandMagicCompass implements CommandExecutor {
                 
                 if(is.isPresent()){ 
                     if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-                        if(player.getItemInHand(HandTypes.MAIN_HAND).get().getItem().equals(COMPASS)){
+                        if(player.getItemInHand(HandTypes.MAIN_HAND).get().getType().equals(COMPASS)){
                             player.setItemInHand(HandTypes.MAIN_HAND, is.get()); 
                         }else{
                             player.sendMessage(MESSAGE("&eVous devez avoir une boussole dans votre main"));

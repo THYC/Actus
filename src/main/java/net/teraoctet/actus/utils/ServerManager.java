@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.function.Consumer;
 import static net.teraoctet.actus.Actus.mapCountDown;
 import net.teraoctet.actus.player.APlayer;
@@ -51,9 +52,23 @@ public class ServerManager {
         Optional<UserStorageService> userStorage = Sponge.getServiceManager().provide(UserStorageService.class);
         return userStorage.get().get(player).get().getPlayer();
     }
+    
+    /**
+     * retourne l'objet Player
+     * @param playerUUID UUID du joueur à retourner
+     * @return Player
+     */
+    public Optional<Player> getPlayer(UUID playerUUID) {
+        Optional<Player> onlinePlayer = Sponge.getServer().getPlayer(playerUUID);
+        if (onlinePlayer.isPresent()) {
+            return onlinePlayer;
+        }
+        Optional<UserStorageService> userStorage = Sponge.getServiceManager().provide(UserStorageService.class);
+        return userStorage.get().get(playerUUID).get().getPlayer();
+    }
         
     /**
-     * retourne l'idetifier UUID du joueur
+     * retourne l'identifier UUID du joueur
      * @param player nom du joueur à retourner
      * @return String
      */
@@ -270,7 +285,7 @@ public class ServerManager {
         if(Config.COOLDOWN_TO_TP()>0){
             CooldownToTP tp = new CooldownToTP(player,worldS, X, Y, Z, Optional.ofNullable(msg));
             tp.run();
-            mapCountDown.put(player, tp);
+            mapCountDown.put(player.getIdentifier(), tp);
             return tp.getResult();
         }else{
             Location lastLocation = player.getLocation();
@@ -303,7 +318,7 @@ public class ServerManager {
         if(Config.COOLDOWN_TO_TP()>0){
             CooldownToTP tp = new CooldownToTP(player,entity,worldS, X, Y, Z);
             tp.run();
-            mapCountDown.put(player, tp);
+            mapCountDown.put(player.getIdentifier(), tp);
             return tp.getResult();
         }else{
             Location lastLocation = player.getLocation();
@@ -333,7 +348,7 @@ public class ServerManager {
             CooldownToTP tp = new CooldownToTP(player,target.getWorld().getName(), 
                     target.getLocation().getBlockX(), target.getLocation().getBlockY(),target.getLocation().getBlockZ());
             tp.run();
-            mapCountDown.put(player, tp);
+            mapCountDown.put(player.getIdentifier(), tp);
             return tp.getResult();
         }else{
             Location lastLocation = player.getLocation();

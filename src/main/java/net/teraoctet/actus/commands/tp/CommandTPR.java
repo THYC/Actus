@@ -77,9 +77,9 @@ public class CommandTPR implements CommandExecutor {
         Vector3d centre = worldBorder.getCenter();
         
         int x = d/2 + (int)(Math.random() * ((D/2 - d/2) + 1)); 
-        plugin.getLogger().info(String.valueOf(x));
+        //plugin.getLogger().info(String.valueOf(x));
         int z = d/2 + (int)(Math.random() * ((D/2 - d/2) + 1));
-        plugin.getLogger().info(String.valueOf(z));
+        //plugin.getLogger().info(String.valueOf(z));
         Location tmp = new Location<>(world, new Vector3d(x + centre.getX(), 250, z + centre.getZ()));
         tmp = getFinalLocation(tmp);
         

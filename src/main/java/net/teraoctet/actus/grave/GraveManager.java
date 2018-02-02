@@ -241,7 +241,7 @@ public class GraveManager {
     public void moveGraveyard(){
         Grave grave;
         int nb = 0;
-        for(String loc : getListGrave()){            
+        for(String loc : getListGrave()){ 
             if(sm.addDate(configGrave.load(loc).get().getGraveTime()) < sm.dateToLong()){
                 grave = configGrave.load(loc).get();
                 moveGrave(grave);

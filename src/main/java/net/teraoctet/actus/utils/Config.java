@@ -4,22 +4,22 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
 public class Config {
     public static final File FILE = new File("config/actus/actus.conf");
-    public static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
-    public static ConfigurationNode config = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
+    public static final ConfigurationLoader<CommentedConfigurationNode> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
+    public static CommentedConfigurationNode config = MANAGER.createEmptyNode();
     
     public static void setup() {
         try {
             if (!FILE.exists()) {
                 FILE.createNewFile();
+
                 config.getNode("mysql").getOptions().setHeader("PARAMETRE DE CONNECTION MYSQL, SI USE=FALSE ALORS C'EST LA BASE H2 QUI EST UTILISE");
-                config.getNode("mysql", "USE").setValue(false);
+                config.getNode("mysql", "USE").setValue(false).getOptions().setHeader("UTILISATION DE MYSQL ? true/false");
                 config.getNode("mysql", "HOST").setValue("localhost");
                 config.getNode("mysql", "PORT").setValue(3306);
                 config.getNode("mysql", "USERNAME").setValue("root");
@@ -34,7 +34,7 @@ public class Config {
                 config.getNode("guild", "MAX_NUMBER_OF_MEMBER").setValue(20);
                 config.getNode("guild", "NAME_MAX_SIZE").setValue(25);
                 config.getNode("guild", "NAME_MIN_SIZE").setValue(5);
-                config.getNode("server", "TITLE").setValue("Bienvenu sur CubiCraft");
+                config.getNode("server", "TITLE").setValue("Bienvenu sur CubiCraft").setComment("affichage msg Title a la connection");
                 config.getNode("server", "SUBTITLE").setValue("Serveur [FR] CRAFT.TER@OCTET");
                 config.getNode("server", "URLWEB").setValue("http://craft.teraoctet.net");
                 config.getNode("server", "COOLDOWN_TO_TP").setValue(10);
@@ -47,9 +47,11 @@ public class Config {
                 config.getNode("server", "LEVEL_ADMIN").setValue(10);
                 config.getNode("server", "LEVEL_DEFAULT").setValue(0);
                 config.getNode("server", "AUTOFOREST").setValue(false);
+                config.getNode("server", "ENABLE_TREEBREAK").setValue(false);
                 config.getNode("server", "ENDERMAN_DESTRUCT").setValue(false);
                 config.getNode("server", "AUTOLOCKCHEST").setValue(false);
                 config.getNode("server", "ENABLE_LOCKCHEST").setValue(true);
+                config.getNode("server", "ITEM_DURABILITY").setValue(10);
                 config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").setValue(10);
                 config.getNode("grave", "ENABLE_SKULL_GRAVE").setValue(true);
                 config.getNode("grave", "ENABLE_SIGN_GRAVE").setValue(false);
@@ -89,10 +91,11 @@ public class Config {
     public static int LEVEL_ADMIN() { return config.getNode("server", "LEVEL_ADMIN").getInt(); }
     public static int LEVEL_DEFAULT() { return config.getNode("server", "LEVEL_DEFAULT").getInt(); }
     public static boolean AUTOFOREST() { return config.getNode("server", "AUTOFOREST").getBoolean(); }
+    public static boolean ENABLE_TREEBREAK() { return config.getNode("server", "ENABLE_TREEBREAK").getBoolean(); }
     public static boolean ENDERMAN_DESTRUCT() { return config.getNode("server", "ENDERMAN_DESTRUCT").getBoolean(); }
     public static boolean AUTO_LOCKCHEST() { return config.getNode("server", "AUTO_LOCKCHEST").getBoolean(); }
     public static boolean ENABLE_LOCKCHEST() { return config.getNode("server", "ENABLE_LOCKCHEST").getBoolean(); }
-    public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(); }
+    public static int DAYS_BEFORE_MOVE_GRAVE() { return config.getNode("grave", "DAYS_BEFORE_MOVE_GRAVE").getInt(3); }
     public static boolean ENABLE_SKULL_GRAVE() { return config.getNode("grave", "ENABLE_SKULL_GRAVE").getBoolean(); }
     public static boolean ENABLE_SIGN_GRAVE() { return config.getNode("grave", "ENABLE_SIGN_GRAVE").getBoolean(); }
     public static boolean ENABLE_TROC_SCOREBOARD() { return config.getNode("troc", "ENABLE_TROC_SCOREBOARD").getBoolean(); }
@@ -147,6 +150,20 @@ public class Config {
     }
     
     /**
+     * Active/Desactive l'efondrement de l'arbre coupé avec la hache diamant
+     * @param val 
+     */
+    public void setEnableTreeBreak(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("server","ENABLE_TREEBREAK").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
      * Active/Desactive l'autoLock des coffres, si true, le coffre sera lock dès sa pose
      * @param val 
      */
@@ -168,6 +185,34 @@ public class Config {
         try {
             config = MANAGER.load();
             config.getNode("server","ENABLE_LOCKCHEST").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Active/Desactive la casse des blocks lors de l'explosion des creepers
+     * @param val 
+     */
+    public void setEnableCreeper(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("server","CREEPER_DISABLE").setValue(val);
+            MANAGER.save(config);
+        } catch (IOException ex) {
+            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Active/Desactive la casse des blocks lors de l'explosion de la TNT
+     * @param val 
+     */
+    public void setEnableTNT(boolean val) {
+        try {
+            config = MANAGER.load();
+            config.getNode("server","TNT_DISABLE").setValue(val);
             MANAGER.save(config);
         } catch (IOException ex) {
             Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);

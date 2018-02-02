@@ -64,6 +64,8 @@ import static org.spongepowered.api.item.ItemTypes.ARROW;
 import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.filter.type.Exclude;
+import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.LocatableBlock;
 
 public class PlotListener {
@@ -86,7 +88,7 @@ public class PlotListener {
         // Event click gauche -- saisie angle 1 plot
         if (event instanceof InteractBlockEvent.Primary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL)){
+                if(itemInHand.get().getType().equals(WOODEN_SHOVEL)){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){
@@ -129,7 +131,7 @@ public class PlotListener {
         // Event click droit -- saisie angle 2 plot
 	if (event instanceof InteractBlockEvent.Secondary){
             if(itemInHand.isPresent()){
-                if(itemInHand.get().getItem().equals(WOODEN_SHOVEL)){
+                if(itemInHand.get().getType().equals(WOODEN_SHOVEL)){
                     if (plot.isPresent()) {
                         player.sendMessage(PLOT_INFO(player,plot.get().getNameOwner(),plot.get().getNameAllowed(),plot.get().getName()));
                         if(player.hasPermission("actus.admin.plot")){                            
@@ -169,10 +171,10 @@ public class PlotListener {
         
         // si la boussole est en main, on sort"
         if (itemInHand.isPresent()) {
-            if(itemInHand.get().getItem().equals(COMPASS)){  
+            if(itemInHand.get().getType().equals(COMPASS)){  
                 return;
             } 
-            if(itemInHand.get().getItem().equals(ARROW)){
+            if(itemInHand.get().getType().equals(ARROW)){
                 event.setCancelled(true);
                 return;
             }  
@@ -260,6 +262,7 @@ public class PlotListener {
     }
         
     @Listener
+    @Exclude (MoveEntityEvent.Teleport.class)
     public void onPlayerMovePlot(MoveEntityEvent event , @First Player player) {
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
         Transform<World> to = event.getToTransform();
@@ -271,20 +274,62 @@ public class PlotListener {
         
         if(!fplot.isPresent()) {
             if(plot.isPresent()){
-                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
-                player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString())){
+                    if(plot.get().getMessage().startsWith("#t")){
+                        if(plot.get().getMessage().contains("#st")){
+                            int index = plot.get().getMessage().indexOf("#st");
+                            Title t = Title.builder()
+                                    .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                    .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                    .fadeIn(30)
+                                    .stay(30)
+                                    .fadeOut(30)
+                                    .build();
+                            player.sendTitle(t);
+                        }else{
+                            player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                        }
+                    }else{
+                        if(plot.get().getMessage().startsWith("#b")){
+                            player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                        }else{
+                            player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                        }
+                    }  
+                }
             }
         }
         
         if(fplot.isPresent() && plot.isPresent()) {
             if(!plot.get().equals(fplot.get())){
-                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString()))
-                player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString())){
+                    if(plot.get().getMessage().startsWith("#t")){
+                        if(plot.get().getMessage().contains("#st")){
+                            int index = plot.get().getMessage().indexOf("#st");
+                            Title t = Title.builder()
+                                    .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                    .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                    .fadeIn(30)
+                                    .stay(30)
+                                    .fadeOut(30)
+                                    .build();
+                            player.sendTitle(t);
+                        }else{
+                            player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                        }
+                    }else{
+                        if(plot.get().getMessage().startsWith("#b")){
+                            player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                        }else{
+                            player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                        }
+                    }  
+                }
             }
         }
 
         if(plot.isPresent()){
-            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != 10){
+            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN()){
                 if (player.get(Keys.CAN_FLY).isPresent()) { 
                     if(player.get(Keys.CAN_FLY).get() == true && plot.get().getNoFly()) {
                         player.offer(Keys.IS_FLYING, false); 
@@ -294,7 +339,27 @@ public class PlotListener {
                 }
 
                 if(!fplot.isPresent()) {
-                    player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                    if(plot.get().getMessage().startsWith("#t")){
+                        if(plot.get().getMessage().contains("#st")){
+                            int index = plot.get().getMessage().indexOf("#st");
+                            Title t = Title.builder()
+                                    .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                    .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                    .fadeIn(30)
+                                    .stay(30)
+                                    .fadeOut(30)
+                                    .build();
+                            player.sendTitle(t);
+                        }else{
+                            player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                        }
+                    }else{
+                        if(plot.get().getMessage().startsWith("#b")){
+                            player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                        }else{
+                            player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                        }
+                    }  
                     if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
                         player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
                         player.sendMessage(PLOT_NO_ENTER());
@@ -304,7 +369,27 @@ public class PlotListener {
                 
                 if(fplot.isPresent()) {
                     if(!fplot.get().equals(plot.get())){
-                        player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                        if(plot.get().getMessage().startsWith("#t")){
+                            if(plot.get().getMessage().contains("#st")){
+                                int index = plot.get().getMessage().indexOf("#st");
+                                Title t = Title.builder()
+                                        .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                        .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                        .fadeIn(30)
+                                        .stay(30)
+                                        .fadeOut(30)
+                                        .build();
+                                player.sendTitle(t);
+                            }else{
+                                player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                            }
+                        }else{
+                            if(plot.get().getMessage().startsWith("#b")){
+                                player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                            }else{
+                                player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                            }
+                        }  
                         if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
                             player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
                             player.sendMessage(PLOT_NO_ENTER());
@@ -439,9 +524,11 @@ public class PlotListener {
     public void onLiquidFlow(ChangeBlockEvent.Pre event,@Root LocatableBlock block) {
         Optional<Plot> plot = ptm.getPlot(block.getLocation());
         if (plot.isPresent()) {                 
-            Optional<MatterProperty> matter = block.getBlockState().getProperty(MatterProperty.class);
-            if (matter.isPresent() && matter.get().getValue() == Matter.LIQUID) {
-                event.setCancelled(true);
+            if(plot.get().getNoLiquidFlow()){
+                Optional<MatterProperty> matter = block.getBlockState().getProperty(MatterProperty.class);
+                if (matter.isPresent() && matter.get().getValue() == Matter.LIQUID) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -468,7 +555,6 @@ public class PlotListener {
         if (plot.isPresent()) {
             if (event.getTargetEntity() instanceof Player) {
                 Entity ent = entity.getSource();
-                //Player player = (Player) event.getTargetEntity();
             
                 if (damage.getType() == DamageTypes.FIRE || damage.getType() == DamageTypes.MAGMA) {
                     if(plot.get().getNoPVPplayer())event.setCancelled(true);
@@ -491,18 +577,13 @@ public class PlotListener {
             } else if(event.getTargetEntity() instanceof Monster) {
 		if(plot.get().getNoPVPmonster())event.setCancelled(true);
             } else if(event.getTargetEntity() instanceof Animal) {
-		//if(plot.get().getNoMob())event.setCancelled(true);
-                //event.getTargetEntity().offer(Keys.TAMED_OWNER, entity.getSource().getUniqueId());
-                event.getTargetEntity().offer(Keys.ANGRY,true);
-                event.getTargetEntity().offer(Keys.ANGER,1000);
-                //event.getTargetEntity().offer(Keys.CAN_BREED,true);
-                //event.getTargetEntity().getScale().
+		if(plot.get().getNoPVPplayer())event.setCancelled(true);
             } 
 	}
     }
 	
     @Listener
-    public void onDamage(DamageEntityEvent event, @Root DamageSource damage) {
+    public void onDamage(DamageEntityEvent event, @First Player player) {
 	if (event.getTargetEntity() instanceof Player) {
             Optional<Plot> plot = ptm.getPlot(event.getTargetEntity().getLocation());
             if (plot.isPresent()) {

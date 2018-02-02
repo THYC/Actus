@@ -88,7 +88,6 @@ import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
 import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
-import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.service.ProviderRegistration;
 import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -176,8 +175,8 @@ public class PlayerListener {
     
     @Listener
     public void promptDouble(MessageChannelEvent.Chat event, @First Player player) {
-        if(inputDouble.containsKey(player)){
-            if(inputDouble.get(player) > 0d)return;
+        if(inputDouble.containsKey(player.getIdentifier())){
+            if(inputDouble.get(player.getIdentifier()) > 0d)return;
             
             String smessage = event.getOriginalMessage().toPlain();
             smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
@@ -186,12 +185,12 @@ public class PlayerListener {
             if(scanner.hasNextDouble()){
                 double d = scanner.nextDouble();
                 if(d==0){
-                    inputDouble.remove(player);
+                    inputDouble.remove(player.getIdentifier());
                     player.sendMessage(MESSAGE("&bL'action a \351t\351 annul\351"));
                     event.clearMessage();
                     return;
                 }
-                inputDouble.replace(player, d);
+                inputDouble.replace(player.getIdentifier(), d);
                 player.sendMessage(CLICK_TO_CONFIRM()
                     .concat(MESSAGE("&esi tu tiens ta bourse dans ta main, la somme sera vers\351 dessus sinon tu aura des \351meraudes")));
             }else{
@@ -202,7 +201,7 @@ public class PlayerListener {
             event.clearMessage();
             return;
         }
-        if(inputShop.containsKey(player)){
+        if(inputShop.containsKey(player.getIdentifier())){
             String smessage = event.getOriginalMessage().toPlain();
             smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
             Scanner scanner = new Scanner(smessage);
@@ -210,12 +209,12 @@ public class PlayerListener {
             if(scanner.hasNextDouble()){
                 double d = scanner.nextDouble();
                 if(d==0){
-                    inputShop.remove(player);
+                    inputShop.remove(player.getIdentifier());
                     player.sendMessage(MESSAGE("&bL'action a \351t\351 annul\351"));
                     event.clearMessage();
                     return;
                 }
-                Sponge.getCommandManager().process(player, inputShop.get(player) + " " + String.valueOf(d));
+                Sponge.getCommandManager().process(player, inputShop.get(player.getIdentifier()) + " " + String.valueOf(d));
             }else{                
                 player.sendMessage(MESSAGE("&bTapes uniquement des chiffres ! recommences : ")
                 .concat(MESSAGE("&bTapes 0 pour annuler")));
@@ -226,7 +225,7 @@ public class PlayerListener {
         
         String smessage = event.getMessage().toPlain();
         smessage = smessage.replaceAll("<" + player.getName() + "> ", "");
-        Text message = MESSAGE(Permissions.getPrefix(player) + " &l&7" + player.getName() + ": &r&7" + smessage + Permissions.getSuffix(player));
+        Text message = MESSAGE(Permissions.getPrefix(player) + "&l&7" + player.getName() + ": &r&7" + smessage + Permissions.getSuffix(player));
         Text prefixWorld = MESSAGE(WorldManager.getWorld(player.getWorld().getName()).getPrefix()) ;
         Text newMessage = Text.builder().append(prefixWorld).append(message).build();
         event.setMessage(newMessage);
@@ -240,6 +239,7 @@ public class PlayerListener {
             if(!event.getTargetInventory().getName().get().contains(player.getName()) && 
                     !event.getTargetInventory().getName().get().contains("[+]") && 
                     !event.getTargetInventory().getName().get().contains("Chest") &&
+                    !event.getTargetInventory().getName().get().contains("TROC") &&
                     aplayer.getLevel() != LEVEL_ADMIN()){
                 player.sendMessage(CHEST_LOCK());
                 event.setCancelled(true);     
@@ -257,7 +257,7 @@ public class PlayerListener {
 
                 if(chest.get(Keys.DISPLAY_NAME).isPresent()){
                     String name = chest.get(Keys.DISPLAY_NAME).get().toPlain();         
-                    if(!name.contains(player.getName()) && !name.contains("[+]")){
+                    if(!name.contains(player.getName()) && !name.contains("[+]") && !name.contains("TROC")){
                         player.sendMessage(CHEST_LOCK());
                         event.setCancelled(true);  
                     }
@@ -272,7 +272,7 @@ public class PlayerListener {
         Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                 
         if (is.isPresent()) {          
-            if(is.get().getItem().equals(COMPASS)){   
+            if(is.get().getType().equals(COMPASS)){   
                 SettingCompass sc = new SettingCompass();
                                         
                 // si interact sur sign "Parcelle a vendre"
@@ -425,7 +425,7 @@ public class PlayerListener {
                                     configBook.OpenListBookMessage(player);
                                     return;
                                 }
-                                if(is.get().getItem().equals(WRITTEN_BOOK) || is.get().getItem().equals(WRITABLE_BOOK)){
+                                if(is.get().getType().equals(WRITTEN_BOOK) || is.get().getType().equals(WRITABLE_BOOK)){
                                     Book book = new Book();
                                     if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
                                         book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
@@ -468,7 +468,7 @@ public class PlayerListener {
                             if(dest.equalsIgnoreCase("[======]")){
                                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                                 if(is.isPresent()){
-                                    if(is.get().getItem().equals(WRITTEN_BOOK)){
+                                    if(is.get().getType().equals(WRITTEN_BOOK)){
                                         Book book = new Book();
                                         if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
                                             book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());
@@ -548,9 +548,9 @@ public class PlayerListener {
     public void onTPwithPVP(DamageEntityEvent event){
         if(event.getTargetEntity() instanceof Player){
             Player player = (Player)event.getTargetEntity();
-            if(mapCountDown.containsKey(player)){
-                mapCountDown.get(player).stopTP();
-                mapCountDown.remove(player);
+            if(mapCountDown.containsKey(player.getIdentifier())){
+                mapCountDown.get(player.getIdentifier()).stopTP();
+                mapCountDown.remove(player.getIdentifier());
                 player.sendMessage(MESSAGE("&eCombat d\351tect\351: T\351l\351portation annul\351e"));
             }
         }  

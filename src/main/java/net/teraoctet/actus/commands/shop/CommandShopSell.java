@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import static net.teraoctet.actus.Actus.action;
 import static net.teraoctet.actus.Actus.ism;
+import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.shop.ItemShop;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
@@ -18,8 +19,6 @@ import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 
 public class CommandShopSell implements CommandExecutor {
         
@@ -28,12 +27,12 @@ public class CommandShopSell implements CommandExecutor {
 
         if(src instanceof Player && src.hasPermission("actus.player.shop")) {
             Player player = (Player) src;
-            if(!action.containsKey(player)){
+            if(!action.containsKey(player.getIdentifier())){
                 player.sendMessages(MESSAGE("&eVous n'avez pas de transaction en cours"));
                 player.sendMessages(MESSAGE("&eVous devez d'abord faire un click droit sur le Shop d'achat"));
                 return CommandResult.empty();
             }
-            action.remove(player);
+            action.remove(player.getIdentifier());
             Optional<String> uuid = ctx.<String> getOne("uuid");
             Optional<ItemShop> itemShop = ism.getItemShop(UUID.fromString(uuid.get()));
             if(itemShop.isPresent()){
@@ -41,14 +40,15 @@ public class CommandShopSell implements CommandExecutor {
                 double price = itemShop.get().getPrice();
                 
                 if(player.getItemInHand(HandTypes.MAIN_HAND).isPresent()){
-                    if(player.getItemInHand(HandTypes.MAIN_HAND).get().equals(is)){
+                    if(player.getItemInHand(HandTypes.MAIN_HAND).get().getType().equals(is.getType()) 
+                            && sm.getItemID(player.getItemInHand(HandTypes.MAIN_HAND).get()).get().equals(sm.getItemID(is).get())){
                         int qte = player.getItemInHand(HandTypes.MAIN_HAND).get().getQuantity();
                         double coin = price*qte*100;
                         coin = round(coin);
                         coin = coin/100;
                         
                         // On verifie si le joueur a une bourse dans son inventaire et on lui verse la monaie
-                        for(Inventory slotInv : player.getInventory().query(Hotbar.class).slots()){
+                        for(Inventory slotInv : player.getInventory().slots()){
                             Optional<ItemStack> peek = slotInv.peek();
                             if(peek.isPresent()){
                                 if(ism.hasCoinPurses(peek.get())){
@@ -60,19 +60,6 @@ public class CommandShopSell implements CommandExecutor {
                                 }
                             }
                         }
-                        
-                        for(Inventory slotInv : player.getInventory().query(GridInventory.class).slots()){
-                            Optional<ItemStack> peek = slotInv.peek();
-                            if(peek.isPresent()){
-                                if(ism.hasCoinPurses(peek.get())){
-                                    slotInv.clear();
-                                    slotInv.offer(ism.addCoin(coin, peek.get()).get());
-                                    player.setItemInHand(HandTypes.MAIN_HAND,null);
-                                    player.sendMessages(MESSAGE("&ela somme a \351t\351 ajout\351 a ta bourse :)"));
-                                    return CommandResult.success();
-                                }
-                            }
-			}
 
                         // si le joueur n'a pas de bourse, on lui en donne une
                         player.setItemInHand(HandTypes.MAIN_HAND,ism.CoinPurses(player, coin).get());

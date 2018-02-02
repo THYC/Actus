@@ -45,7 +45,7 @@ public class CommandPostBookMsg implements CommandExecutor {
                 
                 Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
                 if(is.isPresent()){
-                    if(is.get().getItem().equals(WRITTEN_BOOK)){
+                    if(is.get().getType().equals(WRITTEN_BOOK)){
                         Book book = new Book();
                         if(is.get().get(Keys.BOOK_AUTHOR).isPresent()){
                             book.setAuthor(is.get().get(Keys.BOOK_AUTHOR).get());

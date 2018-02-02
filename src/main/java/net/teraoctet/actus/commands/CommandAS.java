@@ -38,7 +38,6 @@ import static net.teraoctet.actus.utils.MessageManager.POSITION_Z_AS;
 import static net.teraoctet.actus.utils.MessageManager.RIGHT_ARM_ROTATION;
 import static net.teraoctet.actus.utils.MessageManager.RIGHT_LEG_ROTATION;
 import static net.teraoctet.actus.utils.MessageManager.ROTATION_AS;
-import static net.teraoctet.actus.utils.MessageManager.formatText;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
@@ -92,13 +91,13 @@ public class CommandAS implements CommandExecutor {
                 String titre = "ArmorStand";
                 if(ism.hasShop(uuid)){
                     Optional<ItemShop> shop = ism.getItemShop(uuid);
-                    if(shop.isPresent()) titre = "Shop : " + shop.get().getItemStack().getItem().getName();
+                    if(shop.isPresent()) titre = "Shop : " + shop.get().getItemStack().getType().getName();
                 }
 
                 PaginationService paginationService = getGame().getServiceManager().provide(PaginationService.class).get();
                     PaginationList.Builder builder = paginationService.builder();
 
-                    builder.title(formatText("&e" + titre ))
+                    builder.title(MESSAGE("&e" + titre ))
                             .contents(                                        
                                 Text.builder().append(CHEST_ROTATION()).toText().concat(
                                 Text.builder().append(MESSAGE("&a[ X ] ")).onClick(TextActions.executeCallback(callBodyRotation(as, BodyParts.CHEST, Axis.X, false))).toText().concat(

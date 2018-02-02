@@ -55,7 +55,6 @@ public class PortalListener {
             Portal portal = optPortal.get();
             if(optPortalFrom.isPresent()){
                 if(portal.equals(optPortalFrom.get()))return;
-                plugin.getLogger().info("OK1");
             }
             if(player.hasPermission("actus.portal." + portal.getName()) || aplayer.getLevel() == LEVEL_ADMIN())
             {
