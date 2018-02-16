@@ -623,22 +623,30 @@ public class TrocManager {
         player.sendBookView(bv.build());   
     }
     
+    private boolean checkItemTroc(String loc, int slot){
+        if(getTroc(loc,slot).isPresent()){
+            if(getTroc(loc,1).get().getPlayerName().equals("LIBRE"))return true;
+        }else{
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * retourne True si le chestTroc est vide
      * @param loc position au format Location String "World:x;y;z"
      * @return 
      */
-    public boolean chestTrocHasEmpty(String loc){
-        
-        return (getTroc(loc,0).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,1).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,2).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,3).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,4).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,5).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,6).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,7).get().getPlayerName().equals("LIBRE") &&
-                getTroc(loc,8).get().getPlayerName().equals("LIBRE"));
+    public boolean chestTrocHasEmpty(String loc){        
+        return (checkItemTroc(loc,0) &&
+                checkItemTroc(loc,1) &&
+                checkItemTroc(loc,2) &&
+                checkItemTroc(loc,3) &&
+                checkItemTroc(loc,4) &&
+                checkItemTroc(loc,5) &&
+                checkItemTroc(loc,6) &&
+                checkItemTroc(loc,7) &&
+                checkItemTroc(loc,8));
     }
     
     public void writeToChestSign(String locTroc, String owner, Optional<String> guild){

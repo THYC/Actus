@@ -2,7 +2,6 @@ package net.teraoctet.actus.plot;
 
 import com.flowpowered.math.vector.Vector3d;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import net.teraoctet.actus.player.APlayer;
@@ -207,7 +206,7 @@ public class PlotManager {
         int nb = 0;
         for (Plot plot : PLOTS) {
             if(plot.getUuidOwner().equalsIgnoreCase(playerUUID)){
-                listplot = listplot + "\n" + plot.getName();
+                listplot = listplot + "\n" + plot.getName() + " [1] " + plot.getX1() + ":" + plot.getY1() + ":" + plot.getZ1() + " [2] " + plot.getX2() + ":" + plot.getY2() + ":" + plot.getZ2();
                 nb++;
             }
         }
@@ -341,6 +340,45 @@ public class PlotManager {
     }
     
     /**
+     * Retourne True si le player est Owner d'une parcelle unique englobant la nouvelle parcelle
+     * @param player
+     * @param l1
+     * @param l2
+     * @return 
+     */
+    public boolean hasUniquePlotParent(Player player, Location l1, Location l2){
+        Location <World> w = l1;
+        World world = w.getExtent();
+        Plot newPlot = new Plot(world.getName(),l1.getBlockX(),0,l1.getBlockZ(),l2.getBlockX(),500,l2.getBlockZ());
+        String plotname = "nd";        
+        if(getPlot(newPlot.getLocX1Y1Z1()).isPresent()){
+            plotname = getPlot(newPlot.getLocX1Y1Z1()).get().getName();
+        }
+        if(getPlot(newPlot.getLocX1Y1Z2()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX1Y1Z2()).get().getName()))return false;
+        }
+        if(getPlot(newPlot.getLocX1Y2Z2()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX1Y2Z2()).get().getName()))return false;
+        }
+        if(getPlot(newPlot.getLocX2Y2Z1()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX2Y2Z1()).get().getName()))return false;
+        }
+        if(getPlot(newPlot.getLocX2Y2Z2()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX2Y2Z2()).get().getName()))return false;
+        }
+        if(getPlot(newPlot.getLocX2Y1Z2()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX2Y1Z2()).get().getName()))return false;
+        }
+        if(getPlot(newPlot.getLocX2Y1Z1()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX2Y1Z1()).get().getName()))return false;
+        }
+        if(getPlot(newPlot.getLocX1Y2Z1()).isPresent()){
+            if(!plotname.equalsIgnoreCase(getPlot(newPlot.getLocX1Y2Z1()).get().getName()))return false;
+        }
+        return !plotname.equalsIgnoreCase("nd");
+    }
+    
+    /**
      * Retourne le level le plus haut des parcelles parent + 1
      * @param player
      * @param l1
@@ -348,7 +386,7 @@ public class PlotManager {
      * @return 
      */
     public Integer  getMaxLevelPlotParent(Player player, Location l1, Location l2){
-        int level = 0;
+        int level = 1;
         for (Plot plot : getListPlotParent(l1,l2)) {
             if(plot.getLevel() >= level) level = plot.getLevel() + 1;
         }

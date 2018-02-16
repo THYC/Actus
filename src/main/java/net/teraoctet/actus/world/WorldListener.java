@@ -5,17 +5,16 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static net.teraoctet.actus.Actus.configInv;
 import static net.teraoctet.actus.Actus.ptm;
-import net.teraoctet.actus.inventory.AInventory;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
 import net.teraoctet.actus.utils.Config;
 import static net.teraoctet.actus.utils.Config.AUTOFOREST;
 import static net.teraoctet.actus.utils.Config.ENABLE_TREEBREAK;
-import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
+import static net.teraoctet.actus.utils.Config.ENDERMAN_DESTRUCT;
 import net.teraoctet.actus.utils.DeSerialize;
+import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static org.spongepowered.api.Sponge.getGame;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
@@ -176,24 +175,24 @@ public class WorldListener {
         }
     }
     
-    /*@Listener
-    public void onTeleport(MoveEntityEvent.Teleport event) {
-        if(event.getTargetEntity() instanceof Player){
-            Player player = (Player) event.getTargetEntity();
-            APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            aplayer.setLastposition(DeSerialize.location(event.getFromTransform().getLocation()));
-            aplayer.update();
-            AInventory inv = new AInventory(player, event.getFromTransform().getExtent().getName());
-            configInv.save(inv);
-            if(aplayer.getLevel() != LEVEL_ADMIN())player.offer(Keys.GAME_MODE, player.getWorld().getProperties().getGameMode());
-            inv = configInv.load(player, event.getToTransform().getExtent().getName()).get();
-            inv.set();
-        }
-    }*/
+    @Listener
+    public void onTeleport(MoveEntityEvent.Teleport event, @First Player player){
+        APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+        aplayer.setLastposition(DeSerialize.location(event.getFromTransform().getLocation()));
+        aplayer.update();
+        //AInventory inv = new AInventory(player, event.getFromTransform().getExtent().getName());
+        //configInv.save(inv);
+        //if(aplayer.getLevel() != LEVEL_ADMIN())player.offer(Keys.GAME_MODE, player.getWorld().getProperties().getGameMode());
+        //inv = configInv.load(player, event.getToTransform().getExtent().getName()).get();
+        //inv.set();        
+    }
     
     @Listener
     public void treeBreak(ChangeBlockEvent.Break breakEvent, @First Player player) throws Exception {
         if(!ENABLE_TREEBREAK())return;
+        if (breakEvent.getTransactions().size() > 1) {
+            return;
+        }
         if (!firedEvents.contains(breakEvent) && 
             !breakEvent.isCancelled() && breakEvent.getTransactions().size() == 1 &&
             TreeDetector.isWood(breakEvent.getTransactions().get(0).getOriginal())) {
@@ -201,36 +200,40 @@ public class WorldListener {
             Optional<ItemStack> is = player.getItemInHand(HandTypes.MAIN_HAND);
             
             if (is.isPresent() && is.get().getType().equals(DIAMOND_AXE)) {
-                TreeDetector tree = new TreeDetector(breakEvent.getTransactions().get(0).getOriginal());
-                List<Transaction<BlockSnapshot>> transactions = new ArrayList<>(tree.getWoodLocations().size());
-                player.getWorld().playSound(SoundTypes.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, player.getLocation().getPosition(), 2); 
-                tree.getWoodLocations().forEach(blockSnapshot -> {
-                    if (!blockSnapshot.equals(breakEvent.getTransactions().get(0).getOriginal())) {
-                        BlockState newState = BlockTypes.AIR.getDefaultState();
-                        BlockSnapshot newSnapshot = blockSnapshot.withState(newState).withLocation(new Location<>(player.getWorld(), blockSnapshot.getPosition()));
-                        Transaction<BlockSnapshot> t = new Transaction<>(blockSnapshot, newSnapshot);
-                        transactions.add(t);
+                if(is.get().get(Keys.DISPLAY_NAME).isPresent()){
+                    if(is.get().get(Keys.DISPLAY_NAME).get().toPlain().contains("SuperHache")){
+                        TreeDetector tree = new TreeDetector(breakEvent.getTransactions().get(0).getOriginal());
+                        List<Transaction<BlockSnapshot>> transactions = new ArrayList<>(tree.getWoodLocations().size());
+                        player.getWorld().playSound(SoundTypes.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, player.getLocation().getPosition(), 2); 
+                        tree.getWoodLocations().forEach(blockSnapshot -> {
+                            if (!blockSnapshot.equals(breakEvent.getTransactions().get(0).getOriginal())) {
+                                BlockState newState = BlockTypes.AIR.getDefaultState();
+                                BlockSnapshot newSnapshot = blockSnapshot.withState(newState).withLocation(new Location<>(player.getWorld(), blockSnapshot.getPosition()));
+                                Transaction<BlockSnapshot> t = new Transaction<>(blockSnapshot, newSnapshot);
+                                transactions.add(t);
+                            }
+                        });
+
+                        transactions.forEach((Transaction<BlockSnapshot> blockSnapshotTransaction) -> {
+                            ChangeBlockEvent.Break event = SpongeEventFactory.createChangeBlockEventBreak(breakEvent.getCause(),Lists.newArrayList(blockSnapshotTransaction));
+                            firedEvents.add(event);
+
+                            if (!getGame().getEventManager().post(event)) {
+
+                                BlockState bs = blockSnapshotTransaction.getOriginal().getState();
+                                ItemStack item = ItemStack.builder().itemType(bs.getType().getDefaultState().getType().getItem().get()).add(Keys.TREE_TYPE, bs.get(Keys.TREE_TYPE).get()).build();
+                                Entity entity = player.getWorld().createEntity(EntityTypes.ITEM, blockSnapshotTransaction.getOriginal().getPosition());
+                                entity.offer(Keys.REPRESENTED_ITEM, item.createSnapshot());
+                                player.getWorld().spawnEntity(entity);
+                            }
+                            blockSnapshotTransaction.getFinal().getLocation().get().removeBlock();
+                        });
+                        firedEvents.clear();
+                        ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
+                        item.offer(Keys.ITEM_DURABILITY, player.getItemInHand(HandTypes.MAIN_HAND).get().get(Keys.ITEM_DURABILITY).get()-10);
+                        player.setItemInHand(HandTypes.MAIN_HAND,item);
                     }
-                });
-                
-                transactions.forEach((Transaction<BlockSnapshot> blockSnapshotTransaction) -> {
-                    ChangeBlockEvent.Break event = SpongeEventFactory.createChangeBlockEventBreak(breakEvent.getCause(),Lists.newArrayList(blockSnapshotTransaction));
-                    firedEvents.add(event);
-                    
-                    if (!getGame().getEventManager().post(event)) {
-                        
-                        BlockState bs = blockSnapshotTransaction.getOriginal().getState();
-                        ItemStack item = ItemStack.builder().itemType(bs.getType().getDefaultState().getType().getItem().get()).add(Keys.TREE_TYPE, bs.get(Keys.TREE_TYPE).get()).build();
-                        Entity entity = player.getWorld().createEntity(EntityTypes.ITEM, blockSnapshotTransaction.getOriginal().getPosition());
-                        entity.offer(Keys.REPRESENTED_ITEM, item.createSnapshot());
-                        player.getWorld().spawnEntity(entity);
-                    }
-                    blockSnapshotTransaction.getFinal().getLocation().get().removeBlock();
-                });
-                firedEvents.clear();
-                ItemStack item = player.getItemInHand(HandTypes.MAIN_HAND).get();
-                item.offer(Keys.ITEM_DURABILITY, player.getItemInHand(HandTypes.MAIN_HAND).get().get(Keys.ITEM_DURABILITY).get()-10);
-                player.setItemInHand(HandTypes.MAIN_HAND,item);
+                }
             }
         }
     }
@@ -254,8 +257,10 @@ public class WorldListener {
     }
     
     @Listener
-    public void onBlockBreak(ChangeBlockEvent.Modify event, @Root Enderman enderman) {
-        event.setCancelled(true);
+    public void onBlockBreak(ChangeBlockEvent event, @Root Enderman enderman) {
+        if(!ENDERMAN_DESTRUCT()){
+            event.setCancelled(true);
+        }
     }
     
     private double getPower(BlockType powerBlock){

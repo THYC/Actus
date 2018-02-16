@@ -18,6 +18,7 @@ import static net.teraoctet.actus.utils.MessageManager.NO_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import net.teraoctet.actus.utils.TPAH;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
@@ -33,18 +34,19 @@ public class CommandGuildInvit implements CommandExecutor {
             if(GuildManager.hasAnyGuild(aplayer)) {
                 
                 if(ctx.getOne("player").isPresent()) {
-                    Player target = ctx.<Player> getOne("player").get();
-                    if(!target.isOnline()) {
-                        src.sendMessage(NOT_CONNECTED(target.getName()));
+                    User user = ctx.<User> getOne("player").get();
+                    
+                    if(!user.isOnline()) {
+                        src.sendMessage(NOT_CONNECTED(user.getName()));
                         return CommandResult.empty();
                     }
                
-                    TPAH invit = new TPAH(player, target,"guild");
+                    TPAH invit = new TPAH(player, user.getPlayer().get(),"guild");
                     ATPA.add(invit);
 
                     player.sendMessage(MESSAGE("&edemande envoy\351e ..."));
-                    target.sendMessage(MESSAGE("&eTu es invit\351 a rejoindre la guild " + Data.getGuild(aplayer.getID_guild()).getName())); 
-                    target.sendMessage(Text.builder().append(MESSAGE("&bclick ici pour accepter cette demande")).onClick(TextActions.runCommand("/guild accept")).build().toText());
+                    user.getPlayer().get().sendMessage(MESSAGE("&eTu es invit\351 a rejoindre la guild " + Data.getGuild(aplayer.getID_guild()).getName())); 
+                    user.getPlayer().get().sendMessage(Text.builder().append(MESSAGE("&bclick ici pour accepter cette demande")).onClick(TextActions.runCommand("/guild accept")).build().toText());
 
                     return CommandResult.success();
                 }else{

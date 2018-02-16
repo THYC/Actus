@@ -84,7 +84,7 @@ public class CommandPlotExpand implements CommandExecutor {
             Vector3d rotation = player.getHeadRotation();
             
                 // le joueur regarde vers le nord
-            if ((rotation.getY() < -135 && rotation.getY() > -225) || (rotation.getY() > 135 && rotation.getY() < 225)){
+            if (((rotation.getY() < -135 && rotation.getY() > -225) || (rotation.getY() > 135 && rotation.getY() < 225)) && rotation.getFloorX() > -80 && rotation.getFloorX() < 80){
                 if(plot.get().getZ1() > plot.get().getZ2()){
                     // on sauve la valeur dans "point" pour l'affecter à "plot.setZ2" après validation
                     point = plot.get().getZ2() - expand; 
@@ -100,7 +100,7 @@ public class CommandPlotExpand implements CommandExecutor {
                 nbBlock = expand * abs(plot.get().getX1() - plot.get().getX2()); 
                 
                 // le joueur regarde vers l'ouest
-            } else if ((rotation.getY() < -225 && rotation.getY() > -315) || (rotation.getY() > 45 && rotation.getY() < 135)){
+            } else if (((rotation.getY() < -225 && rotation.getY() > -315) || (rotation.getY() > 45 && rotation.getY() < 135)) && rotation.getFloorX() > -80 && rotation.getFloorX() < 80){
                 if(plot.get().getX1() > plot.get().getX2()){
                     // on sauve la valeur dans "point" pour l'affecter à "plot.setX2" après validation
                     point = plot.get().getX2() - expand; 
@@ -115,8 +115,8 @@ public class CommandPlotExpand implements CommandExecutor {
                 nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                 
                 // le joueur regarde vers le sud
-            } else if ((rotation.getY() < -315 && rotation.getY() > -360) || (rotation.getY() < 0 && rotation.getY() > -45) ||
-                    (rotation.getY() < 45 && rotation.getY() > 0) || (rotation.getY() < 360 && rotation.getY() > 315)){
+            } else if (((rotation.getY() < -315 && rotation.getY() > -360) || (rotation.getY() < 0 && rotation.getY() > -45) ||
+                    (rotation.getY() < 45 && rotation.getY() > 0) || (rotation.getY() < 360 && rotation.getY() > 315)) && rotation.getFloorX() > -80 && rotation.getFloorX() < 80){
                 if(plot.get().getZ1() > plot.get().getZ2()){
                     // on sauve la valeur dans "point" pour l'affecter à "plot.setZ1" après validation
                     point = plot.get().getZ1() + expand; 
@@ -131,7 +131,7 @@ public class CommandPlotExpand implements CommandExecutor {
                 nbBlock = expand * abs(plot.get().getX1() - plot.get().getX2());
                 
                 // le joueur regarde vers l'est
-            } else if ((rotation.getY() > -135 && rotation.getY() < -45) || (rotation.getY() > 225 && rotation.getY() < 315)){
+            } else if (((rotation.getY() > -135 && rotation.getY() < -45) || (rotation.getY() > 225 && rotation.getY() < 315)) && rotation.getFloorX() > -80 && rotation.getFloorX() < 80){
                 if(plot.get().getX1() > plot.get().getX2()){
                     // on sauve la valeur dans "point" pour l'affecter à "plot.setX1" après validation
                     point = plot.get().getX1() + expand; 
@@ -145,11 +145,40 @@ public class CommandPlotExpand implements CommandExecutor {
                 }
                 nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                 
+                // le joueur regarde vers le haut
+            } else if (rotation.getFloorX() < -80){
+                if(plot.get().getY1() > plot.get().getY2()){
+                    // on sauve la valeur dans "point" pour l'affecter à "plot.setY1" après validation
+                    point = plot.get().getY1() + expand; 
+                    // on sauve la valeur du point à modifier
+                    axe = "Y1";
+                } else {
+                    // on sauve la valeur dans "point" pour l'affecter à "plot.setY2" après validation
+                    point = plot.get().getY2() + expand;
+                    // on sauve la valeur du point à modifier
+                    axe = "Y2";
+                }
+                nbBlock = 0;//expand * abs(plot.get().getY1() - plot.get().getY2());
+                
+                // le joueur regarde vers le bas
+            } else if (rotation.getFloorX() > 80){
+                if(plot.get().getY1() < plot.get().getY2()){
+                    // on sauve la valeur dans "point" pour l'affecter à "plot.setY1" après validation
+                    point = plot.get().getY1() - expand; 
+                    // on sauve la valeur du point à modifier
+                    axe = "Y1";
+                } else {
+                    // on sauve la valeur dans "point" pour l'affecter à "plot.setY2" après validation
+                    point = plot.get().getY2() - expand;
+                    // on sauve la valeur du point à modifier
+                    axe = "Y2";
+                }
+                nbBlock = 0;//expand * abs(plot.get().getZ1() - plot.get().getZ2());
             }
             
             if(Wedit.WEisActive()){
                 PlotSelection plotSelect = ptm.getPlotSel(player); 
-                Plot plottmp = plot.get();
+                Plot plottmp = new Plot(plot.get().getworldName(),plot.get().getX1(),plot.get().getY1(),plot.get().getZ1(),plot.get().getX2(),plot.get().getY2(),plot.get().getZ2());
                 
                 switch(axe){ 
                     case "Z1": 
@@ -164,6 +193,12 @@ public class CommandPlotExpand implements CommandExecutor {
                     case "X2":
                         plottmp.setX2(point);
                         break;
+                    case "Y1":
+                        plottmp.setY1(point);
+                        break;
+                    case "Y2":
+                        plottmp.setY2(point);
+                        break;
                 }
                 
                 plotSelect.setMinPos(plottmp.getLocX1Y1Z1().getBlockPosition());
@@ -176,6 +211,8 @@ public class CommandPlotExpand implements CommandExecutor {
             else if(nbBlock < 101){ amount = 2;}
             else if(nbBlock < 201){ amount = 3;}
             else { amount = nbBlock / 60;}
+            
+            if(nbBlock < 0)amount = -amount / 2;
             
             player.sendMessage(MESSAGE("&7Le co\373t de cette transaction est de : &e" + amount + " \351meraudes"));
             player.sendMessage(Text.builder("Clique ici pour confirmer l'ajout de " + nbBlock + " block sur ta parcelle\n")
@@ -242,6 +279,28 @@ public class CommandPlotExpand implements CommandExecutor {
                     nbBlock = expand * abs(plot.get().getZ1() - plot.get().getZ2());
                     SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
                     if (SuccessTransaction)plot.get().setX2(point);
+                    break;
+                case "Y1":
+                    // on calcul le nombre de bloc ajouté pour le calcul du prix
+                    loc = new Location<>(plot.get().getWorld().get(), new Vector3d(plot.get().getX1(), point, plot.get().getZ1()));
+                    if(!IsAllowed(loc,aplayer)){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
+                    nbBlock = expand;
+                    SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
+                    if (SuccessTransaction)plot.get().setY1(point);
+                    break;
+                case "Y2":
+                    // on calcul le nombre de bloc ajouté pour le calcul du prix
+                    loc = new Location<>(plot.get().getWorld().get(), new Vector3d(plot.get().getX2(), point, plot.get().getZ2()));
+                    if(!IsAllowed(loc,aplayer)){
+                        player.sendMessage(ALREADY_OWNED_PLOT());
+                        return CommandResult.empty();
+                    }
+                    nbBlock = expand;
+                    SuccessTransaction = ConfirmTransaction(nbBlock,aplayer);
+                    if (SuccessTransaction)plot.get().setY2(point);
                     break;
             }
             

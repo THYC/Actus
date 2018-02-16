@@ -34,8 +34,6 @@ public class CommandPlotCreate implements CommandExecutor {
         if(src instanceof Player && src.hasPermission("actus.player.plot.create")) { 
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
-            //PlotManager plotManager = PlotManager.getSett(player);
-            PlotManager plotManager = new PlotManager();
             PlotSelection plotselect = ptm.getPlotSel(player);
 
             if(!ctx.getOne("name").isPresent()) { 
@@ -51,19 +49,23 @@ public class CommandPlotCreate implements CommandExecutor {
             }
             Boolean strict = false;
 
-            if (plotManager.hasPlot(name) == false){
+            if (ptm.hasPlot(name) == false){
                 if(!plotselect.getMinPos().isPresent() || !plotselect.getMaxPos().isPresent()){
                     player.sendMessage(UNDEFINED_PLOT_ANGLES());
                     return CommandResult.empty();
                 }
                 Location[] c = {plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get()};
-                int level = 1;
-                if(plotManager.plotNotAllow(plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get(), player.getIdentifier())){
-                    if(aplayer.getLevel() != LEVEL_ADMIN() && !plotManager.hasOwnerPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
+                
+                int level;
+                level = ptm.getMaxLevelPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get());
+                if(level == 0)level = 1;
+                
+                if(ptm.plotNotAllow(plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get(), player.getIdentifier())){
+                    if(aplayer.getLevel() != LEVEL_ADMIN() && !ptm.hasOwnerPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
                         player.sendMessage(ALREADY_OWNED_PLOT());
                         return CommandResult.empty();
                     }
-                    level = plotManager.getMaxLevelPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get());
+                    //level = ptm.getMaxLevelPlotParent(player, plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get());
                 }
                 
                 int X = (int) Math.round(c[0].getX()-c[1].getX());
@@ -77,16 +79,20 @@ public class CommandPlotCreate implements CommandExecutor {
                 else if(nbBlock < 101){ amount = 2;}
                 else if(nbBlock < 201){ amount = 3;}
                 else { amount = nbBlock / 60;}
-
-                if(aplayer.getMoney()>= amount || aplayer.getLevel() == 10){
-                    if(ctx.getOne("strict").isPresent()){
-                        if (ctx.<String> getOne("strict").get().equalsIgnoreCase("strict")) strict = true;
+                
+                if(!ptm.hasUniquePlotParent(player,plotselect.getMinPosLoc().get(), plotselect.getMaxPosLoc().get())){
+                    if(aplayer.getMoney()>= amount || aplayer.getLevel() == 10){
+                        if(ctx.getOne("strict").isPresent()){
+                            if (ctx.<String> getOne("strict").get().equalsIgnoreCase("strict")) strict = true;
+                        }
+                        player.sendMessage(MESSAGE("&7Le co\373t de cette transaction est de : &e" + amount + " \351meraudes"));
+                        player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation de ta parcelle").onClick(TextActions.executeCallback(CB_PLOT.callCreate(name,strict,amount,level))).color(TextColors.AQUA).build());  
+                        return CommandResult.success();
+                    } else {
+                        player.sendMessage(BUYING_COST_PLOT(player,String.valueOf(amount),String.valueOf(aplayer.getMoney())));
                     }
-                    player.sendMessage(MESSAGE("&7Le co\373t de cette transaction est de : &e" + amount + " \351meraudes"));
-                    player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation de ta parcelle").onClick(TextActions.executeCallback(CB_PLOT.callCreate(name,strict,amount,level))).color(TextColors.AQUA).build());  
-                    return CommandResult.success();
-                } else {
-                    player.sendMessage(BUYING_COST_PLOT(player,String.valueOf(amount),String.valueOf(aplayer.getMoney())));
+                }else{
+                    player.sendMessage(Text.builder("Clique ici pour confirmer la cr\351ation de ta parcelle").onClick(TextActions.executeCallback(CB_PLOT.callCreate(name,strict,1,level))).color(TextColors.AQUA).build());  
                 }
             } else {
                 player.sendMessage(NAME_ALREADY_USED());

@@ -274,101 +274,8 @@ public class PlotListener {
         
         if(!fplot.isPresent()) {
             if(plot.isPresent()){
-                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString())){
-                    if(plot.get().getMessage().startsWith("#t")){
-                        if(plot.get().getMessage().contains("#st")){
-                            int index = plot.get().getMessage().indexOf("#st");
-                            Title t = Title.builder()
-                                    .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
-                                    .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
-                                    .fadeIn(30)
-                                    .stay(30)
-                                    .fadeOut(30)
-                                    .build();
-                            player.sendTitle(t);
-                        }else{
-                            player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
-                        }
-                    }else{
-                        if(plot.get().getMessage().startsWith("#b")){
-                            player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
-                        }else{
-                            player.sendMessage(MESSAGE(plot.get().getMessage(),player));
-                        }
-                    }  
-                }
-            }
-        }
-        
-        if(fplot.isPresent() && plot.isPresent()) {
-            if(!plot.get().equals(fplot.get())){
-                if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString())){
-                    if(plot.get().getMessage().startsWith("#t")){
-                        if(plot.get().getMessage().contains("#st")){
-                            int index = plot.get().getMessage().indexOf("#st");
-                            Title t = Title.builder()
-                                    .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
-                                    .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
-                                    .fadeIn(30)
-                                    .stay(30)
-                                    .fadeOut(30)
-                                    .build();
-                            player.sendTitle(t);
-                        }else{
-                            player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
-                        }
-                    }else{
-                        if(plot.get().getMessage().startsWith("#b")){
-                            player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
-                        }else{
-                            player.sendMessage(MESSAGE(plot.get().getMessage(),player));
-                        }
-                    }  
-                }
-            }
-        }
-
-        if(plot.isPresent()){
-            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN()){
-                if (player.get(Keys.CAN_FLY).isPresent()) { 
-                    if(player.get(Keys.CAN_FLY).get() == true && plot.get().getNoFly()) {
-                        player.offer(Keys.IS_FLYING, false); 
-                        player.offer(Keys.CAN_FLY, false); 
-                        player.sendMessage(PLOT_NO_FLY());
-                    }
-                }
-
-                if(!fplot.isPresent()) {
-                    if(plot.get().getMessage().startsWith("#t")){
-                        if(plot.get().getMessage().contains("#st")){
-                            int index = plot.get().getMessage().indexOf("#st");
-                            Title t = Title.builder()
-                                    .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
-                                    .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
-                                    .fadeIn(30)
-                                    .stay(30)
-                                    .fadeOut(30)
-                                    .build();
-                            player.sendTitle(t);
-                        }else{
-                            player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
-                        }
-                    }else{
-                        if(plot.get().getMessage().startsWith("#b")){
-                            player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
-                        }else{
-                            player.sendMessage(MESSAGE(plot.get().getMessage(),player));
-                        }
-                    }  
-                    if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
-                        player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
-                        player.sendMessage(PLOT_NO_ENTER());
-                        event.setCancelled(true);
-                    }
-                }
-                
-                if(fplot.isPresent()) {
-                    if(!fplot.get().equals(plot.get())){
+                if(!plot.get().getNoMsg()){
+                    if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString())){
                         if(plot.get().getMessage().startsWith("#t")){
                             if(plot.get().getMessage().contains("#st")){
                                 int index = plot.get().getMessage().indexOf("#st");
@@ -390,6 +297,107 @@ public class PlotListener {
                                 player.sendMessage(MESSAGE(plot.get().getMessage(),player));
                             }
                         }  
+                    }
+                }
+            }
+        }
+        
+        if(fplot.isPresent() && plot.isPresent()) {
+            if(!plot.get().equals(fplot.get())){
+                if(!plot.get().getNoMsg()){
+                    if(DISPLAY_PLOT_MSG_FOR_OWNER() && plot.get().getUuidAllowed().contains(player.getUniqueId().toString())){
+                        if(plot.get().getMessage().startsWith("#t")){
+                            if(plot.get().getMessage().contains("#st")){
+                                int index = plot.get().getMessage().indexOf("#st");
+                                Title t = Title.builder()
+                                        .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                        .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                        .fadeIn(30)
+                                        .stay(30)
+                                        .fadeOut(30)
+                                        .build();
+                                player.sendTitle(t);
+                            }else{
+                                player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                            }
+                        }else{
+                            if(plot.get().getMessage().startsWith("#b")){
+                                player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                            }else{
+                                player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                            }
+                        }  
+                    }
+                }
+            }
+        }
+
+        if(plot.isPresent()){
+            if(!plot.get().getUuidAllowed().contains(player.getUniqueId().toString()) && aplayer.getLevel() != LEVEL_ADMIN()){
+                if (player.get(Keys.CAN_FLY).isPresent()) { 
+                    if(player.get(Keys.CAN_FLY).get() == true && plot.get().getNoFly()) {
+                        player.offer(Keys.IS_FLYING, false); 
+                        player.offer(Keys.CAN_FLY, false); 
+                        player.sendMessage(PLOT_NO_FLY());
+                    }
+                }
+
+                if(!fplot.isPresent()) {
+                    if(!plot.get().getNoMsg()){
+                        if(plot.get().getMessage().startsWith("#t")){
+                            if(plot.get().getMessage().contains("#st")){
+                                int index = plot.get().getMessage().indexOf("#st");
+                                Title t = Title.builder()
+                                        .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                        .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                        .fadeIn(30)
+                                        .stay(30)
+                                        .fadeOut(30)
+                                        .build();
+                                player.sendTitle(t);
+                            }else{
+                                player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                            }
+                        }else{
+                            if(plot.get().getMessage().startsWith("#b")){
+                                player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                            }else{
+                                player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                            }
+                        }
+                    }
+                    if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
+                        player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
+                        player.sendMessage(PLOT_NO_ENTER());
+                        event.setCancelled(true);
+                    }
+                }
+                
+                if(fplot.isPresent()) {
+                    if(!fplot.get().equals(plot.get())){
+                        if(!plot.get().getNoMsg()){
+                            if(plot.get().getMessage().startsWith("#t")){
+                                if(plot.get().getMessage().contains("#st")){
+                                    int index = plot.get().getMessage().indexOf("#st");
+                                    Title t = Title.builder()
+                                            .title(MESSAGE(plot.get().getMessage().substring(2,index),player))
+                                            .subtitle(MESSAGE(plot.get().getMessage().substring(index + 3),player))
+                                            .fadeIn(30)
+                                            .stay(30)
+                                            .fadeOut(30)
+                                            .build();
+                                    player.sendTitle(t);
+                                }else{
+                                    player.sendTitle(Title.of(MESSAGE(plot.get().getMessage().substring(2),player)));
+                                }
+                            }else{
+                                if(plot.get().getMessage().startsWith("#b")){
+                                    player.sendMessage(ChatTypes.ACTION_BAR, MESSAGE(plot.get().getMessage().substring(2),player));
+                                }else{
+                                    player.sendMessage(MESSAGE(plot.get().getMessage(),player));
+                                }
+                            }  
+                        }
                         if(plot.get().getNoEnter() && aplayer.getLevel() != LEVEL_ADMIN()) {
                             player.transferToWorld(getGame().getServer().getWorld(world).get(), from.getPosition());
                             player.sendMessage(PLOT_NO_ENTER());

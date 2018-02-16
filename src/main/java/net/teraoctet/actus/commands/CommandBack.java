@@ -5,6 +5,7 @@ import net.teraoctet.actus.utils.DeSerialize;
 import static net.teraoctet.actus.utils.DeSerialize.getLocation;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -23,7 +24,7 @@ public class CommandBack implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
                 
-        if (src instanceof Player && src.hasPermission("actus.modo.back")){           
+        if (src instanceof Player && (src.hasPermission("actus.modo.back") || src.hasPermission("actus.level." + LEVEL_ADMIN()))) {       
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             Optional<Location<World>> location = getLocation(aplayer.getLastposition());

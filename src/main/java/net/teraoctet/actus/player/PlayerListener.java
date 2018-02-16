@@ -9,16 +9,13 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
-import static net.teraoctet.actus.Actus.configInv;
 
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.mapCountDown;
-import static net.teraoctet.actus.Actus.plugin;
 import static net.teraoctet.actus.Actus.ptm;
 import static net.teraoctet.actus.Actus.sm;
 import net.teraoctet.actus.bookmessage.Book;
-import net.teraoctet.actus.inventory.AInventory;
 import static net.teraoctet.actus.player.PlayerManager.addAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayerName;
@@ -68,20 +65,16 @@ import static net.teraoctet.actus.utils.MessageManager.LAST_CONNECT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.utils.Permissions;
 import net.teraoctet.actus.world.WorldManager;
+import net.teraoctet.lightperm.api.Manager;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.command.CommandManager;
-import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.Transaction;
-import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
-import org.spongepowered.api.effect.potion.PotionEffect;
-import org.spongepowered.api.effect.potion.PotionEffectTypes;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
-import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
@@ -97,12 +90,12 @@ public class PlayerListener {
     
     public static ArrayList<Inventory> inventorys = new ArrayList<>();
     public PlayerListener() {}
-    
+        
     @Listener
-    public void onPlayerLogin(ClientConnectionEvent.Login event) {
-        Player player = (Player) event.getTargetUser();
+    public void onPlayerLogin(ClientConnectionEvent.Login event, @First User user){
+        Player player = user.getPlayer().get();
         getGame().getServer().getBroadcastChannel().send(EVENT_LOGIN_MESSAGE(player));
-        APlayer aplayer = getAPlayer(player.getUniqueId().toString());
+        APlayer aplayer = getAPlayer(player.getIdentifier());
         
         if(aplayer == null) {
             getGame().getServer().getBroadcastChannel().send(FIRSTJOIN_BROADCAST_MESSAGE(player));
@@ -110,8 +103,7 @@ public class PlayerListener {
     }
     
     @Listener
-    public void onPlayerJoin(ClientConnectionEvent.Join event) {
-    	Player player = event.getTargetEntity();
+    public void onPlayerJoin(ClientConnectionEvent.Join event, @First Player player){
         String uuid = player.getUniqueId().toString();
         String name = player.getName();
         APlayer aplayer = getAPlayer(player.getUniqueId().toString());
@@ -122,7 +114,6 @@ public class PlayerListener {
             aplayer.insert();
             commit();
             player.sendMessage(FIRSTJOIN_MESSAGE(player)); 
-            player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "group.default", Tristate.TRUE);
         } else {
             addAPlayer(aplayer.getUUID(), aplayer);
             player.sendMessage(JOIN_MESSAGE(player));
@@ -142,22 +133,24 @@ public class PlayerListener {
         if(configBook.getCountMessageBook(player) > 0)configBook.OpenListBookMessage(player);
         
         if(ptm.getListPlot(player.getIdentifier()).isPresent()){
-            if(!player.hasPermission(SubjectData.GLOBAL_CONTEXT, "group.citoyen")){
-                player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "group.citoyen", Tristate.TRUE);
+            if(Manager.getPlayer(player.getUniqueId()).isPresent()){
+                if(Manager.getPlayer(player.getUniqueId()).get().getGroup().getName().equalsIgnoreCase("vagabon")){
+                    player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "group.citoyen", Tristate.TRUE);
+                    Manager.setRank(player, "citoyen");
+                }
             }
         }
     }
     
     @Listener
-    public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event) {
-        Player player = (Player) event.getTargetEntity();
+    public void onPlayerDisconnect(ClientConnectionEvent.Disconnect event, @First Player player){
         APlayer aplayer = getAPlayer(player.getIdentifier());
         long timeConnect = sm.dateToLong()- PlayerManager.getFirstTime(player.getIdentifier());
         long onlineTime = (long)aplayer.getOnlinetime() + timeConnect;
         PlayerManager.removeFirstTime(player.getIdentifier());
         aplayer.setLastonline(sm.dateToLong());
         aplayer.setOnlinetime(onlineTime);
-        aplayer.update();
+        aplayer.update();    
         event.setMessage(EVENT_DISCONNECT_MESSAGE(player));
     }
         
@@ -590,23 +583,23 @@ public class PlayerListener {
         }
     }
     
-    @Listener
-    public void onRespawnPlayer(RespawnPlayerEvent event, @First Player player) {
+    //@Listener
+    //public void onRespawnPlayer(RespawnPlayerEvent event, @First Player player) {
         
-        AInventory invFrom = new AInventory(player, event.getFromTransform().getExtent().getName());
-        AInventory invTO;
-        configInv.save(invFrom);
+        //AInventory invFrom = new AInventory(player, event.getFromTransform().getExtent().getName());
+        //AInventory invTO;
+        //configInv.save(invFrom);
         
-        if(configInv.load(player, event.getToTransform().getExtent().getName()).isPresent()){
-            invTO = configInv.load(player, event.getToTransform().getExtent().getName()).get();
-            invTO.set();
-        }
+        //if(configInv.load(player, event.getToTransform().getExtent().getName()).isPresent()){
+            //invTO = configInv.load(player, event.getToTransform().getExtent().getName()).get();
+            //invTO.set();
+        //}
         
-        player.getOrCreate(PotionEffectData.class).ifPresent(potionEffectData -> {
-            PotionEffectData data = potionEffectData.addElement(PotionEffect.of(PotionEffectTypes.INVISIBILITY, 1, 2));
-            DataTransactionResult result = player.offer(data);
-        });
-    }
+        //player.getOrCreate(PotionEffectData.class).ifPresent(potionEffectData -> {
+            //PotionEffectData data = potionEffectData.addElement(PotionEffect.of(PotionEffectTypes.INVISIBILITY, 1, 2));
+            //DataTransactionResult result = player.offer(data);
+        //});
+    //}
     
     //@Listener
     //public void onPlayerAchievement(ChangeStatisticEvent.TargetPlayer event, @First Player player){

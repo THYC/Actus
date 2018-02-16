@@ -88,7 +88,7 @@ public class CommandManager {
     
         public CommandSpec CommandSetName = CommandSpec.builder()
                 .description(MESSAGE("&9Change le nom de l'item en main"))
-                .permission("actus.admin.setname")
+                .permission("actus.admin.level")
                 .arguments(GenericArguments.firstParsing(
                     GenericArguments.remainingJoinedStrings(MESSAGE("arguments"))))
                 .executor(new CommandSetName())
@@ -258,6 +258,15 @@ public class CommandManager {
                 .executor(new CommandPlotSetLevel()) 
                 .build(); 
         
+        public CommandSpec CommandPlotSetLevelL = CommandSpec.builder()
+                .description(MESSAGE("&9/plot setlevel [level] &eChange le level de la parcelle")) 
+                .permission("actus.level.10") 
+                .arguments(
+                    GenericArguments.seq(
+                        GenericArguments.optional(GenericArguments.integer(MESSAGE("level")))))
+                .executor(new CommandPlotSetLevel()) 
+                .build(); 
+        
         public CommandSpec CommandPlotTag = CommandSpec.builder()
                 .description(MESSAGE("&9/plot tag &ePose une banniere aux angles de ta parcelle")) 
                 .permission("actus.player.plot.tag") 
@@ -325,7 +334,7 @@ public class CommandManager {
                 .permission("actus.modo.back")
                 .executor(new CommandBack())
                 .build();
-        
+                
         public CommandSpec CommandLevel = CommandSpec.builder()
                 .description(MESSAGE("&çChange le level d'un joueur"))
                 .permission("actus.admin.level")
@@ -409,7 +418,7 @@ public class CommandManager {
         public CommandSpec CommandPlayerinfo = CommandSpec.builder()
                 .description(MESSAGE("/playerinfo [player]"))
                 .permission("actus.player.playerinfo")
-                .arguments(GenericArguments.optional(GenericArguments.string(MESSAGE("tplayer"))))
+                .arguments(GenericArguments.optional(GenericArguments.user(MESSAGE("tplayer"))))
                 .executor(new CommandPlayerinfo())
                 .build();
         
@@ -465,7 +474,7 @@ public class CommandManager {
         public CommandSpec CommandGuildInvit = CommandSpec.builder()
                 .description(MESSAGE("&9Invite un joueur a rejoindre ta guilde")) 
                 .permission("actus.player.guild.invit") 
-                .arguments(GenericArguments.onlyOne(GenericArguments.player(MESSAGE("player"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.user(MESSAGE("player"))))
                 .executor(new CommandGuildInvit()) 
                 .build();
         
@@ -1019,7 +1028,17 @@ public class CommandManager {
                 .description(MESSAGE("&9Modifie les parametres config ACTUS")) 
                 .permission("actus.admin.config")
                 .arguments(
-                    GenericArguments.optional(GenericArguments.string(MESSAGE("cmd"))))
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("cmd"))),
+                    GenericArguments.optional(GenericArguments.bool(MESSAGE("value"))))
                 .executor(new CommandConfigActus())
+                .build();
+        
+        public CommandSpec CommandPromote = CommandSpec.builder()
+                .description(MESSAGE("&9Change le rank d'un joueur")) 
+                .permission("actus.modo.promote")
+                .arguments(
+                    GenericArguments.optional(GenericArguments.user(MESSAGE("user"))),
+                    GenericArguments.optional(GenericArguments.string(MESSAGE("rank"))))
+                .executor(new CommandPromote())
                 .build();
 }

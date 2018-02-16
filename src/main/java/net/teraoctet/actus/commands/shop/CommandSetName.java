@@ -1,6 +1,7 @@
 package net.teraoctet.actus.commands.shop;
 
 import java.util.Optional;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.command.CommandResult;
@@ -20,7 +21,7 @@ public class CommandSetName implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.admin.setname")) {
+        if(src instanceof Player && (src.hasPermission("actus.admin.level.setname") || src.hasPermission("actus.admin.level." + LEVEL_ADMIN()))) {
             Player player = (Player) src;
             Optional<String> arguments = ctx.<String> getOne("arguments");
             String item;

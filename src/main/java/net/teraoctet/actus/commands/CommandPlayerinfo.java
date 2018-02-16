@@ -10,7 +10,6 @@ import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.guild.GuildManager;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
-import static net.teraoctet.actus.player.PlayerManager.getUUID;
 import static net.teraoctet.actus.utils.Data.getGuild;
 import net.teraoctet.actus.utils.DeSerialize;
 import org.spongepowered.api.command.CommandResult;
@@ -31,8 +30,8 @@ import static net.teraoctet.actus.utils.MessageManager.PI_ONHOVER_GUILD;
 import static net.teraoctet.actus.utils.MessageManager.PI_ONHOVER_HOME;
 import static net.teraoctet.actus.utils.MessageManager.PI_ONHOVER_NOGUILD;
 import static net.teraoctet.actus.utils.MessageManager.PI_ONHOVER_PLOT;
-import net.teraoctet.actus.utils.ServerManager;
 import static org.spongepowered.api.Sponge.getGame;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.statistic.Statistics;
@@ -104,21 +103,19 @@ public class CommandPlayerinfo implements CommandExecutor
         /**********************************************************************/
         /*                      PLAYERINFO ADMIN                              */
         /**********************************************************************/
-        String targetName = ctx.<String> getOne("tplayer").get();
-        String targetUUID = getUUID(targetName);
-            
-        if(targetUUID == null)
-        {
-            src.sendMessage(DATA_NOT_FOUND(targetName));
+        Optional<User> user = ctx.<User> getOne("tplayer");    
+        if(!user.isPresent()){
+            src.sendMessage(DATA_NOT_FOUND(user.get().getName()));
             return CommandResult.empty();
         }
-            
+        String targetName = user.get().getName();
+        String targetUUID = user.get().getIdentifier();
+                        
         APlayer aplayer = getAPlayer(targetUUID);
         List<Text> contents = new ArrayList<>();
            
         //joueur cible connecté
-        if(ServerManager.isOnline(targetName)) 
-        {
+        if(user.get().isOnline()) {
             Player tPlayer = getGame().getServer().getPlayer(targetName).get();
             
             contents.add(Text.builder().append(MESSAGE("&ePlayer: " + targetName))

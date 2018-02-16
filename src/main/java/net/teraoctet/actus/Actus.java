@@ -198,6 +198,7 @@ public class Actus {
         getGame().getCommandManager().register(this, new CommandManager().CommandChestSet, "chestset");
         getGame().getCommandManager().register(this, new CommandManager().CommandConfigActus, "confactus","conf","ca");
         getGame().getCommandManager().register(this, new CommandManager().CommandPlotFlaglist, "flaglist");
+        getGame().getCommandManager().register(this, new CommandManager().CommandPromote, "promote");
     }
         
     @Listener

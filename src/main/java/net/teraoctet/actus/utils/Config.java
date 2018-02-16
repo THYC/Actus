@@ -18,8 +18,8 @@ public class Config {
             if (!FILE.exists()) {
                 FILE.createNewFile();
 
-                config.getNode("mysql").getOptions().setHeader("PARAMETRE DE CONNECTION MYSQL, SI USE=FALSE ALORS C'EST LA BASE H2 QUI EST UTILISE");
-                config.getNode("mysql", "USE").setValue(false).getOptions().setHeader("UTILISATION DE MYSQL ? true/false");
+                config.getNode("mysql").setComment("PARAMETRE DE CONNECTION MYSQL, SI USE=FALSE ALORS C'EST LA BASE H2 QUI EST UTILISE");
+                config.getNode("mysql", "USE").setValue(false).setComment("UTILISATION DE MYSQL ? true/false");
                 config.getNode("mysql", "HOST").setValue("localhost");
                 config.getNode("mysql", "PORT").setValue(3306);
                 config.getNode("mysql", "USERNAME").setValue("root");
@@ -29,11 +29,14 @@ public class Config {
                 config.getNode("limits", "MAX_TEMPBAN_TIME_IN_SECONDS").setValue(3600);
                 config.getNode("limits", "MAX_MUTE_TIME_IN_SECONDS").setValue(600);
                 config.getNode("limits", "DEFAULT_TEMP_JAIL_IN_SECONDS").setValue(3600);
-                config.getNode("plot", "DEL_SIGN_AFTER_SALE").setValue(true);
-                config.getNode("plot", "DISPLAY_PLOT_MSG_FOR_OWNER").setValue(true);
-                config.getNode("guild", "MAX_NUMBER_OF_MEMBER").setValue(20);
-                config.getNode("guild", "NAME_MAX_SIZE").setValue(25);
-                config.getNode("guild", "NAME_MIN_SIZE").setValue(5);
+                config.getNode("plot").setComment("PARAMETRAGE PLOT/PARCELLE");
+                config.getNode("plot", "DEL_SIGN_AFTER_SALE").setValue(true).setComment("SUPPRIME LES PANNEAUX DE VENTE DE PARCELLE APRES VENTE");
+                config.getNode("plot", "DISPLAY_PLOT_MSG_FOR_OWNER").setValue(true).setComment("AFFICHE LE MSG D'ACCUEIL POUR LE OWNER");
+                config.getNode("guild").setComment("PARAMETRAGE GUILD");
+                config.getNode("guild", "MAX_NUMBER_OF_MEMBER").setValue(20).setComment("NOMBRE MAXIMUM DE MEMBRE PAR GUILD");
+                config.getNode("guild", "NAME_MAX_SIZE").setValue(25).setComment("NB MAXI DE CARACTERE POUR LE NOM DE GUILD");
+                config.getNode("guild", "NAME_MIN_SIZE").setValue(5).setComment("NB MINI DE CARACTERE POUR LE NOM DE GUILD");
+                config.getNode("server").setComment("PARAMETRAGE DU SERVEUR");
                 config.getNode("server", "TITLE").setValue("Bienvenu sur CubiCraft").setComment("affichage msg Title a la connection");
                 config.getNode("server", "SUBTITLE").setValue("Serveur [FR] CRAFT.TER@OCTET");
                 config.getNode("server", "URLWEB").setValue("http://craft.teraoctet.net");

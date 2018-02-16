@@ -22,4 +22,5 @@ repositories {
 dependencies {
     compile 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
     compile 'com.sk89q.worldedit:worldedit-core:6.1'
+    compile 'net.teraoctet:LightPerm:0.8.0'
 }

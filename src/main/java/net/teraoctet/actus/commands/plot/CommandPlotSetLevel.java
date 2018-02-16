@@ -5,6 +5,7 @@ import static net.teraoctet.actus.Actus.ptm;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
 import net.teraoctet.actus.plot.Plot;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.USAGE;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,7 +23,7 @@ public class CommandPlotSetLevel implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext ctx) {
 
-        if(src instanceof Player && src.hasPermission("actus.admin.plot.setlevel")) { 
+        if(src instanceof Player && (src.hasPermission("actus.admin.plot.setlevel") || src.hasPermission("actus.level." + LEVEL_ADMIN()))) {
             Player player = (Player) src;
             APlayer aplayer = getAPlayer(player.getUniqueId().toString());
             Optional<Plot> plot;

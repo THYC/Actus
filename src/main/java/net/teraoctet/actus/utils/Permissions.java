@@ -1,13 +1,11 @@
 package net.teraoctet.actus.utils;
 
-import java.util.Collection;
-import java.util.Optional;
-import static net.teraoctet.actus.Actus.plugin;
 import net.teraoctet.actus.guild.Guild;
 import net.teraoctet.actus.player.APlayer;
 import net.teraoctet.actus.player.PlayerManager;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.permission.SubjectData;
 
 public class Permissions {
     
@@ -24,33 +22,22 @@ public class Permissions {
             Guild guild = Data.getGuild(aplayer.getID_guild());
             return guild.getName();
         }
-        Collection<Subject> subjectCol = player.getContainingCollection().getLoadedSubjects();
-        for (Subject subject : subjectCol) {
-            if (subject.getOption("prefix").isPresent())return subject.getOption("prefix").get();
+        if(player.getOption(SubjectData.GLOBAL_CONTEXT, "prefix").isPresent()){
+            return player.getOption(SubjectData.GLOBAL_CONTEXT, "prefix").get();
         }
         return "";
     }
-    
-    public static String getSuffix(Player player) {
-    	Optional<Subject> subject = player.getContainingCollection().getSubject(player.getIdentifier());
-	if(subject.isPresent()){
-            
-            return subject.get().getOption("suffix").orElse("");
-		}
-		return "";
-}
 	       
-    public static String getSuffix2(Player player) {
-        Collection<Subject> subjectCol = player.getContainingCollection().getLoadedSubjects();
-        for(Subject subject : subjectCol){
-            if (subject.getOption("suffix").isPresent()) {
-                return subject.getOption("suffix").get();
-            }
+    public static String getSuffix(Player player) {
+        APlayer aplayer = PlayerManager.getAPlayer(player.getIdentifier());
+        if(aplayer.getLevel() == LEVEL_ADMIN()){
+            return " &l&7[L" + LEVEL_ADMIN() + "]";
+        }
+        
+        if(player.getOption(SubjectData.GLOBAL_CONTEXT, "suffix").isPresent()){
+            return player.getOption(SubjectData.GLOBAL_CONTEXT, "suffix").get();
         }
         return "";
-        
-        //Subject subject = player.getContainingCollection().getDefaults();
-        //return subject.getOption("suffix").orElse("");
     }
 
 }

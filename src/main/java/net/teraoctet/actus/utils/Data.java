@@ -86,26 +86,49 @@ public class Data {
                             + "z INT, "
                             + "UNIQUE (name))");
                 }
-
-                if(!tables.contains("APLAYERS")) {
-                    plugin.getLogger().info("creation table APLAYERS ...");
-                    execute("CREATE TABLE APLAYERS ("
-                            + "uuid VARCHAR(50) NOT NULL, "
-                            + "level INT, "
-                            + "name VARCHAR(50), "
-                            + "godmode VARCHAR(50), "
-                            + "flymode DOUBLE, "
-                            + "mails VARCHAR(50), "
-                            + "money DOUBLE, "
-                            + "lastposition VARCHAR(50), "
-                            + "lastdeath VARCHAR(50), "
-                            + "onlinetime DOUBLE, "
-                            + "lastonline DOUBLE, "
-                            + "jail VARCHAR(50), "
-                            + "timejail DOUBLE, "
-                            + "id_guild INT, "
-                            + "guild_rank INT, "
-                            + "KEY (uuid), UNIQUE (uuid))");
+                
+                if(Config.MYSQL_USE()){
+                    if(!tables.contains("APLAYERS")) {
+                        plugin.getLogger().info("creation table APLAYERS ...");
+                        execute("CREATE TABLE APLAYERS ("
+                                + "uuid VARCHAR(50) NOT NULL, "
+                                + "level INT, "
+                                + "name VARCHAR(50), "
+                                + "godmode VARCHAR(50), "
+                                + "flymode DOUBLE, "
+                                + "mails VARCHAR(50), "
+                                + "money DOUBLE, "
+                                + "lastposition VARCHAR(50), "
+                                + "lastdeath VARCHAR(50), "
+                                + "onlinetime DOUBLE, "
+                                + "lastonline DOUBLE, "
+                                + "jail VARCHAR(50), "
+                                + "timejail DOUBLE, "
+                                + "id_guild INT, "
+                                + "guild_rank INT, "
+                                + "KEY (uuid), UNIQUE (uuid))");
+                    }
+                }else{
+                    if(!tables.contains("APLAYERS")) {
+                        plugin.getLogger().info("creation table APLAYERS ...");
+                        execute("CREATE TABLE APLAYERS ("
+                                + "uuid VARCHAR(50) NOT NULL, "
+                                + "level INT, "
+                                + "name VARCHAR(50), "
+                                + "godmode VARCHAR(50), "
+                                + "flymode DOUBLE, "
+                                + "mails VARCHAR(50), "
+                                + "money DOUBLE, "
+                                + "lastposition VARCHAR(50), "
+                                + "lastdeath VARCHAR(50), "
+                                + "onlinetime DOUBLE, "
+                                + "lastonline DOUBLE, "
+                                + "jail VARCHAR(50), "
+                                + "timejail DOUBLE, "
+                                + "id_guild INT, "
+                                + "guild_rank INT, "
+                                + "PRIMARY KEY (uuid))");
+                    }
                 }
                 
                 if(!tables.contains("GUILDS")) {
@@ -201,7 +224,7 @@ public class Data {
                             + "noLiquidFlow BOOLEAN DEFAULT FALSE,"
                             + "autoForest BOOLEAN DEFAULT TRUE, "
                             + "noMsg BOOLEAN DEFAULT FALSE, "
-                            + "KEY (plotName), UNIQUE (plotName))");
+                            + "PRIMARY KEY (plotName))"); //, UNIQUE (plotName))");
                 }
                 
                 if(!tables.contains("PLSALE")) {

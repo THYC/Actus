@@ -39,10 +39,10 @@ public class CommandSetHome implements CommandExecutor {
                 return CommandResult.empty(); 
             }
 
-            int nbHomes = 0;
-            for(int i = 1; i <= 100; i++) {if(player.hasPermission("actus.sethome." + i)) nbHomes = i;}
+            int nbHomes = 1;
+            for(int i = 1; i <= 100; i++) {if(player.hasPermission("actus.player.sethome." + i)) nbHomes = i;}
 
-            if(!player.hasPermission("actus.home.unlimited") && nbHomes <= homes.size()) {
+            if(!player.hasPermission("actus.player.sethome.unlimited") && nbHomes <= homes.size()) {
                 src.sendMessage(NB_ALLOWED_HOME(player,String.valueOf(nbHomes)));
                 return CommandResult.empty(); 
             }
@@ -63,7 +63,7 @@ public class CommandSetHome implements CommandExecutor {
                 src.sendMessage(HOME_SET_SUCCESS(player,name));
             }
 
-            if(player.hasPermission("actus.home.unlimited")) src.sendMessage(NB_HOME(player,String.valueOf(homes.size()),"illimité"));
+            if(player.hasPermission("actus.player.sethome.unlimited")) src.sendMessage(NB_HOME(player,String.valueOf(homes.size()),"illimité"));
             else src.sendMessage(NB_HOME(player,String.valueOf(homes.size()),String.valueOf(nbHomes)));  
             
             return CommandResult.success();

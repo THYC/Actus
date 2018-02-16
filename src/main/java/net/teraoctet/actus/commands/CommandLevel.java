@@ -3,6 +3,7 @@ package net.teraoctet.actus.commands;
 import java.util.Optional;
 import net.teraoctet.actus.player.APlayer;
 import static net.teraoctet.actus.player.PlayerManager.getAPlayer;
+import static net.teraoctet.actus.utils.Config.LEVEL_ADMIN;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import static net.teraoctet.actus.utils.MessageManager.NO_PERMISSIONS;
 import static net.teraoctet.actus.utils.MessageManager.NOT_FOUND;
@@ -13,6 +14,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.util.Tristate;
 
 public class CommandLevel implements CommandExecutor {
     
@@ -46,6 +49,13 @@ public class CommandLevel implements CommandExecutor {
             aplayer = getAPlayer(player.getUniqueId().toString()); 
             aplayer.setLevel(level.get());
             aplayer.update();
+            
+            if(level.get()==LEVEL_ADMIN()){
+                aplayer.getPlayer().get().getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "actus.level." + LEVEL_ADMIN(), Tristate.TRUE);
+            }else{
+                aplayer.getPlayer().get().getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "actus.level." + LEVEL_ADMIN(), Tristate.FALSE);
+            }
+                
             src.sendMessage(MESSAGE("&6%name% est mont\351e au level %var1%",player,String.valueOf(level.get())));
             return CommandResult.success();
         }
