@@ -35,7 +35,7 @@ public class GraveManager {
     private final TypeToken<Grave> TOKEN_CONFIG = TypeToken.of(Grave.class);
     private static final File FILE = new File("config/actus/grave.conf");
     private static final ConfigurationLoader<?> MANAGER = HoconConfigurationLoader.builder().setFile(FILE).build();
-    private static ConfigurationNode graveNode = MANAGER.createEmptyNode(ConfigurationOptions.defaults());;
+    private static ConfigurationNode graveNode = MANAGER.createEmptyNode(ConfigurationOptions.defaults());
     
     /**
      * retourne la tombe du point idGrave

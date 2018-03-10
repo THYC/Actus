@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static net.teraoctet.actus.Actus.configBook;
-
+//import net.teraoctet.
 import static net.teraoctet.actus.Actus.inputDouble;
 import static net.teraoctet.actus.Actus.inputShop;
 import static net.teraoctet.actus.Actus.mapCountDown;
@@ -65,7 +65,9 @@ import static net.teraoctet.actus.utils.MessageManager.LAST_CONNECT;
 import static net.teraoctet.actus.utils.MessageManager.MESSAGE;
 import net.teraoctet.actus.utils.Permissions;
 import net.teraoctet.actus.world.WorldManager;
-import net.teraoctet.lightperm.api.Manager;
+import net.teraoctet.permlight.api.PermManager;
+import net.teraoctet.permlight.api.PermUser;
+
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import static org.spongepowered.api.block.BlockTypes.CHEST;
@@ -82,14 +84,14 @@ import org.spongepowered.api.item.ItemTypes;
 import static org.spongepowered.api.item.ItemTypes.WRITABLE_BOOK;
 import static org.spongepowered.api.item.ItemTypes.WRITTEN_BOOK;
 import org.spongepowered.api.service.ProviderRegistration;
-import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.service.user.UserStorageService;
-import org.spongepowered.api.util.Tristate;
+
 
 public class PlayerListener {
     
     public static ArrayList<Inventory> inventorys = new ArrayList<>();
     public PlayerListener() {}
+    private static final PermManager PM = new PermManager();
         
     @Listener
     public void onPlayerLogin(ClientConnectionEvent.Login event, @First User user){
@@ -133,10 +135,12 @@ public class PlayerListener {
         if(configBook.getCountMessageBook(player) > 0)configBook.OpenListBookMessage(player);
         
         if(ptm.getListPlot(player.getIdentifier()).isPresent()){
-            if(Manager.getPlayer(player.getUniqueId()).isPresent()){
-                if(Manager.getPlayer(player.getUniqueId()).get().getGroup().getName().equalsIgnoreCase("vagabon")){
-                    player.getSubjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "group.citoyen", Tristate.TRUE);
-                    Manager.setRank(player, "citoyen");
+            Optional<PermUser> permuser = PM.getUser(player.getIdentifier());
+            if(permuser.isPresent()){
+                if(permuser.get().getGroup().equalsIgnoreCase("default") || permuser.get().getGroup().equalsIgnoreCase("vagabon")){
+                    permuser.get().setGroup("citoyen");
+                    PM.saveUser(permuser.get());
+                    PM.loadPermissions(player);
                 }
             }
         }
